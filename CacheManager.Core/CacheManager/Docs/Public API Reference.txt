@@ -1,0 +1,424 @@
+================================================================================
+CacheManager.Core Public API Reference
+================================================================================
+
+Package: NCache.OSS.CacheManager.Core
+Namespace: NCache.OSS.CacheManager.Core
+
+================================================================================
+OVERVIEW
+================================================================================
+
+ICacheManager<TCacheValue> is the primary abstraction in CacheManager.Core.
+
+It extends:
+    - ICache<TCacheValue>
+
+And provides:
+    - Multi-layer cache orchestration (L1/L2/etc.)
+    - Distributed cache coordination (via handles)
+    - Event-driven cache lifecycle hooks
+    - Advanced concurrency-safe update semantics
+    - Expiration control APIs
+
+
+================================================================================
+1. EVENTS (CACHE LIFECYCLE HOOKS)
+================================================================================
+
+--------------------------------------------------------------------------------
+1.1 OnAdd
+--------------------------------------------------------------------------------
+
+Signature:
+    event EventHandler<CacheActionEventArgs> OnAdd
+
+Description:
+    Fired when an item is successfully added to cache.
+
+Notes:
+    - NOT fired if Add() returns false (key already exists)
+
+
+--------------------------------------------------------------------------------
+1.2 OnPut
+--------------------------------------------------------------------------------
+
+Signature:
+    event EventHandler<CacheActionEventArgs> OnPut
+
+Description:
+    Fired whenever an item is inserted or replaced.
+
+
+--------------------------------------------------------------------------------
+1.3 OnGet
+--------------------------------------------------------------------------------
+
+Signature:
+    event EventHandler<CacheActionEventArgs> OnGet
+
+Description:
+    Fired on cache HIT only.
+
+Important:
+    - Cache MISS does NOT trigger this event
+
+
+--------------------------------------------------------------------------------
+1.4 OnRemove
+--------------------------------------------------------------------------------
+
+Signature:
+    event EventHandler<CacheActionEventArgs> OnRemove
+
+Description:
+    Fired when an item is explicitly removed via Remove().
+
+
+--------------------------------------------------------------------------------
+1.5 OnUpdate
+--------------------------------------------------------------------------------
+
+Signature:
+    event EventHandler<CacheActionEventArgs> OnUpdate
+
+Description:
+    Fired when Update() successfully modifies an entry.
+
+
+--------------------------------------------------------------------------------
+1.6 OnClear
+--------------------------------------------------------------------------------
+
+Signature:
+    event EventHandler<CacheClearEventArgs> OnClear
+
+Description:
+    Fired after Clear() completes.
+
+
+--------------------------------------------------------------------------------
+1.7 OnClearRegion
+--------------------------------------------------------------------------------
+
+Signature:
+    event EventHandler<CacheClearRegionEventArgs> OnClearRegion
+
+Description:
+    Fired after a region-level clear operation.
+
+
+--------------------------------------------------------------------------------
+1.8 OnRemoveByHandle
+--------------------------------------------------------------------------------
+
+Signature:
+    event EventHandler<CacheItemRemovedEventArgs> OnRemoveByHandle
+
+Description:
+    Fired when a cache handle evicts an item.
+
+Reasons:
+    - Expiration
+    - Memory pressure
+    - Distributed eviction
+
+Metadata:
+    - Reason (why removed)
+    - Level (which cache layer triggered it)
+
+
+================================================================================
+2. CORE WRITE / READ OPERATIONS
+================================================================================
+
+--------------------------------------------------------------------------------
+2.1 AddOrUpdate (PRIMARY CONCURRENCY-SAFE API)
+--------------------------------------------------------------------------------
+
+Signatures:
+    TCacheValue AddOrUpdate(string key, TCacheValue addValue,
+        Func<TCacheValue, TCacheValue> updateValue)
+
+    TCacheValue AddOrUpdate(string key, string region, TCacheValue addValue,
+        Func<TCacheValue, TCacheValue> updateValue)
+
+    TCacheValue AddOrUpdate(string key, TCacheValue addValue,
+        Func<TCacheValue, TCacheValue> updateValue, int maxRetries)
+
+    TCacheValue AddOrUpdate(string key, string region, TCacheValue addValue,
+        Func<TCacheValue, TCacheValue> updateValue, int maxRetries)
+
+    TCacheValue AddOrUpdate(CacheItem<TCacheValue> addItem,
+        Func<TCacheValue, TCacheValue> updateValue)
+
+    TCacheValue AddOrUpdate(CacheItem<TCacheValue> addItem,
+        Func<TCacheValue, TCacheValue> updateValue, int maxRetries)
+
+Description:
+    Adds a value if missing, otherwise updates existing value atomically.
+
+Behavior:
+    - Uses optimistic concurrency control
+    - Retries on version conflicts (if maxRetries provided)
+    - updateValue always receives latest cached value
+    - addValue used only when key does not exist
+
+Failure Cases:
+    - Returns null if retries exhausted
+
+
+================================================================================
+3. GET OR ADD PATTERNS
+================================================================================
+
+--------------------------------------------------------------------------------
+3.1 GetOrAdd (VALUE BASED)
+--------------------------------------------------------------------------------
+
+Signatures:
+    TCacheValue GetOrAdd(string key, TCacheValue value)
+    TCacheValue GetOrAdd(string key, string region, TCacheValue value)
+
+Description:
+    Returns existing value or inserts provided value if missing.
+
+
+--------------------------------------------------------------------------------
+3.2 GetOrAdd (FACTORY BASED)
+--------------------------------------------------------------------------------
+
+Signatures:
+    TCacheValue GetOrAdd(string key, Func<string, TCacheValue> valueFactory)
+    TCacheValue GetOrAdd(string key, string region,
+        Func<string, string, TCacheValue> valueFactory)
+
+Description:
+    Lazily generates value only on cache miss.
+
+
+--------------------------------------------------------------------------------
+3.3 GetOrAddCacheItem (FULL CONTROL)
+--------------------------------------------------------------------------------
+
+Signatures:
+    CacheItem<TCacheValue> GetOrAddCacheItem(string key,
+        Func<string, CacheItem<TCacheValue>> valueFactory)
+
+    CacheItem<TCacheValue> GetOrAddCacheItem(string key, string region,
+        Func<string, string, CacheItem<TCacheValue>> valueFactory)
+
+Description:
+    Returns full CacheItem including metadata (expiration, regions, etc.)
+
+
+
+================================================================================
+4. TRY-GET OR ADD (FAIL-SAFE VARIANTS)
+================================================================================
+
+--------------------------------------------------------------------------------
+4.1 TryGetOrAdd
+--------------------------------------------------------------------------------
+
+Signatures:
+    bool TryGetOrAdd(string key,
+        Func<string, TCacheValue> valueFactory,
+        out TCacheValue value)
+
+    bool TryGetOrAdd(string key, string region,
+        Func<string, string, TCacheValue> valueFactory,
+        out TCacheValue value)
+
+Description:
+    Safe version of GetOrAdd with retry failure handling.
+
+
+--------------------------------------------------------------------------------
+4.2 TryGetOrAddCacheItem
+--------------------------------------------------------------------------------
+
+Signatures:
+    bool TryGetOrAddCacheItem(string key,
+        Func<string, CacheItem<TCacheValue>> valueFactory,
+        out CacheItem<TCacheValue> item)
+
+    bool TryGetOrAddCacheItem(string key, string region,
+        Func<string, string, CacheItem<TCacheValue>> valueFactory,
+        out CacheItem<TCacheValue> item)
+
+Description:
+    Full metadata-safe version of TryGetOrAdd.
+
+
+
+================================================================================
+5. UPDATE OPERATIONS
+================================================================================
+
+--------------------------------------------------------------------------------
+5.1 Update (STANDARD)
+--------------------------------------------------------------------------------
+
+Signatures:
+    TCacheValue Update(string key,
+        Func<TCacheValue, TCacheValue> updateValue)
+
+    TCacheValue Update(string key, string region,
+        Func<TCacheValue, TCacheValue> updateValue)
+
+    TCacheValue Update(string key,
+        Func<TCacheValue, TCacheValue> updateValue,
+        int maxRetries)
+
+    TCacheValue Update(string key, string region,
+        Func<TCacheValue, TCacheValue> updateValue,
+        int maxRetries)
+
+Description:
+    Updates existing value using latest cached version.
+
+Behavior:
+    - Optimistic concurrency control
+    - Retries on version conflicts
+    - Returns updated value or null
+
+
+--------------------------------------------------------------------------------
+5.2 TryUpdate
+--------------------------------------------------------------------------------
+
+Signatures:
+    bool TryUpdate(string key,
+        Func<TCacheValue, TCacheValue> updateValue,
+        out TCacheValue value)
+
+    bool TryUpdate(string key, string region,
+        Func<TCacheValue, TCacheValue> updateValue,
+        out TCacheValue value)
+
+    bool TryUpdate(string key,
+        Func<TCacheValue, TCacheValue> updateValue,
+        int maxRetries,
+        out TCacheValue value)
+
+    bool TryUpdate(string key, string region,
+        Func<TCacheValue, TCacheValue> updateValue,
+        int maxRetries,
+        out TCacheValue value)
+
+Description:
+    Safe update variant returning success flag.
+
+
+
+================================================================================
+6. READ / WRITE BASIC OPERATIONS (INHERITED FROM ICache)
+================================================================================
+
+(These exist via ICache<T>)
+
+Typical operations:
+    - Get(key)
+    - Put(key, value)
+    - Remove(key)
+    - Exists(key)
+    - Clear()
+
+Behavior:
+    - Operate across all configured cache layers
+    - L1/L2 synchronization handled internally
+
+
+
+================================================================================
+7. EXPIRATION CONTROL API
+================================================================================
+
+IMPORTANT:
+Expiration APIs override per-item expiration across ALL cache layers.
+
+--------------------------------------------------------------------------------
+7.1 Expire (Mode + Timeout)
+--------------------------------------------------------------------------------
+
+    void Expire(string key, ExpirationMode mode, TimeSpan timeout)
+    void Expire(string key, string region, ExpirationMode mode, TimeSpan timeout)
+
+
+--------------------------------------------------------------------------------
+7.2 Expire (Absolute)
+--------------------------------------------------------------------------------
+
+    void Expire(string key, DateTimeOffset absoluteExpiration)
+    void Expire(string key, string region, DateTimeOffset absoluteExpiration)
+
+
+--------------------------------------------------------------------------------
+7.3 Expire (Sliding)
+--------------------------------------------------------------------------------
+
+    void Expire(string key, TimeSpan slidingExpiration)
+    void Expire(string key, string region, TimeSpan slidingExpiration)
+
+
+--------------------------------------------------------------------------------
+7.4 RemoveExpiration
+--------------------------------------------------------------------------------
+
+    void RemoveExpiration(string key)
+    void RemoveExpiration(string key, string region)
+
+
+Behavior Notes:
+    - Implemented via Put() internally
+    - NOT atomic in distributed systems
+    - Should not be used in strict concurrency scenarios
+
+
+
+================================================================================
+8. CONCURRENCY MODEL
+================================================================================
+
+Key concepts:
+
+1. Optimistic concurrency
+    - Version-based conflict detection
+
+2. Retry mechanism
+    - Controlled via maxRetries overloads
+
+3. Latest-value semantics
+    - updateValue always receives latest cached state
+
+4. Distributed consistency depends on cache handle
+
+
+================================================================================
+9. SUMMARY
+================================================================================
+
+ICacheManager<T> provides:
+
+CORE OPERATIONS:
+    - Get / Put / Remove / Exists / Clear
+
+ADVANCED OPERATIONS:
+    - AddOrUpdate (atomic-safe updates)
+    - GetOrAdd (lazy initialization)
+    - Update / TryUpdate (controlled mutation)
+    - TryGetOrAdd (safe lazy caching)
+
+EVENT SYSTEM:
+    - OnAdd / OnPut / OnGet / OnRemove / OnUpdate
+    - OnClear / OnClearRegion / OnRemoveByHandle
+
+EXPIRATION CONTROL:
+    - Absolute / Sliding / Mode-based expiration override
+
+ARCHITECTURE:
+    - Multi-layer cache composition
+    - Provider-agnostic abstraction
+    - Distributed cache coordination via handles

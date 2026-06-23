@@ -1,0 +1,473 @@
+================================================================================
+NCache.OSS.CacheManager.Core CacheHandle Exceptions and Logging Reference
+================================================================================
+
+Package: NCache.OSS.CacheManager.Core
+Namespace: NCache.OSS.CacheManager.Core
+
+
+================================================================================
+EXCEPTIONS REFERENCE
+================================================================================
+
+This section describes exceptions thrown by NCacheCacheHandle<T>,
+which wraps Alachisoft.NCache.Client.ICache inside CacheManager.Core BaseCacheHandle.
+
+
+================================================================================
+ArgumentNullException
+================================================================================
+
+Thrown by:
+
+--------------------------------------------------------------------------------
+Constructor
+--------------------------------------------------------------------------------
+- If managerConfiguration is null
+- If configuration is null
+- If loggerFactory is null
+- If options is null
+
+
+--------------------------------------------------------------------------------
+AddInternalPrepared(CacheItem<T>)
+--------------------------------------------------------------------------------
+- If item is null
+
+
+--------------------------------------------------------------------------------
+PutInternalPrepared(CacheItem<T>)
+--------------------------------------------------------------------------------
+- If item is null
+
+
+--------------------------------------------------------------------------------
+RemoveInternal(string key)
+--------------------------------------------------------------------------------
+- If key is null or empty
+
+
+--------------------------------------------------------------------------------
+RemoveInternal(string key, string region)
+--------------------------------------------------------------------------------
+- If key is null or empty
+- If region is null or empty
+
+
+--------------------------------------------------------------------------------
+Exists(string key)
+--------------------------------------------------------------------------------
+- If key is null or empty
+
+
+--------------------------------------------------------------------------------
+Exists(string key, string region)
+--------------------------------------------------------------------------------
+- If key is null or empty
+- If region is null or empty
+
+
+--------------------------------------------------------------------------------
+GetCacheItemInternal(string key)
+--------------------------------------------------------------------------------
+- If key is null or empty
+
+
+--------------------------------------------------------------------------------
+GetCacheItemInternal(string key, string region)
+--------------------------------------------------------------------------------
+- If key is null or empty
+- If region is null or empty
+
+
+--------------------------------------------------------------------------------
+ClearRegion(string region)
+--------------------------------------------------------------------------------
+- If region is null or empty
+
+
+Message format:
+    "Value cannot be null. (Parameter '{parameterName}')"
+
+
+================================================================================
+NCache SDK Exceptions (Alachisoft.NCache)
+================================================================================
+
+These are the most important runtime exceptions in this provider.
+
+--------------------------------------------------------------------------------
+OperationFailedException
+--------------------------------------------------------------------------------
+
+Thrown by:
+
+- AddInternalPrepared(CacheItem<T>) via:
+    _cache.Add(item.Key, ncacheItem)
+
+Typical causes:
+    - Key already exists
+    - Cache cluster rejection
+    - Partition failure
+    - Internal NCache constraint violation
+
+Behavior in code:
+    - If message contains "already exists" → returns false
+    - Otherwise:
+        - Logged
+        - Re-thrown
+
+
+--------------------------------------------------------------------------------
+General Exception (ICache operations)
+--------------------------------------------------------------------------------
+
+Thrown by:
+
+- _cache.GetCacheItem(key)
+- _cache.Insert(key, CacheItem)
+- _cache.Add(...)
+- _cache.Remove(...)
+- _cache.Contains(...)
+- _cache.Clear()
+
+Typical causes:
+    - Cache server unreachable
+    - Network partition
+    - Serialization failure
+    - Cache not initialized
+    - Node failure in cluster
+
+Behavior:
+    - Logged via ILogger.LogError
+    - Re-thrown (preserves stack trace)
+
+
+Important detail:
+    ✔ Uses `throw;` everywhere
+    ✔ Stack trace is preserved correctly
+
+
+--------------------------------------------------------------------------------
+OverflowException
+--------------------------------------------------------------------------------
+
+Thrown by:
+
+- Count property
+
+Cause:
+    - _cache.Count exceeds Int32.MaxValue
+
+Behavior:
+    - Returns int.MaxValue as safe fallback
+
+
+================================================================================
+THREAD / TASK CANCELLATION EXCEPTIONS
+================================================================================
+
+--------------------------------------------------------------------------------
+TaskCanceledException / OperationCanceledException
+--------------------------------------------------------------------------------
+
+NOT explicitly used in this implementation.
+
+However may occur indirectly if:
+
+    - Caller uses cancellation-aware pipeline above this layer
+    - External wrapping task cancels execution
+
+
+================================================================================
+LOGGING
+================================================================================
+
+================================================================================
+LOGGER IMPLEMENTATION
+================================================================================
+
+Type:
+    Microsoft.Extensions.Logging.ILogger
+
+Source:
+    Injected via ILoggerFactory
+
+Logger scope:
+    NCacheCacheHandle<T>
+
+
+Important:
+    ✔ Fully integrated with Microsoft.Extensions.Logging
+    ✔ NOT using NCache internal logger
+    ✔ Supports structured logging providers (Serilog, NLog, etc.)
+
+
+================================================================================
+LOGGING INITIALIZATION
+================================================================================
+
+Constructor:
+
+    _logger = loggerFactory.CreateLogger(this.GetType());
+
+    _cache = CacheManager.GetCache(_options.CacheName, ...)
+
+    Log:
+        "NCache handle initialized. CacheName={CacheName}"
+
+
+================================================================================
+LOG LEVEL BEHAVIOR
+================================================================================
+
+--------------------------------------------------------------------------------
+Information Logs
+--------------------------------------------------------------------------------
+
+Emitted for:
+
+- Initialization:
+    "NCache handle initialized. CacheName={CacheName}"
+
+- Clear:
+    "CLEAR cache triggered"
+    "CLEAR cache completed"
+
+- Add:
+    "ADD key={key} region={region}"
+
+- Put:
+    "PUT key={key} region={region}"
+
+- Remove:
+    "REMOVE key={key}"
+    "REMOVE key={key} region={region}"
+
+- Exists miss:
+    "EXISTS miss key={key}"
+
+- Exists(region) miss:
+    "EXISTS(region) miss key={key} region={region}"
+
+- Dispose:
+    "Disposing NCache handle CacheName={CacheName}"
+
+
+--------------------------------------------------------------------------------
+Error Logs
+--------------------------------------------------------------------------------
+
+Emitted on ALL exceptions:
+
+Format:
+    _logger.LogError(ex, "Error during {Operation}")
+
+Operations include:
+
+- Count
+- Clear
+- ClearRegion
+- Exists
+- AddInternalPrepared
+- GetCacheItemInternal
+- RemoveInternal
+- PutInternalPrepared
+- Dispose
+
+
+Example:
+    "Error during PutInternalPrepared(item) operation"
+
+
+================================================================================
+LOGGING CHARACTERISTICS
+================================================================================
+
+--------------------------------------------------------------------------------
+1. Always-on logging (no feature flag)
+--------------------------------------------------------------------------------
+
+Unlike OutputCache provider:
+
+    ✔ Logging is always enabled
+    ✔ No EnabledLogs / EnableDetailLogs switch
+
+
+--------------------------------------------------------------------------------
+2. No debug-level tracing
+--------------------------------------------------------------------------------
+
+- No verbose request/response tracing
+- No payload logging
+- No latency metrics
+- No hit/miss classification logs
+
+
+--------------------------------------------------------------------------------
+3. Structured logging support
+--------------------------------------------------------------------------------
+
+Because ILogger is used:
+
+    ✔ Supports structured sinks (Serilog, AppInsights, etc.)
+    ✔ Log fields can be enriched externally
+
+
+--------------------------------------------------------------------------------
+4. Error propagation strategy
+--------------------------------------------------------------------------------
+
+Pattern:
+
+    try
+    {
+        ...
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error during X operation");
+        throw;
+    }
+
+Meaning:
+    ✔ No swallowing of exceptions
+    ✔ Full propagation to caller
+    ✔ Logging happens at boundary only
+
+
+================================================================================
+REGION MANAGEMENT LOGGING BEHAVIOR
+================================================================================
+
+Region operations are NOT deeply logged:
+
+- AddToRegion → silent (no log)
+- RemoveFromRegion → silent
+- GetRegionKeys → silent
+
+Only visible indirectly via:
+
+- Add/Put/Remove logs with region field
+
+
+================================================================================
+PERFORMANCE CHARACTERISTICS
+================================================================================
+
+Logging impact:
+
+- Low overhead for Info logs (string interpolation)
+- Error logging includes exception stack trace allocation
+- Region tracking uses additional cache round-trips
+
+Key considerations:
+
+✔ No synchronous blocking logging
+✔ No external logger initialization cost per operation
+✔ No serialization overhead in logs
+
+
+================================================================================
+COMMON ERROR SCENARIOS
+================================================================================
+
+--------------------------------------------------------------------------------
+1. Cache Cluster Not Available
+--------------------------------------------------------------------------------
+
+Source:
+    _cache.* operations
+
+Behavior:
+    - Logged as Error
+    - Exception re-thrown
+
+
+--------------------------------------------------------------------------------
+2. Duplicate Key on Add
+--------------------------------------------------------------------------------
+
+Source:
+    OperationFailedException
+
+Behavior:
+    - Returns false (handled gracefully)
+    - NOT treated as fatal
+
+
+--------------------------------------------------------------------------------
+3. Region Corruption / Missing Region Key
+--------------------------------------------------------------------------------
+
+Behavior:
+    - Returns empty HashSet
+    - No exception thrown
+
+
+--------------------------------------------------------------------------------
+4. Serialization / Network Failures
+--------------------------------------------------------------------------------
+
+Source:
+    NCache SDK layer
+
+Behavior:
+    - Logged
+    - Re-thrown
+
+
+--------------------------------------------------------------------------------
+5. Invalid Arguments
+--------------------------------------------------------------------------------
+
+Source:
+    Guard clauses in methods
+
+Behavior:
+    - Immediate ArgumentNullException
+    - No logging (fail-fast design)
+
+
+================================================================================
+KEY ARCHITECTURAL NOTES
+================================================================================
+
+✔ Uses Alachisoft.NCache.Client.ICache directly
+✔ Uses BaseCacheHandle<T> abstraction from CacheManager.Core
+✔ Implements region tracking manually via cache-stored HashSet<string>
+✔ No dependency on NCache internal logging system
+✔ Fully Microsoft.Extensions.Logging compliant
+✔ Safe exception propagation (throw; preserved stack traces)
+✔ Region model is NOT native NCache region feature (custom implementation)
+
+
+================================================================================
+DESIGN LIMITATIONS
+================================================================================
+
+- Region tracking is a soft abstraction (HashSet-based)
+- No atomic region updates (possible race conditions)
+- No built-in distributed lock for region mutation
+- No tag system (only region emulation)
+- No async API surface (sync NCache calls)
+- No built-in metrics or observability hooks
+
+
+================================================================================
+SUMMARY
+================================================================================
+
+This CacheManager.NCache handle:
+
+    - Wraps NCache ICache client
+    - Implements BaseCacheHandle<T>
+    - Provides region emulation via HashSet keys
+    - Uses Microsoft ILogger for all observability
+    - Logs all operations at Information level + Error on failure
+    - Uses strict fail-fast validation (ArgumentNullException)
+    - Propagates all NCache exceptions upward
+
+It is designed as a:
+    - Thin, reliable abstraction layer
+    - Not a feature-rich observability cache system

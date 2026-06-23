@@ -1,0 +1,280 @@
+================================================================================
+CacheManager.Core Integration Workflow Docs (Corrected)
+================================================================================
+
+================================================================================
+ARCHITECTURE SUMMARY
+================================================================================
+
+CacheManager.Core
+    ✔ It uses a CONFIGURABLE CACHE HANDLE PIPELINE
+    ✔ The number of cache levels is UNBOUNDED (N-level)
+    ✔ Each cache layer is represented by a Cache Handle
+    ✔ Handles are executed in ORDER (top → bottom)
+
+A typical setup might look like:
+
+    InMemoryCache (L1)
+        ↓
+    RedisCache (L2)
+        ↓
+    NCache (L3)
+        ↓
+    Distributed Cache (L4)
+        ↓
+    Custom Provider (L5)
+        ↓
+    ... (N levels possible)
+
+
+================================================================================
+CORE CONCEPT: CACHE HANDLE PIPELINE
+================================================================================
+
+Each cache provider is a "Cache Handle":
+
+    BaseCacheHandle<TCacheValue>
+
+All handles are stored inside:
+
+    ICacheManager<T> → CacheHandles (ordered list)
+
+Execution model:
+
+    READ PATH:
+        First → Last (fastest → slowest)
+
+    WRITE PATH:
+        Depends on configuration, typically:
+            - propagate to all handles OR
+            - propagate selectively based on policy
+
+
+================================================================================
+REQUEST FLOW MODEL
+================================================================================
+
+    ┌──────────────────────────────────────────────────────────────┐
+    │                    APPLICATION LAYER                         │
+    └──────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+    ┌──────────────────────────────────────────────────────────────┐
+    │             ICacheManager<T> ENTRY POINT                     │
+    │                                                              │
+    │   Exposes unified API:                                       │
+    │   - Get / Put / Add / Update / Remove                        │
+    │   - GetOrAdd / AddOrUpdate                                   │
+    └──────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+    ┌──────────────────────────────────────────────────────────────┐
+    │          CACHE HANDLE PIPELINE (N LEVELS)                    │
+    │                                                              │
+    │   Handle[0] → Handle[1] → Handle[2] → ... → Handle[N]        │
+    │     (fast)                                         (slow)    │
+    └──────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+    ┌──────────────────────────────────────────────────────────────┐
+    │                UNDERLYING STORAGE LAYERS                     │
+    │                                                              │
+    │   - InMemory dictionaries                                    │
+    │   - Distributed cache systems (Redis, NCache, etc.)          │
+    │   - Custom providers                                         │
+    └──────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+READ FLOW (GET)
+================================================================================
+
+    Get(key)
+        │
+        ▼
+    Iterate CacheHandles in order:
+
+        Handle[0] → check key
+            ├─ HIT → return value + optionally promote to upper levels
+            └─ MISS → next handle
+
+        Handle[1]
+            ├─ HIT → return + optional promotion
+            └─ MISS → next
+
+        ...
+
+        Handle[N]
+            ├─ HIT → return
+            └─ MISS → return null
+
+
+KEY BEHAVIOR:
+
+✔ First-hit wins
+✔ Higher-level caches are typically faster
+✔ Optional "cache promotion" may occur (implementation dependent)
+
+
+================================================================================
+WRITE FLOW (PUT / ADD)
+================================================================================
+
+Put(key, value)
+    │
+    ▼
+Iterate CacheHandles (based on configuration):
+
+    Option A (common):
+        Write-through ALL handles
+
+    Option B:
+        Write only to top-most / primary handle
+
+    Option C:
+        Conditional write (per handle settings)
+
+
+Typical behavior:
+
+    Handle[0] → Put
+    Handle[1] → Put
+    Handle[2] → Put
+    ...
+
+
+KEY BEHAVIOR:
+
+✔ Multi-target write possible
+✔ Each handle may have independent expiration rules
+✔ Failures may be isolated per handle
+
+
+================================================================================
+ADD / UPDATE SEMANTICS
+================================================================================
+
+AddOrUpdate / Update flows:
+
+    1. Try read from handles (to resolve latest value)
+    2. Apply update function
+    3. Write back through configured pipeline
+    4. Retry on version conflicts (if provider supports it)
+
+Important:
+
+✔ Optimistic concurrency behavior may exist per handle
+✔ Distributed providers may introduce retry loops
+✔ Local caches do not participate in global locking
+
+
+================================================================================
+GETORADD FLOW
+================================================================================
+
+GetOrAdd(key, factory)
+
+    1. Try Get across all handles
+    2. If found → return immediately
+    3. If not found:
+        - invoke factory
+        - store via Put pipeline
+        - return value
+
+
+================================================================================
+CACHE HANDLE RESPONSIBILITY MODEL
+================================================================================
+
+Each Cache Handle:
+
+    ✔ Encapsulates one storage system
+    ✔ Implements BaseCacheHandle<T>
+    ✔ Is unaware of other handles
+    ✔ Is orchestrated ONLY by CacheManager.Core
+
+Examples:
+
+    - MemoryCacheHandle
+    - RedisCacheHandle
+    - NCacheCacheHandle
+    - CustomHandle
+
+
+================================================================================
+EVENT MODEL (GLOBAL OBSERVABILITY)
+================================================================================
+
+ICacheManager<T> exposes events:
+
+    OnGet
+    OnPut
+    OnAdd
+    OnRemove
+    OnUpdate
+    OnClear
+    OnClearRegion
+    OnRemoveByHandle
+
+
+Important:
+
+✔ Events are aggregated across ALL handles
+✔ You do NOT get per-handle isolation unless implemented manually
+
+
+================================================================================
+CONFIGURATION MODEL
+================================================================================
+
+CacheManager configuration defines:
+
+    - Ordered list of cache handles
+    - Handle priority (order = execution order)
+    - Expiration policies per handle
+    - Retry policies for distributed stores
+
+
+Example conceptually:
+
+    Handles = [
+        InMemoryHandle,
+        RedisHandle,
+        NCacheHandle
+    ]
+
+
+================================================================================
+LIMITATIONS (REALISTIC)
+================================================================================
+
+✔ No built-in distributed coordination between handles
+✔ No automatic cross-handle invalidation guarantees
+✔ No global transactional consistency across handles
+✔ Promotion/demotion is not inherently guaranteed
+✔ Behavior depends on selected providers
+
+
+================================================================================
+SUMMARY
+================================================================================
+
+CacheManager.Core is best described as:
+
+    A multi-level, pluggable cache pipeline engine
+
+
+It provides:
+
+    ✔ Ordered cache abstraction (handles)
+    ✔ Multi-provider support
+    ✔ Flexible read/write propagation
+    ✔ Event-driven cache lifecycle hooks
+
+But leaves:
+
+    ✖ Consistency strategy
+    ✖ Distribution semantics
+    ✖ Multi-layer synchronization
+
+entirely to configuration and provider implementation.
