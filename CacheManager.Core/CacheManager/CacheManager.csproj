@@ -28,12 +28,6 @@
 	  <!-- Package Icon and Readme -->
 	  <PackageIcon>Icon.png</PackageIcon>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
-
-	  <!-- Build Settings -->
-	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
-	  <NoWarn>$(NoWarn);CS1591</NoWarn>
-	  <AssemblyName>CacheManager.NCache</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
