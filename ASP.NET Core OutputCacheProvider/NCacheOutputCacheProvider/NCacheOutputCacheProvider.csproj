@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<Version>5.3.0</Version>
+    <AssemblyName>Alachisoft.NCache.OutputCacheProvider</AssemblyName>
+	<FileVersion>5.3.6.0</FileVersion>
+    <AssemblyVersion>5.3.0.0</AssemblyVersion>
+  </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+	    <DebugType>none</DebugType>
+    </PropertyGroup>
+
+	<ItemGroup>
+    <PackageReference Include="Alachisoft.NCache.Opensource.SDK" Version="5.3.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="client.ncconf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="tls.ncconf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+    <ItemGroup>
+	    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+</Project>

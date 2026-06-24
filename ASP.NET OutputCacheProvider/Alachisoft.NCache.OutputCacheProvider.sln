@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alachisoft.NCache.OutputCacheProvider", "Alachisoft.NCache.OutputCacheProvider.csproj", "{6EBE763B-771D-4763-9EF0-DF44FDF9C744}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		DebugJvCache|Any CPU = DebugJvCache|Any CPU
+		Release.2x|Any CPU = Release.2x|Any CPU
+		Release|Any CPU = Release|Any CPU
+		ReleaseExpress|Any CPU = ReleaseExpress|Any CPU
+		ReleaseJvCache.2x|Any CPU = ReleaseJvCache.2x|Any CPU
+		ReleaseJvCache|Any CPU = ReleaseJvCache|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6EBE763B-771D-4763-9EF0-DF44FDF9C744}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EBE763B-771D-4763-9EF0-DF44FDF9C744}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EBE763B-771D-4763-9EF0-DF44FDF9C744}.DebugJvCache|Any CPU.ActiveCfg = DebugJvCache|Any CPU
+		{6EBE763B-771D-4763-9EF0-DF44FDF9C744}.DebugJvCache|Any CPU.Build.0 = DebugJvCache|Any CPU
+		{6EBE763B-771D-4763-9EF0-DF44FDF9C744}.Release.2x|Any CPU.ActiveCfg = Release.2x|Any CPU
+		{6EBE763B-771D-4763-9EF0-DF44FDF9C744}.Release.2x|Any CPU.Build.0 = Release.2x|Any CPU
+		{6EBE763B-771D-4763-9EF0-DF44FDF9C744}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EBE763B-771D-4763-9EF0-DF44FDF9C744}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EBE763B-771D-4763-9EF0-DF44FDF9C744}.ReleaseExpress|Any CPU.ActiveCfg = ReleaseExpress|Any CPU
+		{6EBE763B-771D-4763-9EF0-DF44FDF9C744}.ReleaseExpress|Any CPU.Build.0 = ReleaseExpress|Any CPU
+		{6EBE763B-771D-4763-9EF0-DF44FDF9C744}.ReleaseJvCache.2x|Any CPU.ActiveCfg = ReleaseJvCache.2x|Any CPU
+		{6EBE763B-771D-4763-9EF0-DF44FDF9C744}.ReleaseJvCache.2x|Any CPU.Build.0 = ReleaseJvCache.2x|Any CPU
+		{6EBE763B-771D-4763-9EF0-DF44FDF9C744}.ReleaseJvCache|Any CPU.ActiveCfg = ReleaseJvCache|Any CPU
+		{6EBE763B-771D-4763-9EF0-DF44FDF9C744}.ReleaseJvCache|Any CPU.Build.0 = ReleaseJvCache|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
