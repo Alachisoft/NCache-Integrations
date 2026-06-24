@@ -4,8 +4,6 @@
     <TargetFrameworks>net472;netstandard2.0</TargetFrameworks>
 	<RootNamespace>NCache.OSS.CacheManager.Core</RootNamespace>
 	<UseWindowsThreadPool>true</UseWindowsThreadPool>
-	<SignAssembly>True</SignAssembly>
-	<AssemblyOriginatorKeyFile>..\..\..\Resources\ncache.snk</AssemblyOriginatorKeyFile>
 
 	  <!-- NuGet Package Configuration -->
 	  <PackageId>NCache.OSS.CacheManager.Core</PackageId>
