@@ -40,5 +40,4 @@ Copyright © 2005-2026 Alachisoft. All rights reserved.
 
 - [NCache Documentation](https://www.alachisoft.com/resources/docs/)
 - [NCache Open Source](https://github.com/Alachisoft/NCache)
-- [Microsoft HybridCache Documentation](https://learn.microsoft.com/en-us/aspnet/core/performance/caching/hybrid)
 - [Alachisoft Website](https://www.alachisoft.com/ncache/)

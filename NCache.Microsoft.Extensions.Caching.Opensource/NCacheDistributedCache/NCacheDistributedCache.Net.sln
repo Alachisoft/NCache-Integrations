@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29318.209
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCacheDistributedCache.NetCore", "NCacheDistributedCache\NCacheDistributedCache.Net.csproj", "{DD8FA603-34ED-4CE6-9A5A-E8CC46E96222}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1DC433B2-C1F4-4267-9C26-DFBF44227D3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DC433B2-C1F4-4267-9C26-DFBF44227D3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DC433B2-C1F4-4267-9C26-DFBF44227D3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DC433B2-C1F4-4267-9C26-DFBF44227D3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A56583C0-7109-46E2-9A5F-EE396D4031E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A56583C0-7109-46E2-9A5F-EE396D4031E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A56583C0-7109-46E2-9A5F-EE396D4031E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A56583C0-7109-46E2-9A5F-EE396D4031E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD8FA603-34ED-4CE6-9A5A-E8CC46E96222}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD8FA603-34ED-4CE6-9A5A-E8CC46E96222}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD8FA603-34ED-4CE6-9A5A-E8CC46E96222}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD8FA603-34ED-4CE6-9A5A-E8CC46E96222}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FAA2740E-D7A2-49F5-BB96-6597EE2B98F2}
+	EndGlobalSection
+EndGlobal
