@@ -2,6 +2,27 @@
 
 ## Overview
 
+NCache Entity Framework Core Integration enables you to use NCache as a distributed cache with Entity Framework Core applications, reducing database load and improving application performance through fast, in-memory caching.
+
+## Package Versions
+
+### .NET 6.0
+
+| Package                                  | Version    |
+| ---------------------------------------- | ---------- |
+| Alachisoft.NCache.Opensource.SDK         | >= 5.3.6.2 |
+| Microsoft.EntityFrameworkCore.Relational | >= 6.0.2   |
+| Microsoft.Extensions.Caching.Memory      | >= 6.0.3   |
+
+### .NET 8.0
+
+| Package                                  | Version    |
+| ---------------------------------------- | ---------- |
+| Alachisoft.NCache.Opensource.SDK         | >= 5.3.6.2 |
+| Microsoft.EntityFrameworkCore.Relational | >= 8.0.16  |
+| Microsoft.Extensions.Caching.Memory      | >= 8.0.1   |
+
+
 ### Query Caching
 
 - Query caching involves storing transactional query results in cache using the EF Core extension APIs (`FromCache`/`FromCacheAsync`).

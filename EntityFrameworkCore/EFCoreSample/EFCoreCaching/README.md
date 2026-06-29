@@ -5,6 +5,7 @@
 * [Introduction](#introduction)
 * [Prerequisites](#prerequisites)
 * [Build and Run the sample](#build-and-run-the-sample)
+* [Database Setup](#database-setup)
 * [Notes](#notes)
 * [References](#references)
 * [Additional Resources](#additional-resources)
@@ -101,7 +102,7 @@ The connection string needs to be placed in the `App.config` in the project root
 ```
 
 From Visual Studio (Recommended):
-- Open `EFCoreCaching.sln`.
+- Open `EntityFrameworkCore6.sln`.
 - Let NuGet packages restore.
 - Build.
 
@@ -113,37 +114,6 @@ cd "<path-to-sample>"
 dotnet restore
 dotnet build
 ```
-
-### Configuration (Query Indexes)
-
-Configure the cache to index the model classes so queries can run efficiently:
-
-1. Build EFCoreCaching
-    - Build the solution so `EFCoreCaching.dll` is produced in: `EFCoreCaching\bin\Debug\net8.0\EFCoreCaching.dll` (or release folder if built in Release).
-2. Open NCache Web Manager (Default URL: `http://localhost:8251/`).
-    - Select your cache (this sample uses `demoCache`).
-    - If the cache is running, stop it before making configuration changes.
-3. Configure query index
-    - Click `View Details` and select `Query Indexes` tab in the `Advanced Settings (Clustered Cache)` section.
-    - Click `Add` then `Browse`, locate and select the `EFCoreCaching.dll` from the build output folder.
-    - In `Browsed Assemblies` expand the assembly, locate and check the `EFCoreCaching.Models` to check all class as below and click `Add Selected Classes` button.
-        - [ ] `EFCoreCaching, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null`
-            - [x] `EFCoreCaching.Models`
-                - [x] `EFCoreCaching.Models.Customer`
-                - [x] `EFCoreCaching.Models.Order`
-                - [x] `EFCoreCaching.Models.Product`
-                - [x] `EFCoreCaching.Models.Supplier`
-4. Select attributes to index
-    - In the `Select Attributes`, check all the properties (checking the model will select all it's attributes).
-    - Click `OK` button 
-5. Save changes and Start Cache
-    - Click the `Save Changes` button.
-    - Start the cache.
-
-#### Troubleshooting
-
-- If the assembly does not appear or classes are not listed, ensure you have selected `EFCoreCaching.dll` correctly.
-- If the cache fails to start after adding indexes, remove the index, start the cache, fix issues in the assembly, then re-add.
 
 ### Run the sample
 
