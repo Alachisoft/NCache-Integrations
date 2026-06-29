@@ -20,14 +20,6 @@
 	<RepositoryUrl>https://github.com/Alachisoft/NCache</RepositoryUrl>
 	<RepositoryType>git</RepositoryType>
 
-	 
-
-	<!-- Readme -->
-	
-	<PackageReadmeFile>README.md</PackageReadmeFile>
-
-	<!-- Build Settings -->
-	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
