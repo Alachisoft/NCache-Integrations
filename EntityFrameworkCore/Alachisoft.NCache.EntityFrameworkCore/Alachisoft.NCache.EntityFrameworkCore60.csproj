@@ -1,0 +1,91 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Version>5.3.0</Version>
+    <Authors>Alachisoft</Authors>
+    <Company>Alachisoft</Company>
+    <Product>NCacheEFCoreCachingPorvider</Product>
+    <PackageId>EntityFrameworkCore.NCache.OpenSource</PackageId>
+    <AssemblyName>Alachisoft.NCache.EntityFrameworkCore</AssemblyName>
+    <RootNamespace>Alachisoft.NCache.EntityFrameworkCore</RootNamespace>
+    <PackageLicenseUrl>http://www.alachisoft.com/license-agreements.html</PackageLicenseUrl>
+    <PackageIconUrl>http://www.alachisoft.com/images/ext-logos/nuget/ncache-insignia-logo-155X155.png</PackageIconUrl>
+    <Copyright>Copyright 2005-2026 Alachisoft. All rights reserved.</Copyright>
+    <PackageProjectUrl>http://www.alachisoft.com/ncache/</PackageProjectUrl>
+    <PackageTags>Alachisoft NCache Cache Caching DistributedCache In-Memory DotNet DotNetCore Core EntityFramework EntityFrameworkCore3.1 EFCore3.1 EF</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants>EFCORE;RELEASE;FULL;</DefineConstants>
+    <Description>Entity Framework Core for NCache lets you use NCache as a cache for Entity Framework Core using extension methods. NCache is an extremely fast and scalable in-memory distributed cache that removes performance bottlenecks related to data storage and databases.Note:This integration is only supported with Entity Framework core 3.1.x for the early version of Microsoft.EntityFrameworkCore use Alachisoft.NCache.Professional.EFCore 5.2.0.</Description>
+    <FileVersion>5.3.6.0</FileVersion>
+    <AssemblyVersion>5.3.0.0</AssemblyVersion>
+  </PropertyGroup>
+  <!--Define Debug and trace-->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <!--Build Framework Constants-->
+
+
+
+  <ItemGroup>
+    <Compile Remove="System\**" />
+    <EmbeddedResource Remove="System\**" />
+    <None Remove="System\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <!--UnConditional nuget packages-->
+  <ItemGroup>
+    <PackageReference Include="Alachisoft.NCache.Opensource.SDK" Version="5.3.6.2" />
+    <PackageReference Include="FSharp.Core" Version="6.0.3" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.6" />
+    <PackageReference Include="Remotion.Linq" Version="2.2.0" />
+    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
+  </ItemGroup>
+
+<!--.NET 6.0 Nuget packages-->
+	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.3" />
+	</ItemGroup>
+
+<!--.NET 8.0 Nuget packages-->
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.16" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
+	</ItemGroup>
+
+
+  <ItemGroup>
+    <Compile Update="EFCore\CreateEntity\CreateEntityCommand.cs" />
+    <Compile Update="EFCore\CreateEntity\CreateEntityConnection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\SR.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="client.ncconf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="config.ncconf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
