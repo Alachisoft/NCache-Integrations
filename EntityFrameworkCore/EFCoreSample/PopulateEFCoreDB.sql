@@ -186,28 +186,28 @@ END
 -- ============================================
 IF NOT EXISTS (SELECT 1 FROM dbo.Orders)
 BEGIN
-    INSERT INTO dbo.Orders (CustomerID, EmployeeID, OrderDate, Freight, ShipName)
+    INSERT INTO dbo.Orders (CustomerID, EmployeeID, OrderDate, Freight, ShipName, ShipCountry)
     VALUES
-    ('ALFKI', 1, GETDATE(), 10.0, 'Ship A'),
-    ('ANATR', 2, GETDATE(), 20.0, 'Ship B'),
-    ('ANTON', 3, GETDATE(), 30.0, 'Ship C'),
-    ('AROUT', 4, GETDATE(), 40.0, 'Ship D'),
-    ('BERGS', 5, GETDATE(), 50.0, 'Ship E'),
-    ('BLAUS', 6, GETDATE(), 60.0, 'Ship F'),
-    ('BLONP', 7, GETDATE(), 70.0, 'Ship G'),
-    ('BOLID', 8, GETDATE(), 80.0, 'Ship H'),
-    ('BONAP', 9, GETDATE(), 90.0, 'Ship I'),
-    ('BOTTM', 10, GETDATE(), 100.0, 'Ship J'),
-    ('BSBEV', 11, GETDATE(), 110.0, 'Ship K'),
-    ('CACTU', 12, GETDATE(), 120.0, 'Ship L'),
-    ('CENTC', 13, GETDATE(), 130.0, 'Ship M'),
-    ('CHOPS', 14, GETDATE(), 140.0, 'Ship N'),
-    ('COMMI', 15, GETDATE(), 150.0, 'Ship O'),
-    ('CONSH', 16, GETDATE(), 160.0, 'Ship P'),
-    ('DRACD', 17, GETDATE(), 170.0, 'Ship Q'),
-    ('DUMON', 18, GETDATE(), 180.0, 'Ship R'),
-    ('EASTC', 19, GETDATE(), 190.0, 'Ship S'),
-    ('ERNSH', 20, GETDATE(), 200.0, 'Ship T');
+    ('ALFKI', 1, GETDATE(), 10.0, 'Ship A', 'France'),
+    ('ANATR', 2, GETDATE(), 20.0, 'Ship B', 'Germany'),
+    ('ANTON', 3, GETDATE(), 30.0, 'Ship C', 'UK'),
+    ('AROUT', 4, GETDATE(), 40.0, 'Ship D', 'USA'),
+    ('BERGS', 5, GETDATE(), 50.0, 'Ship E', 'France'),
+    ('BLAUS', 6, GETDATE(), 60.0, 'Ship F', 'Netherlands'),
+    ('BLONP', 7, GETDATE(), 70.0, 'Ship G', 'Germany'),
+    ('BOLID', 8, GETDATE(), 80.0, 'Ship H', 'Portugal'),
+    ('BONAP', 9, GETDATE(), 90.0, 'Ship I', 'France'),
+    ('BOTTM', 10, GETDATE(), 100.0, 'Ship J', 'Netherlands'),
+    ('BSBEV', 11, GETDATE(), 110.0, 'Ship K', 'Italy'),
+    ('CACTU', 12, GETDATE(), 120.0, 'Ship L', 'Italy'),
+    ('CENTC', 13, GETDATE(), 130.0, 'Ship M', 'Finland'),
+    ('CHOPS', 14, GETDATE(), 140.0, 'Ship N', 'Sweden'),
+    ('COMMI', 15, GETDATE(), 150.0, 'Ship O', 'Switzerland'),
+    ('CONSH', 16, GETDATE(), 160.0, 'Ship P', 'Switzerland'),
+    ('DRACD', 17, GETDATE(), 170.0, 'Ship Q', 'Belgium'),
+    ('DUMON', 18, GETDATE(), 180.0, 'Ship R', 'Czech'),
+    ('EASTC', 19, GETDATE(), 190.0, 'Ship S', 'Spain'),
+    ('ERNSH', 20, GETDATE(), 200.0, 'Ship T', 'Austria');
 END
 
 PRINT 'Database setup complete with sample data.';

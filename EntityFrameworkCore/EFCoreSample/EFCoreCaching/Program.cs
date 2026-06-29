@@ -48,14 +48,9 @@ var db = new NorthwindContext();
 // Retrieving data from database as well as cache
 await GetCustomerAsync(db);
 await GetCustomerOrdersAsync(db);
+await GetAllCustomersAsync(db);
+TestCacheHitVsMiss(db);
 
-// REFERENCE DATA CACHING examples using EF Core with NCache
-// Load entire data sets into cache first
-//LoadReferenceDataFromDB(db);
-
-//// Now run EF Core Queries on this cached data sets
-//await SearchSuppliersInCacheAsync(db);
-//await SearchDiscontinuedProductsInCacheAsync(db);
 
 /// -------------------------------------------------------------------------------
 /// <summary>
@@ -70,31 +65,55 @@ CachingOptions DefaultOptions(StoreAs storeAs = StoreAs.Collection)
         Priority = CacheItemPriority.Default
     };
 
-/// -------------------------------------------------------------------------------
 /// <summary>
-/// Method to fetch data regarding suppliers and products from database
+/// Tests cache hit vs miss by running same query twice
+/// and measuring time difference
 /// </summary>
-/// <param name="db">Instance of Northwind db context</param>
-//void LoadReferenceDataFromDB(NorthwindContext db)
-//{
-//    var options = DefaultOptions(StoreAs.SeparateEntities);
+void TestCacheHitVsMiss(NorthwindContext db)
+{
+    var options = DefaultOptions();
+    var sw = System.Diagnostics.Stopwatch.StartNew();
 
-//    //// Loading all suppliers into cache
-//    var suppliers = (from c in db.Suppliers select c).LoadIntoCache(options).ToList();
+    // First call - cache miss, hits DB
+    var result1 = (from o in db.Customers.AsNoTracking()
+                   where o.Country == "France"
+                   select o)
+                 .FromCache(options)
+                 .ToList();
 
-//    //// Loading all products into cache
-//    var products = (from c in db.Products select c).LoadIntoCache(options).ToList();
+    sw.Stop();
+    Console.WriteLine($"\nSync: France orders - First call (DB): {result1.Count} orders in {sw.ElapsedMilliseconds}ms");
 
-//    // Confirming data load
-//    if (suppliers.Any() && products.Any())
-//    {
-//        Console.WriteLine("\nSuppliers and products loaded into cache successfully.");
-//    }
-//    else
-//    {
-//        Console.WriteLine("\nFailed to load suppliers and products into cache.");
-//    }
-//}
+    sw.Restart();
+
+    // Second call - should be cache hit
+    var result2 = (from o in db.Customers.AsNoTracking()
+                   where o.Country == "France"
+                   select o)
+                 .FromCache(options)
+                 .ToList();
+
+    sw.Stop();
+    Console.WriteLine($"Sync: France orders - Second call (cache): {result2.Count} orders in {sw.ElapsedMilliseconds}ms");
+}
+
+/// <summary>
+/// Fetch all customers - tests basic collection caching
+/// </summary>
+async Task GetAllCustomersAsync(NorthwindContext db)
+{
+    var options = DefaultOptions();
+
+    var result = await (from c in db.Customers.AsNoTracking()
+                        select c)
+               .FromCacheAsync(options);
+
+    Console.WriteLine("\nAsync: All customers from cache:");
+    foreach (var c in result)
+        Console.WriteLine($"{c.CustomerId,-10} {c.CompanyName,-40} {c.Country}");
+}
+
+
 
 /// -------------------------------------------------------------------------------
 /// <summary>
@@ -111,7 +130,7 @@ async Task GetCustomerAsync(NorthwindContext db)
     var result = await (from c in db.Customers.AsNoTracking()
                         where c.CustomerId == "ALFKI"
                         select c)
-                .FromCacheAsync(options);
+               .FromCacheAsync(options);
 
     Console.WriteLine("\nAsync: Customer fetched from db or cache:");
     foreach (var c in result)
@@ -140,45 +159,3 @@ async Task GetCustomerOrdersAsync(NorthwindContext db)
         Console.WriteLine($"OrderID: {o.OrderId}, Date: {o.OrderDate}, ShipName: {o.ShipName}");
 }
 
-/// -------------------------------------------------------------------------------
-/// <summary>
-/// Method to retrieve suppliers with caching and expiration settings asynchronously
-/// </summary>
-/// <param name="db">Instance of Northwind db context</param>
-//async Task SearchSuppliersInCacheAsync(NorthwindContext db)
-//{
-//    var options = DefaultOptions();
-//    options.SetSlidingExpiration(TimeSpan.FromMinutes(30));
-
-//    // Fetching suppliers only from cache asynchronously (no DB hit)
-//    // Note: We can also use FromCacheOnly here for synchronous operation
-//    var result = await (from s in db.Suppliers
-//                        where s.SupplierId <= 10
-//                        select s)
-//                .FromCacheOnlyAsync();
-
-//    Console.WriteLine("\nAsync: Fetching suppliers from cache only where SupplierId<=10:");
-//    foreach (var s in result)
-//        Console.WriteLine($"{s.SupplierId,-5} {s.CompanyName,-40} {s.Phone}");
-//}
-
-/// -------------------------------------------------------------------------------
-/// <summary>
-/// Method to retrieve discontinued products using separate entity storage asynchronously
-/// </summary>
-/// <param name="db">Instance of Northwind db context</param>
-//async Task SearchDiscontinuedProductsInCacheAsync(NorthwindContext db)
-//{
-//    var options = DefaultOptions(StoreAs.SeparateEntities);
-
-//    // Fetching discontinued products only from cache asynchronously (no DB hit)
-//    // Note: We can also use FromCacheOnly here for synchronous operation
-//    var discontinued = await (from p in db.Products
-//                              where p.Discontinued == true
-//                              select p)
-//                     .FromCacheOnlyAsync();
-
-//    Console.WriteLine("\nAsync: Fetching discontinued products from cache only:");
-//    foreach (var p in discontinued)
-//        Console.WriteLine($"{p.ProductId,-5} {p.ProductName,-40} {p.QuantityPerUnit}");
-//}
