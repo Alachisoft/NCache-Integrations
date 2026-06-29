@@ -1,0 +1,146 @@
+========================================
+NCache TicketStore Configuration Guide
+========================================
+
+Package: NCache.OSS.AspNetCore.Authentication.TicketStore
+Namespace: NCache.OSS.AspNetCore.Authentication.TicketStore
+
+The NCache TicketStore integration lets NCache act as a store for ticketing.
+
+It enables:
+    - Storage, retrieval, removal and renewal of authentication data.
+
+================================================================================
+CONFIGURATION APPROACHES
+================================================================================
+
+Configuration is provided via passing NCacheOptions instance.
+
+
+================================================================================
+Example
+================================================================================
+
+File: Program.cs
+
+	var builder = WebApplication.CreateBuilder(args);
+
+	builder.Services.AddNCacheTicketStore(options =>
+	{
+		options.CacheName = "demoCache";
+
+		options.ServerList.Add(new NCacheOptions.ServerConfig
+		{
+			Ip = "20.200.20.29",
+			Port = 9800
+		});
+	});
+
+	builder.Logging.ClearProviders();
+	builder.Logging.AddConsole();
+
+	builder.Logging.SetMinimumLevel(LogLevel.Information);
+
+	builder.Services
+        .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(cookieOptions =>
+        {
+            cookieOptions.SessionStore =
+                builder.Services
+                       .BuildServiceProvider()
+                       .GetRequiredService<ITicketStore>();
+            cookieOptions.ExpireTimeSpan = TimeSpan.FromSeconds(30);
+            cookieOptions.SlidingExpiration = false; // default is true
+        });
+
+	builder.Services.AddAuthorization();
+
+	var app = builder.Build();
+
+	app.UseAuthentication();
+	app.UseAuthorization();
+
+
+================================================================================
+CONFIGURATION PROPERTIES
+================================================================================
+
+Class: NCacheOptions
+
+--------------------------------------------------------------------------------
+1. CacheName (string, REQUIRED)
+--------------------------------------------------------------------------------
+The name of the NCache cache instance.
+
+Rules:
+    - Must already exist in NCache cluster
+    - Required for initialization
+
+Failure:
+    - Throws InvalidOperationException during startup
+
+--------------------------------------------------------------------------------
+2. ServerList (IList<ServerConfig>)
+--------------------------------------------------------------------------------
+List of NCache server nodes.
+
+ServerConfig:
+    - Ip (string, required)
+    - Port (int, default: 9800)
+
+Validation:
+    - IP must be valid IPv4/IPv6
+    - Port must be 1–65535
+
+Used for:
+    CacheConnectionOptions.ServerList
+
+================================================================================
+INTERNAL CONNECTION FLOW
+================================================================================
+
+1. Options validated via isValid()
+
+2. Cache connection created via:
+       CacheManager.GetCache(CacheName, CacheConnectionOptions)
+
+3. Server list is converted:
+       ServerConfig → ServerInfo
+
+4. Connection options built in:
+       GetCacheConnectionOptions()
+
+
+================================================================================
+VALIDATION RULES
+================================================================================
+
+Executed during constructor:
+
+Checks:
+    - Options != null
+    - CacheName must be valid
+    - ServerList entries must pass IP + Port (port is optional, default is 9800) validation
+
+Failure:
+    → throws InvalidOperationException or runtime exception from NCache
+
+
+================================================================================
+COMMON ERROR SCENARIOS
+================================================================================
+
+1. Invalid CacheName
+    → cache does not exist in NCache
+
+2. Invalid Server IP/Port
+    → fails ServerConfig.isValid()
+
+================================================================================
+BEST PRACTICES
+================================================================================
+
+- Always pre-create cache in NCache
+- Always configure ServerList in distributed setups
+- Avoid large payload caching
+- Prefer single cache cluster per environment

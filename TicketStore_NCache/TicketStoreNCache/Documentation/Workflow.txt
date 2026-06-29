@@ -1,0 +1,439 @@
+================================================================================
+NCache TicketStore Integration Workflow Docs
+================================================================================
+
+================================================================================
+ARCHITECTURE SUMMARY
+================================================================================
+
+NCache TicketStore
+    - Implements ASP.NET Core ITicketStore
+    - Uses NCache as distributed ticket persistence backend
+    - Stores AuthenticationTicket objects server-side
+    - Supports distributed authentication session sharing
+    - Supports sliding and absolute expiration policies
+
+A typical setup might look like:
+
+    Browser Cookie
+        ↓
+    ASP.NET Core Cookie Middleware
+        ↓
+    ITicketStore (NCacheTicketStore)
+        ↓
+    NCache Distributed Cache Cluster
+        ↓
+    Serialized AuthenticationTicket Storage
+
+
+================================================================================
+CORE CONCEPT: SERVER-SIDE AUTHENTICATION STORAGE
+================================================================================
+
+NCacheTicketStore moves authentication state from:
+
+    Browser Cookie Payload
+
+into:
+
+    Distributed Server-Side Cache Storage
+
+Instead of storing the entire AuthenticationTicket inside the cookie:
+
+    Browser stores ONLY session key
+
+While:
+
+    NCache stores serialized AuthenticationTicket
+
+
+Execution model:
+
+    AUTHENTICATION FLOW:
+        Browser Cookie
+            ↓
+        Session Key
+            ↓
+        TicketStore Lookup
+            ↓
+        NCache Retrieval
+            ↓
+        AuthenticationTicket Reconstruction
+
+
+================================================================================
+REQUEST FLOW MODEL
+================================================================================
+
+    ┌──────────────────────────────────────────────────────────────┐
+    │                    CLIENT BROWSER                            │
+    │                                                              │
+    │   Stores Authentication Cookie                               │
+    │   Cookie contains Session Key only                           │
+    └──────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+    ┌──────────────────────────────────────────────────────────────┐
+    │          ASP.NET CORE COOKIE MIDDLEWARE                      │
+    │                                                              │
+    │   - Reads authentication cookie                              │
+    │   - Extracts session key                                     │
+    │   - Calls ITicketStore                                       │
+    └──────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+    ┌──────────────────────────────────────────────────────────────┐
+    │               NCACHETICKETSTORE (ITicketStore)               │
+    │                                                              │
+    │   Exposes unified APIs:                                      │
+    │   - StoreAsync                                               │
+    │   - RetrieveAsync                                            │
+    │   - RenewAsync                                               │
+    │   - RemoveAsync                                              │
+    └──────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+    ┌──────────────────────────────────────────────────────────────┐
+    │                    NCACHE DISTRIBUTED CACHE                  │
+    │                                                              │
+    │   Stores serialized AuthenticationTicket payloads            │
+    │   Applies expiration policies                                │
+    │   Handles distributed session availability                   │
+    └──────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+STORE FLOW (SIGN-IN)
+================================================================================
+
+SignInAsync(...)
+    │
+    ▼
+Cookie Middleware creates AuthenticationTicket
+    │
+    ▼
+ITicketStore.StoreAsync(ticket)
+    │
+    ▼
+NCacheTicketStore:
+    │
+    ├─ Generate unique session key
+    │
+    ├─ Serialize AuthenticationTicket
+    │
+    ├─ Create CacheItem
+    │
+    ├─ Apply expiration policy
+    │
+    └─ Insert into NCache
+    │
+    ▼
+Return session key
+    │
+    ▼
+Cookie Middleware stores ONLY key in browser cookie
+
+
+KEY BEHAVIOR:
+
+- Authentication state stored server-side
+- Browser cookie size reduced significantly
+- Session shared across application servers
+- Ticket expiration managed centrally
+
+
+================================================================================
+RETRIEVE FLOW (AUTHENTICATION REQUEST)
+================================================================================
+
+Incoming Request
+    │
+    ▼
+Cookie Middleware reads browser cookie
+    │
+    ▼
+Extract session key
+    │
+    ▼
+ITicketStore.RetrieveAsync(key)
+    │
+    ▼
+NCacheTicketStore:
+    │
+    ├─ Retrieve serialized ticket bytes from NCache
+    │
+    ├─ Deserialize AuthenticationTicket
+    │
+    └─ Return reconstructed ticket
+    │
+    ▼
+Cookie Middleware reconstructs ClaimsPrincipal
+    │
+    ▼
+HttpContext.User populated
+
+
+KEY BEHAVIOR:
+
+- Authentication shared across servers
+- ClaimsPrincipal restored dynamically
+- Missing ticket results in authentication failure
+- Expired tickets automatically invalidate sessions
+
+
+================================================================================
+RENEW FLOW (SLIDING EXPIRATION)
+================================================================================
+
+Authenticated Request
+    │
+    ▼
+Cookie Middleware determines renewal required
+    │
+    ▼
+ITicketStore.RenewAsync(key, ticket)
+    │
+    ▼
+NCacheTicketStore:
+    │
+    ├─ Serialize updated ticket
+    │
+    ├─ Recalculate expiration
+    │
+    ├─ Replace existing cache entry
+    │
+    └─ Update expiration window
+    │
+    ▼
+Session lifetime extended
+
+
+KEY BEHAVIOR:
+
+- Sliding expiration supported
+- Active sessions remain alive
+- Expiration refreshed centrally
+- Existing cache entry overwritten atomically
+
+
+================================================================================
+REMOVE FLOW (SIGN-OUT)
+================================================================================
+
+SignOutAsync(...)
+    │
+    ▼
+Cookie Middleware invokes:
+    │
+    ▼
+ITicketStore.RemoveAsync(key)
+    │
+    ▼
+NCacheTicketStore:
+    │
+    └─ Remove ticket from NCache
+    │
+    ▼
+Browser cookie invalidated
+
+
+KEY BEHAVIOR:
+
+- Session invalidated centrally
+- Distributed logout support
+- Ticket immediately unavailable
+- All application servers observe logout
+
+
+================================================================================
+SERIALIZATION FLOW
+================================================================================
+
+AuthenticationTicket
+    │
+    ▼
+TicketSerializer.Default.Serialize(ticket)
+    │
+    ▼
+byte[]
+    │
+    ▼
+Stored in NCache CacheItem
+
+
+Retrieve Path:
+
+byte[]
+    │
+    ▼
+TicketSerializer.Default.Deserialize(bytes)
+    │
+    ▼
+AuthenticationTicket
+
+
+KEY BEHAVIOR:
+
+- Avoids ClaimsPrincipal JSON serialization issues
+- Uses ASP.NET Core-native ticket serialization
+- Platform-safe authentication persistence
+- Binary storage format
+
+
+================================================================================
+EXPIRATION MODEL
+================================================================================
+
+Expiration precedence:
+
+    1. ticket.Properties.ExpiresUtc
+    2. NCacheOptions.DefaultExpirationTime
+
+
+Behavior:
+
+    If ticket.Properties.ExpiresUtc exists:
+        ✔ Use ticket-defined expiration
+
+    Otherwise:
+        ✔ Use configured default expiration
+
+
+Supported expiration types:
+
+    - Absolute Expiration
+    - Sliding Expiration
+
+
+================================================================================
+COOKIE VS SERVER-SIDE EXPIRATION
+================================================================================
+
+Two independent expiration systems exist:
+
+    1. Browser Cookie Expiration
+    2. NCache Ticket Expiration
+
+
+Browser Cookie:
+    - Controls client-side cookie persistence
+
+NCache Ticket:
+    - Controls server-side session validity
+
+
+Example:
+
+    Browser cookie may exist
+        BUT
+    Ticket may already be expired in NCache
+
+Result:
+    Authentication fails because server-side session is gone
+
+
+================================================================================
+CONFIGURATION MODEL
+================================================================================
+
+NCacheTicketStore registration supports:
+
+    - Action-based configuration
+    - IConfiguration/appsettings.json configuration
+
+
+Example conceptually:
+
+    builder.Services.AddNCacheTicketStore(options =>
+    {
+        options.CacheName = "demoCache";
+
+        options.ServerList.Add(
+            new ServerConfig
+            {
+                Ip = "20.200.20.29",
+                Port = 9800
+            });
+
+        options.DefaultExpirationTime =
+            TimeSpan.FromMinutes(20);
+
+        options.DefaultExpirationType =
+            ExpirationType.Absolute;
+    });
+
+
+================================================================================
+LOGGING MODEL
+================================================================================
+
+NCacheTicketStore integrates with:
+
+    Microsoft.Extensions.Logging
+
+
+Logging lifecycle includes:
+
+    - Initialization
+    - StoreAsync operations
+    - RetrieveAsync operations
+    - RenewAsync operations
+    - RemoveAsync operations
+    - Exception handling
+    - Disposal
+
+
+Behavior:
+
+    - Logging controlled entirely by ASP.NET Core logging pipeline
+    - Supports Console / Serilog / Seq / NLog / ApplicationInsights
+    - Log levels configured globally through application logging config
+
+
+================================================================================
+DISTRIBUTED SESSION BENEFITS
+================================================================================
+
+Using NCacheTicketStore enables:
+
+- Shared authentication across servers
+- Load-balanced authentication consistency
+- Reduced cookie size
+- Centralized session invalidation
+- Distributed sign-out propagation
+- Better scalability for large claims payloads
+
+
+================================================================================
+LIMITATIONS (REALISTIC)
+================================================================================
+
+- Requires distributed cache availability
+- Authentication depends on NCache connectivity
+- Cache outages may invalidate active sessions
+- Ticket serialization versioning must remain compatible
+- Browser cookie still required for session key transport
+
+
+================================================================================
+SUMMARY
+================================================================================
+
+NCache TicketStore is best described as:
+
+    A distributed ASP.NET Core authentication session provider
+
+
+It provides:
+
+    - Server-side AuthenticationTicket persistence
+    - Distributed authentication session sharing
+    - Centralized expiration management
+    - Sliding and absolute expiration support
+    - ASP.NET Core ITicketStore integration
+
+But relies on:
+
+    - ASP.NET Core Cookie Middleware for authentication orchestration
+    - NCache for distributed storage availability
+    - Browser cookies for session key transport

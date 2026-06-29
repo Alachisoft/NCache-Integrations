@@ -1,0 +1,469 @@
+================================================================================
+NCache TicketStore Public API Reference
+================================================================================
+
+Package: NCache.OSS.AspNetCore.Authentication.TicketStore
+Namespace: NCache.OSS.AspNetCore.Authentication.TicketStore
+
+================================================================================
+OVERVIEW
+================================================================================
+
+NCacheTicketStore is an implementation of:
+
+    - Microsoft.AspNetCore.Authentication.Cookies.ITicketStore
+
+And provides:
+    - Distributed authentication ticket storage
+    - Server-side ASP.NET Core cookie session persistence
+    - NCache-backed ticket expiration management
+    - Sliding and absolute expiration support
+    - Authentication ticket serialization support
+    - Centralized multi-server authentication session storage
+
+
+================================================================================
+1. CONSTRUCTORS
+================================================================================
+
+--------------------------------------------------------------------------------
+1.1 NCacheTicketStore
+--------------------------------------------------------------------------------
+
+Signature:
+    NCacheTicketStore(
+        NCacheOptions options,
+        ILogger<NCacheTicketStore> logger)
+
+Description:
+    Initializes a new NCache-backed authentication ticket store.
+
+Parameters:
+    - options
+        Configuration used to connect to NCache and control expiration behavior.
+
+    - logger
+        Microsoft.Extensions.Logging logger instance used for diagnostics.
+
+Behavior:
+    - Establishes cache connection
+    - Initializes expiration defaults
+    - Enables distributed ticket persistence
+
+Failure Cases:
+    - Throws ArgumentNullException if options or logger are null
+    - Throws cache connection exceptions if NCache connection fails
+
+
+
+================================================================================
+2. CORE ITICKETSTORE OPERATIONS
+================================================================================
+
+--------------------------------------------------------------------------------
+2.1 StoreAsync
+--------------------------------------------------------------------------------
+
+Signature:
+    Task<string> StoreAsync(AuthenticationTicket ticket)
+
+Description:
+    Stores an authentication ticket in NCache.
+
+Behavior:
+    - Serializes AuthenticationTicket using TicketSerializer
+    - Generates unique session key
+    - Inserts serialized ticket into NCache
+    - Applies expiration policy
+
+Returns:
+    - Generated session key
+
+Expiration Rules:
+    - Uses ticket.Properties.ExpiresUtc when available
+    - Falls back to 14 day default expiration otherwise
+
+Failure Cases:
+    - Throws ArgumentNullException if ticket is null
+    - Throws cache exceptions if insert operation fails
+
+
+--------------------------------------------------------------------------------
+2.2 RetrieveAsync
+--------------------------------------------------------------------------------
+
+Signature:
+    Task<AuthenticationTicket> RetrieveAsync(string key)
+
+Description:
+    Retrieves an authentication ticket from NCache.
+
+Behavior:
+    - Reads serialized ticket bytes from cache
+    - Deserializes bytes into AuthenticationTicket
+    - Returns null if key does not exist
+
+Returns:
+    - AuthenticationTicket if found
+    - null if ticket does not exist
+
+Failure Cases:
+    - Throws ArgumentNullException if key is null or empty
+    - Throws deserialization exceptions if ticket data is invalid
+
+
+--------------------------------------------------------------------------------
+2.3 RenewAsync
+--------------------------------------------------------------------------------
+
+Signature:
+    Task RenewAsync(string key, AuthenticationTicket ticket)
+
+Description:
+    Updates an existing authentication ticket.
+
+Behavior:
+    - Replaces existing ticket data
+    - Recalculates expiration policy
+    - Supports sliding expiration renewal semantics
+
+Expiration Rules:
+    - Uses ticket.Properties.ExpiresUtc when available
+    - Falls back to 14 day default expiration otherwise
+
+Failure Cases:
+    - Throws ArgumentNullException if key or ticket are invalid
+    - Throws cache exceptions if insert operation fails
+
+
+--------------------------------------------------------------------------------
+2.4 RemoveAsync
+--------------------------------------------------------------------------------
+
+Signature:
+    Task RemoveAsync(string key)
+
+Description:
+    Removes an authentication ticket from NCache.
+
+Behavior:
+    - Deletes cached ticket entry
+    - Invalidates associated session
+
+Failure Cases:
+    - Throws ArgumentNullException if key is null or empty
+    - Throws cache exceptions if removal fails
+
+
+
+================================================================================
+3. EXPIRATION MANAGEMENT
+================================================================================
+
+--------------------------------------------------------------------------------
+3.1 Ticket Expiration Resolution
+--------------------------------------------------------------------------------
+
+Description:
+    Ticket expiration is resolved using the following precedence:
+
+Priority Order:
+    1. ticket.Properties.ExpiresUtc
+    2. 14 day default expiration
+
+Behavior:
+    - Explicit ticket expiration overrides defaults
+    - Expiration converted into NCache Expiration object
+    - Supports both Absolute and Sliding expiration
+
+
+--------------------------------------------------------------------------------
+3.2 Sliding Expiration Support
+--------------------------------------------------------------------------------
+
+Description:
+    Sliding expiration is supported through RenewAsync().
+
+Behavior:
+    - Ticket expiration refreshed on renewal
+    - Cache entry expiration updated accordingly
+    - Session lifetime extended during active usage
+
+
+--------------------------------------------------------------------------------
+3.3 Absolute Expiration Support
+--------------------------------------------------------------------------------
+
+Description:
+    Absolute expiration enforces fixed session lifetime.
+
+Behavior:
+    - Ticket expires at predetermined UTC timestamp
+    - Renewal does not extend absolute lifetime beyond configured expiration
+
+
+
+================================================================================
+4. SERIALIZATION MODEL
+================================================================================
+
+--------------------------------------------------------------------------------
+4.1 AuthenticationTicket Serialization
+--------------------------------------------------------------------------------
+
+Description:
+    AuthenticationTicket objects are serialized before cache storage.
+
+Serializer Used:
+    TicketSerializer.Default
+
+Reason:
+    AuthenticationTicket contains ClaimsPrincipal which cannot be safely
+    serialized by default JSON serializers on all platforms.
+
+Stored Cache Format:
+    byte[]
+
+Behavior:
+    - Serialize during StoreAsync and RenewAsync
+    - Deserialize during RetrieveAsync
+
+
+--------------------------------------------------------------------------------
+4.2 Cache Storage Format
+--------------------------------------------------------------------------------
+
+Description:
+    Serialized ticket bytes are stored as NCache CacheItem objects.
+
+Behavior:
+    - CacheItem used for expiration control
+    - Binary payload stored in distributed cache
+    - Metadata managed separately from ticket payload
+
+
+
+================================================================================
+5. KEY MANAGEMENT
+================================================================================
+
+--------------------------------------------------------------------------------
+5.1 Session Key Generation
+--------------------------------------------------------------------------------
+
+Description:
+    Unique ticket keys are generated using Guid values.
+
+Format:
+    Guid.NewGuid().ToString("N")
+
+Example:
+    5f8d04b4d9e84247a4e0f3c0b7f7d90a
+
+
+--------------------------------------------------------------------------------
+5.2 Internal Cache Key Format
+--------------------------------------------------------------------------------
+
+Description:
+    Internal cache keys are prefixed before insertion.
+
+Format:
+    NCacheAuthTicket:{key}
+
+Example:
+    NCacheAuthTicket:5f8d04b4d9e84247a4e0f3c0b7f7d90a
+
+Purpose:
+    - Prevents cache key collisions
+    - Separates ticket entries from other cache data
+
+
+
+================================================================================
+6. LOGGING
+================================================================================
+
+--------------------------------------------------------------------------------
+6.1 Microsoft.Extensions.Logging Integration
+--------------------------------------------------------------------------------
+
+Description:
+    Logging is integrated through Microsoft.Extensions.Logging.
+
+Logger Type:
+    ILogger<NCacheTicketStore>
+
+Behavior:
+    - Logs initialization lifecycle
+    - Logs cache operation failures
+    - Logs ticket operation success events
+
+Typical Logged Operations:
+    - StoreAsync
+    - RetrieveAsync
+    - RenewAsync
+    - RemoveAsync
+    - Dispose
+
+
+--------------------------------------------------------------------------------
+6.2 DI Logging Support
+--------------------------------------------------------------------------------
+
+Description:
+    Logger instances are resolved automatically through ASP.NET Core DI.
+
+Behavior:
+    - Uses application logging configuration
+    - Supports Console / Serilog / NLog / Seq / ApplicationInsights
+    - Respects configured log levels automatically
+
+
+
+================================================================================
+7. CONFIGURATION API
+================================================================================
+
+--------------------------------------------------------------------------------
+7.1 AddNCacheTicketStore (Action Based)
+--------------------------------------------------------------------------------
+
+Signature:
+    IServiceCollection AddNCacheTicketStore(
+        this IServiceCollection services,
+        Action<NCacheOptions> configure)
+
+Description:
+    Registers NCacheTicketStore using programmatic configuration.
+
+Behavior:
+    - Validates configuration
+    - Registers NCacheOptions singleton
+    - Registers ITicketStore implementation
+
+
+--------------------------------------------------------------------------------
+7.2 AddNCacheTicketStore (Configuration Based)
+--------------------------------------------------------------------------------
+
+Signature:
+    IServiceCollection AddNCacheTicketStore(
+        this IServiceCollection services,
+        IConfigurationSection configSection)
+
+Description:
+    Registers NCacheTicketStore using appsettings.json configuration.
+
+Behavior:
+    - Binds configuration section into NCacheOptions
+    - Validates configuration
+    - Registers ITicketStore implementation
+
+
+
+================================================================================
+8. NCacheOptions
+================================================================================
+
+--------------------------------------------------------------------------------
+8.1 Core Configuration Properties
+--------------------------------------------------------------------------------
+
+Properties:
+    string CacheName
+    IList<ServerConfig> ServerList
+    int Port
+    TimeSpan DefaultExpirationTime
+    ExpirationType DefaultExpirationType
+
+Description:
+    Represents all configuration required for NCache connectivity and
+    expiration behavior.
+
+
+--------------------------------------------------------------------------------
+8.2 ServerConfig
+--------------------------------------------------------------------------------
+
+Properties:
+    string Ip
+    int Port
+
+Description:
+    Represents individual NCache server connection configuration.
+
+
+--------------------------------------------------------------------------------
+8.3 Validation Support
+--------------------------------------------------------------------------------
+
+Signature:
+    bool isValid(out string err)
+
+Description:
+    Validates NCache configuration before registration.
+
+Validation Rules:
+    - CacheName required
+    - Server IPs must be valid
+    - Ports must be within valid range
+
+
+
+================================================================================
+9. DISPOSAL
+================================================================================
+
+--------------------------------------------------------------------------------
+9.1 Dispose
+--------------------------------------------------------------------------------
+
+Signature:
+    void Dispose()
+
+Description:
+    Releases underlying NCache resources.
+
+Behavior:
+    - Disposes cache connection
+    - Cleans up internal resources
+
+Failure Cases:
+    - Throws exceptions if cache disposal fails
+
+
+
+================================================================================
+10. SUMMARY
+================================================================================
+
+NCacheTicketStore provides:
+
+CORE FEATURES:
+    - Distributed ASP.NET Core session storage
+    - Server-side authentication ticket persistence
+    - Multi-server authentication coordination
+
+TICKET OPERATIONS:
+    - StoreAsync
+    - RetrieveAsync
+    - RenewAsync
+    - RemoveAsync
+
+SERIALIZATION:
+    - TicketSerializer-based AuthenticationTicket persistence
+    - Binary cache storage model
+
+CONFIGURATION:
+    - Action-based registration
+    - IConfiguration/appsettings registration
+
+LOGGING:
+    - Microsoft.Extensions.Logging integration
+    - DI-driven logger resolution
+
+ARCHITECTURE:
+    - NCache distributed cache backend
+    - ASP.NET Core ITicketStore implementation
+    - Distributed authentication session coordination

@@ -1,0 +1,277 @@
+================================================================================
+NCache TicketStore Exceptions and Logging Reference
+================================================================================
+
+Package: NCache.OSS.AspNetCore.Authentication.TicketStore
+Namespace: NCache.OSS.AspNetCore.Authentication.TicketStore
+
+
+================================================================================
+EXCEPTIONS REFERENCE
+================================================================================
+
+================================================================================
+ArgumentNullException
+================================================================================
+
+Thrown by:
+
+--------------------------------------------------------------------------------
+Constructor
+--------------------------------------------------------------------------------
+- If loggerFactory is null
+- If options is null
+
+
+--------------------------------------------------------------------------------
+RemoveAsync(string key)
+--------------------------------------------------------------------------------
+- If key is null or empty
+
+
+--------------------------------------------------------------------------------
+RenewAsync(string key, AuthenticationTicket ticket)
+--------------------------------------------------------------------------------
+- If key is null or emptyu
+- If ticket is null
+
+
+--------------------------------------------------------------------------------
+RetrieveAsync(string key)
+--------------------------------------------------------------------------------
+- If key is null or empty
+
+
+--------------------------------------------------------------------------------
+StoreAsync(AuthenticationTicket ticket)
+--------------------------------------------------------------------------------
+- If ticket is null
+
+
+--------------------------------------------------------------------------------
+General Exception (ICache operations)
+--------------------------------------------------------------------------------
+
+Thrown by:
+
+- _cache.Insert(...)
+- _cache.Get(...)
+- _cache.Remove(...)
+
+Typical causes:
+    - Cache server unreachable
+    - Network partition
+    - Serialization failure
+    - Cache not initialized
+    - Node failure in cluster
+
+Behavior:
+    - Logged via ILogger.LogError
+    - Re-thrown (preserves stack trace)
+
+
+Important detail:
+    - Uses `throw;` everywhere
+    - Stack trace is preserved correctly
+
+
+================================================================================
+LOGGING
+================================================================================
+
+================================================================================
+LOGGER IMPLEMENTATION
+================================================================================
+
+Type:
+    Microsoft.Extensions.Logging.ILogger
+
+Source:
+    Injected via dependency injection
+
+Logger scope:
+    NCacheCacheHandle<T>
+
+
+Important:
+    - Fully integrated with Microsoft.Extensions.Logging
+    - NOT using NCache internal logger
+    - Supports structured logging providers (Serilog, NLog, etc.)
+
+
+================================================================================
+LOG LEVEL BEHAVIOR
+================================================================================
+
+--------------------------------------------------------------------------------
+Information Logs
+--------------------------------------------------------------------------------
+
+Emitted for:
+
+- Initialization:
+    "Initializing NCache Ticket Store"
+	"NCache Ticket Store initialized"
+
+- RemoveAsync:
+    $"RemoveAsync method successfully called for key: {key}"
+
+- RenewAsync:
+    $"RenewAsync method successfully called for key: {key}"
+
+- RetrieveAsync:
+    $"RetrieveAsync method successfully called for key: {key}"
+
+- StoreAsync:
+    $"StoreAsync method successfully called for ticket: {ticket.Principal?.Identity?.Name}"
+
+
+--------------------------------------------------------------------------------
+Error Logs
+--------------------------------------------------------------------------------
+
+Emitted on ALL exceptions:
+
+Format:
+    _logger.LogError(ex, "Failed to call {method_name} method successfully");
+
+Operations include:
+
+- RemoveAsync
+- RenewAsync
+- RetrieveAsync
+- StoreAsync
+
+
+================================================================================
+LOGGING CHARACTERISTICS
+================================================================================
+
+--------------------------------------------------------------------------------
+1. Always-on logging (no feature flag)
+--------------------------------------------------------------------------------
+
+Unlike OutputCache provider:
+
+    ✔ Logging is always enabled
+    ✔ No EnabledLogs / EnableDetailLogs switch
+
+
+--------------------------------------------------------------------------------
+2. No debug-level tracing
+--------------------------------------------------------------------------------
+
+- No verbose request/response tracing
+- No payload logging
+- No latency metrics
+- No hit/miss classification logs
+
+
+--------------------------------------------------------------------------------
+3. Structured logging support
+--------------------------------------------------------------------------------
+
+Because ILogger is used:
+
+    ✔ Supports structured sinks (Serilog, AppInsights, etc.)
+    ✔ Log fields can be enriched externally
+
+
+--------------------------------------------------------------------------------
+4. Error propagation strategy
+--------------------------------------------------------------------------------
+
+Pattern:
+
+    try
+    {
+        ...
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error during X operation");
+        throw;
+    }
+
+Meaning:
+    ✔ No swallowing of exceptions
+    ✔ Full propagation to caller
+    ✔ Logging happens at boundary only
+
+
+================================================================================
+PERFORMANCE CHARACTERISTICS
+================================================================================
+
+Logging impact:
+
+- Low overhead for Info logs (string interpolation)
+- Error logging includes exception stack trace allocation
+- Region tracking uses additional cache round-trips
+
+Key considerations:
+
+- No synchronous blocking logging
+- No external logger initialization cost per operation
+- No serialization overhead in logs
+
+
+================================================================================
+COMMON ERROR SCENARIOS
+================================================================================
+
+--------------------------------------------------------------------------------
+1. Cache Cluster Not Available
+--------------------------------------------------------------------------------
+
+Source:
+    _cache.* operations
+
+Behavior:
+    - Logged as Error
+    - Exception re-thrown
+
+
+--------------------------------------------------------------------------------
+2. Duplicate Key on Add
+--------------------------------------------------------------------------------
+
+Source:
+    OperationFailedException
+
+Behavior:
+    - Returns false (handled gracefully)
+    - NOT treated as fatal
+
+
+--------------------------------------------------------------------------------
+3. Region Corruption / Missing Region Key
+--------------------------------------------------------------------------------
+
+Behavior:
+    - Returns empty HashSet
+    - No exception thrown
+
+
+--------------------------------------------------------------------------------
+4. Serialization / Network Failures
+--------------------------------------------------------------------------------
+
+Source:
+    NCache SDK layer
+
+Behavior:
+    - Logged
+    - Re-thrown
+
+
+--------------------------------------------------------------------------------
+5. Invalid Arguments
+--------------------------------------------------------------------------------
+
+Source:
+    Guard clauses in methods
+
+Behavior:
+    - Immediate ArgumentNullException
+    - No logging (fail-fast design)
