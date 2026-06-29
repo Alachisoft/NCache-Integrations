@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Alachisoft.NCache.TicketStore</AssemblyName>
+    <RootNamespace>NCache.OSS.AspNetCore.Authentication.TicketStore</RootNamespace>
+	 
+	
+	  <!-- NuGet Package Configuration -->
+	<PackageId>NCache.OSS.AspNetCore.Authentication.TicketStore</PackageId>
+	<Version>5.3.6.1</Version>
+	<Authors>Alachisoft</Authors>
+	<Company>Alachisoft</Company>
+	<Description>NCache Opensource implementation for ITicketStore providing distributed caching</Description>
+	<Copyright>Copyright 2005-2026 Alachisoft. All rights reserved.</Copyright>
+	<PackageTags>Alachisoft;NCache;Cache;Caching;DistributedCache;In-Memory;Opensource;ITicketStore;Distributed</PackageTags>
+
+	<!-- Package URLs -->
+	<PackageProjectUrl>https://www.alachisoft.com/ncache/</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/Alachisoft/NCache</RepositoryUrl>
+	<RepositoryType>git</RepositoryType>
+
+	 
+
+	<!-- Readme -->
+	
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+
+	<!-- Build Settings -->
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Alachisoft.NCache.Opensource.SDK" Version="5.3.6.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.3.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.8" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <None Update="config.ncconf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Documentation\" />
+  </ItemGroup>
+
+</Project>
