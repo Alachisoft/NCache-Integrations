@@ -12,18 +12,6 @@
     <copyright>Copyright 2017</copyright>
     <tags>asp .net core ncache enterprise session locking alachisoft caching</tags>	
   </metadata>   
-  <!--Files added for debug purposes, comment out for release, the application should pick these from GAC, if NCache is installed. -->
-  <!--<files>
-		<file src="bin\release\Alachisoft.NCache.Cache.dll" target="lib\net452\Alachisoft.NCache.Cache.dll" />
-		<file src="bin\release\Alachisoft.NCache.Management.dll" target="lib\net452\Alachisoft.NCache.Management.dll" />
-		<file src="bin\release\Alachisoft.NCache.Common.dll" target="lib\net452\Alachisoft.NCache.Common.dll" />
-		<file src="bin\release\Alachisoft.NCache.Runtime.dll" target="lib\net452\Alachisoft.NCache.Runtime.dll" />
-		<file src="bin\release\Alachisoft.NCache.Security.dll" target="lib\net452\Alachisoft.NCache.Security.dll" />
-		<file src="bin\release\Alachisoft.NCache.Serialization.dll" target="lib\net452\Alachisoft.NCache.Serialization.dll" />
-		<file src="bin\release\Alachisoft.NCache.SessionStateManagement.dll" target="lib\net452\Alachisoft.NCache.SessionStateManagement.dll" />
-		<file src="bin\release\Alachisoft.NCache.SessionStoreProvider.dll" target="lib\net452\Alachisoft.NCache.SessionStoreProvider.dll" />
-		<file src="bin\release\Alachisoft.NCache.Web.dll" target="lib\net452\Alachisoft.NCache.Web.dll" />
-	</files>-->
 	<files>
 		<file src="readme.txt" target="" />
 	</files>

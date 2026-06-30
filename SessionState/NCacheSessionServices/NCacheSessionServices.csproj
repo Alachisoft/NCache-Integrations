@@ -44,25 +44,6 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Alachisoft.NCache.Client, Version=5.1.0.0, Culture=neutral, PublicKeyToken=cff5926ed6a53769, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Src\build\Server\4x\Alachisoft.NCache.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Alachisoft.NCache.Common">
-      <HintPath>..\..\..\..\Src\build\Server\4x\Alachisoft.NCache.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Alachisoft.NCache.Runtime">
-      <HintPath>..\..\..\..\Src\build\Server\4x\Alachisoft.NCache.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Alachisoft.NCache.Serialization">
-      <HintPath>..\..\..\..\Src\build\Server\4x\Alachisoft.NCache.Serialization.dll</HintPath>
-    </Reference>
-    <Reference Include="Alachisoft.NCache.SessionStateManagement">
-      <HintPath>..\..\..\..\Src\build\Server\4x\Alachisoft.NCache.SessionStateManagement.dll</HintPath>
-    </Reference>
-    <Reference Include="Alachisoft.NCache.SessionStoreProvider">
-      <HintPath>..\..\..\..\Src\build\Server\4x\Alachisoft.NCache.SessionStoreProvider.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AspNetCore.DataProtection, Version=1.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNetCore.DataProtection.1.1.0\lib\net451\Microsoft.AspNetCore.DataProtection.dll</HintPath>
       <Private>True</Private>

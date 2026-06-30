@@ -10,7 +10,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Alachisoft.NCache.Web.SessionStoreProvider</RootNamespace>
     <AssemblyName>Alachisoft.NCache.SessionStoreProvider</AssemblyName>
-    <AssemblyOriginatorKeyFile>..\\..\\..\\..\\Resources\\ncache.snk</AssemblyOriginatorKeyFile>
     <SccProjectName>
     </SccProjectName>
     <SccLocalPath>
