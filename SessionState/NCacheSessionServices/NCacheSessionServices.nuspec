@@ -9,7 +9,7 @@
     <owners>Alachisoft</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Deploys the NCache Session Storage Services in an ASP.NET Core web application for .NET Framework. The services include complete session management module to replace the default ASP.NET Core session management with additional NCache exclusive features such as session locking that follows the flow of conventional ASP.NET session locking. The services also include an implementation of distributed cache to be used with the default session management of ASP.NET Core. </description>
-    <copyright>Copyright 2017</copyright>
+    <copyright>Copyright 2026</copyright>
     <tags>asp .net core ncache enterprise session locking alachisoft caching</tags>	
   </metadata>   
 	<files>
