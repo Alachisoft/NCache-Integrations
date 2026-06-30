@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  
+   <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyName>Alachisoft.NCache.SessionStateManagement</AssemblyName>
+    <RootNamespace>Alachisoft.NCache.Web.SessionStateManagement</RootNamespace>
+	<RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+  </PropertyGroup>
+  
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+     <DefineConstants>TRACE;DEBUG;ENTERPRISE;VS2005;NETCORE</DefineConstants>
+   </PropertyGroup>
+  
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+     <DefineConstants>TRACE;ENTERPRISE;VS2005;NETCORE</DefineConstants>
+   </PropertyGroup>
+  
+   <ItemGroup>
+     <Compile Remove="CustomSessionIdManager.cs" />
+   </ItemGroup>
+  
+   <ItemGroup>
+     <PackageReference Include="Alachisoft.NCache.Opensource.SDK" Version="5.3.6.2" />
+   </ItemGroup>
+  
+   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+     <Exec Command="xcopy /Y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)build\NetCore\&quot;" />
+   </Target>
+
+</Project>

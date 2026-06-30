@@ -1,0 +1,69 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Repos\\NCache-OSS-New\\SessionState\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A1DEFCFE-C676-C1B1-370B-64AB15DAF266}|NCSessionStoreProvider\\NCSessionStoreProvider.Net.csproj|d:\\repos\\ncache-oss-new\\sessionstate\\ncsessionstoreprovider\\ncsessionstoreprovider.net.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{A1DEFCFE-C676-C1B1-370B-64AB15DAF266}|NCSessionStoreProvider\\NCSessionStoreProvider.Net.csproj|solutionrelative:ncsessionstoreprovider\\ncsessionstoreprovider.net.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5109B104-4825-DD45-94F4-5AED5AF7EAEC}|NCSessionStateManagement\\NCSessionStateManagement.Net.csproj|d:\\repos\\ncache-oss-new\\sessionstate\\ncsessionstatemanagement\\ncsessionstatemanagement.net.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{5109B104-4825-DD45-94F4-5AED5AF7EAEC}|NCSessionStateManagement\\NCSessionStateManagement.Net.csproj|solutionrelative:ncsessionstatemanagement\\ncsessionstatemanagement.net.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1DC433B2-C1F4-4267-9C26-DFBF44227D3B}|NCacheSessionServices\\NCacheSessionServices.NetCore.csproj|d:\\repos\\ncache-oss-new\\sessionstate\\ncachesessionservices\\ncachesessionservices.netcore.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{1DC433B2-C1F4-4267-9C26-DFBF44227D3B}|NCacheSessionServices\\NCacheSessionServices.NetCore.csproj|solutionrelative:ncachesessionservices\\ncachesessionservices.netcore.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "NCSessionStateManagement.Net.csproj",
+              "DocumentMoniker": "D:\\Repos\\NCache-OSS-New\\SessionState\\NCSessionStateManagement\\NCSessionStateManagement.Net.csproj",
+              "RelativeDocumentMoniker": "NCSessionStateManagement\\NCSessionStateManagement.Net.csproj",
+              "ToolTip": "D:\\Repos\\NCache-OSS-New\\SessionState\\NCSessionStateManagement\\NCSessionStateManagement.Net.csproj",
+              "RelativeToolTip": "NCSessionStateManagement\\NCSessionStateManagement.Net.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAABYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-06-30T05:48:31.034Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "NCacheSessionServices.NetCore.csproj",
+              "DocumentMoniker": "D:\\Repos\\NCache-OSS-New\\SessionState\\NCacheSessionServices\\NCacheSessionServices.NetCore.csproj",
+              "RelativeDocumentMoniker": "NCacheSessionServices\\NCacheSessionServices.NetCore.csproj",
+              "ToolTip": "D:\\Repos\\NCache-OSS-New\\SessionState\\NCacheSessionServices\\NCacheSessionServices.NetCore.csproj",
+              "RelativeToolTip": "NCacheSessionServices\\NCacheSessionServices.NetCore.csproj",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-06-30T05:48:05.518Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "NCSessionStoreProvider.Net.csproj",
+              "DocumentMoniker": "D:\\Repos\\NCache-OSS-New\\SessionState\\NCSessionStoreProvider\\NCSessionStoreProvider.Net.csproj",
+              "RelativeDocumentMoniker": "NCSessionStoreProvider\\NCSessionStoreProvider.Net.csproj",
+              "ToolTip": "D:\\Repos\\NCache-OSS-New\\SessionState\\NCSessionStoreProvider\\NCSessionStoreProvider.Net.csproj",
+              "RelativeToolTip": "NCSessionStoreProvider\\NCSessionStoreProvider.Net.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-06-30T05:43:46.321Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
