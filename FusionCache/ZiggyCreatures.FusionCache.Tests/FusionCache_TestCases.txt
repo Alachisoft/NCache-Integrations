@@ -1,0 +1,691 @@
+================================================================================
+  ZIGGYCREATURES FUSIONCACHE - TEST CASES DOCUMENT
+  Project: ZiggyCreatures.FusionCache.Tests
+  Target Framework: .NET 9.0
+================================================================================
+
+OVERVIEW
+--------
+This document lists all test cases across the FusionCache test suite and describes
+their scope. Tests are organized by test file / test class. Async and Sync variants
+share the same logical scope; only the async versions are listed where both exist.
+
+--------------------------------------------------------------------------------
+1. L1 (MEMORY CACHE) TESTS  [L1Tests_Async.cs / L1Tests_Sync.cs]
+   Scope: Tests for single-layer, in-memory (L1) caching behavior only.
+   No distributed cache or backplane involved.
+--------------------------------------------------------------------------------
+
+  TC-L1-01  CanRemoveAsync
+            Verifies that a cached entry can be removed and is no longer returned.
+
+  TC-L1-02  ReturnsStaleDataWhenFactoryFailsAsync
+            Confirms stale data is returned when the factory throws and fail-safe is enabled.
+
+  TC-L1-03  ReturnsStaleDataWhenFactoryFailsWithoutExceptionAsync
+            Confirms stale data is returned when the factory returns a failure signal (no exception).
+
+  TC-L1-04  ThrowsWhenFactoryThrowsWithoutFailSafeAsync
+            Ensures an exception propagates to the caller when fail-safe is disabled and factory fails.
+
+  TC-L1-05  ThrowsOnFactoryHardTimeoutWithoutStaleDataAsync
+            Verifies that a hard timeout exception is thrown when no stale data is available.
+
+  TC-L1-06  ReturnsStaleDataWhenFactorySoftTimeoutWithFailSafeAsync
+            Validates that soft-timeout triggers background refresh and returns stale data immediately.
+
+  TC-L1-07  DoesNotSoftTimeoutWithoutStaleDataAsync
+            Ensures soft-timeout does not activate if there is no stale data to fall back to.
+
+  TC-L1-08  DoesHardTimeoutEvenWithoutStaleDataAsync
+            Verifies hard timeout fires even when no stale value exists in cache.
+
+  TC-L1-09  ReturnsStaleDataWhenFactoryHitHardTimeoutWithFailSafeAsync
+            Checks stale data is returned on hard timeout when fail-safe is active.
+
+  TC-L1-10  HandlesBackgroundFactoryExceptionAsync
+            Ensures background factory exceptions are swallowed or handled gracefully.
+
+  TC-L1-11  SetOverwritesAnExistingValueAsync
+            Confirms that calling Set replaces a previously cached value.
+
+  TC-L1-12  GetOrSetDoesNotOverwriteANonExpiredValueAsync
+            Validates GetOrSet returns the existing value without re-running the factory.
+
+  TC-L1-13  DoesNotReturnStaleDataIfFactorySucceedsAsync
+            Verifies fresh data from a successful factory replaces and is returned over stale data.
+
+  TC-L1-14  GetOrDefaultDoesReturnStaleDataWithFailSafeAsync
+            Checks GetOrDefault falls back to stale data when fail-safe is enabled.
+
+  TC-L1-15  GetOrDefaultDoesNotReturnStaleDataWithoutFailSafeAsync
+            Ensures GetOrDefault does not return stale data when fail-safe is disabled.
+
+  TC-L1-16  FactoryTimedOutButSuccessfulDoesUpdateCachedValueAsync
+            Confirms that a factory completing after a timeout still updates the cache.
+
+  TC-L1-17  TryGetReturnsCorrectlyAsync
+            Validates TryGet returns a hit/miss status and correct value.
+
+  TC-L1-18  CanCancelAnOperationAsync
+            Tests that cache operations can be cancelled via CancellationToken.
+
+  TC-L1-19  HandlesFlexibleSimpleTypeConversionsAsync
+            Checks that simple value types are correctly stored and retrieved.
+
+  TC-L1-20  HandlesFlexibleComplexTypeConversionsAsync
+            Verifies complex object types survive round-trip through the cache.
+
+  TC-L1-21  GetOrDefaultDoesNotSetAsync
+            Ensures GetOrDefault does not write any value to the cache.
+
+  TC-L1-22  GetOrSetWithDefaultValueWorksAsync
+            Validates GetOrSet with a default value returns that default on miss.
+
+  TC-L1-23  ThrottleDurationWorksCorrectlyAsync
+            Tests that the throttle duration prevents re-executing the factory too frequently.
+
+  TC-L1-24  AdaptiveCachingAsync
+            Validates that the factory can dynamically adjust cache entry options at runtime.
+
+  TC-L1-25  AdaptiveCachingWithBackgroundFactoryCompletionAsync
+            Checks adaptive caching behavior when the factory completes in the background.
+
+  TC-L1-26  AdaptiveCachingDoesNotChangeOptionsAsync
+            Confirms adaptive caching does not mutate the original default entry options.
+
+  TC-L1-27  AdaptiveCachingCanWorkWithSkipMemoryCacheAsync
+            Validates adaptive caching when memory cache writes are skipped.
+
+  TC-L1-28  AdaptiveCachingCanWorkOnExceptionAsync
+            Ensures adaptive caching handles factory exceptions without crashing.
+
+  TC-L1-29  FailSafeMaxDurationNormalizationOccursAsync
+            Verifies that fail-safe max duration is normalized relative to entry expiry.
+
+  TC-L1-30  ReturnsStaleDataWithoutSavingItWhenNoFactoryAsync
+            Checks that stale data is returned in read-only mode without re-saving it.
+
+  TC-L1-31  CanHandleInfiniteOrSimilarDurationsAsync
+            Tests cache behavior when duration is set to TimeSpan.MaxValue or similar.
+
+  TC-L1-32  CanHandleZeroDurationsAsync
+            Ensures zero-duration entries are handled without errors (immediate expiry).
+
+  TC-L1-33  CanHandleNegativeDurationsAsync
+            Verifies negative durations are treated as expired/invalid without errors.
+
+  TC-L1-34  CanConditionalRefreshAsync
+            Tests conditional refresh: factory only runs when ETag/modified condition changes.
+
+  TC-L1-35  CanEagerRefreshAsync
+            Validates eager refresh: cache refreshes in the background before full expiry.
+
+  TC-L1-36  CanEagerRefreshWithInfiniteDurationAsync
+            Confirms eager refresh works correctly when the duration is effectively infinite.
+
+  TC-L1-37  CanEagerRefreshNoCancellationAsync
+            Ensures eager refresh continues to completion and is not cancelled prematurely.
+
+  TC-L1-38  NormalFactoryExecutionWaitsForInFlightEagerRefreshAsync
+            Tests that a normal factory call blocks until an in-flight eager refresh completes.
+
+  TC-L1-39  CanExpireAsync
+            Verifies manual expiry marks an entry as stale/expired.
+
+  TC-L1-40  CanSkipMemoryCacheAsync
+            Checks that the SkipMemoryCache flag causes reads/writes to bypass L1.
+
+  TC-L1-41  CanUseNullFusionCacheAsync
+            Ensures the Null implementation of IFusionCache behaves safely (no-ops).
+
+  TC-L1-42  FailSafeMaxDurationIsRespectedAsync
+            Validates that stale data is not served beyond the fail-safe maximum duration.
+
+  TC-L1-43  CanAutoCloneAsync
+            Tests that AutoClone serializes/deserializes values to prevent mutation of cached objects.
+
+  TC-L1-44  AutoCloneSkipsImmutableObjectsAsync
+            Confirms AutoClone does not clone types marked as immutable.
+
+  TC-L1-45  CanRemoveByTagAsync
+            Verifies all entries associated with a given tag are removed together.
+
+  TC-L1-46  CanRemoveByTagMultiAsync
+            Validates bulk removal of entries associated with multiple tags.
+
+  TC-L1-47  CanRemoveByTagWithChangingTagsAsync
+            Checks that tag-based removal works even when tags on an entry have changed.
+
+  TC-L1-48  CanRemoveByTagWithBehaviorExpireAsync
+            Tests tag-based removal using the Expire behavior (marks entries as stale).
+
+  TC-L1-49  CanRemoveByTagWithBehaviorRemoveAsync
+            Tests tag-based removal using the Remove behavior (deletes entries entirely).
+
+  TC-L1-50  CanClearAsync
+            Validates that Clear removes all entries from the memory cache.
+
+  TC-L1-51  CanClearWithFailSafeAsync
+            Confirms Clear works correctly when fail-safe is active on entries.
+
+  TC-L1-52  CanSkipMemoryCacheReadWriteAsync
+            Tests combined skip of both read and write to memory cache.
+
+  TC-L1-53  CanSoftFailWithSoftTimeoutAsync
+            Verifies soft-fail behavior activates on soft timeout.
+
+  TC-L1-54  CanDisableTaggingAsync
+            Ensures tagging can be disabled without breaking normal cache operations.
+
+  TC-L1-55  CanHandleEagerRefreshWithTagsAsync
+            Tests that eager refresh properly preserves and propagates entry tags.
+
+
+--------------------------------------------------------------------------------
+2. L1+L2 (MEMORY + DISTRIBUTED CACHE) TESTS  [L1L2Tests_Async.cs / L1L2Tests_Sync.cs]
+   Scope: Two-layer cache (memory + distributed, e.g. Redis/NCache). No backplane.
+--------------------------------------------------------------------------------
+
+  TC-L2-01  ReturnsDataFromDistributedCacheIfNoDataInMemoryCacheAsync
+            Validates that a cache miss in L1 falls through to L2 (distributed cache).
+
+  TC-L2-02  HandlesDistributedCacheFailuresAsync
+            Checks that distributed cache errors are handled gracefully (fail-safe / fallback).
+
+  TC-L2-03  AppliesDistributedCacheHardTimeoutAsync
+            Ensures hard timeout is enforced on distributed cache operations.
+
+  TC-L2-04  AppliesDistributedCacheSoftTimeoutAsync
+            Validates soft timeout behavior for distributed cache reads.
+
+  TC-L2-05  DistributedCacheCircuitBreakerActuallyWorksAsync
+            Tests that repeated distributed cache failures open the circuit breaker.
+
+  TC-L2-06  DistributedCacheWireVersionPrefixModeWorksAsync
+            Confirms wire version prefix is correctly added to distributed cache keys.
+
+  TC-L2-07  DistributedCacheWireVersionSuffixModeWorksAsync
+            Confirms wire version suffix is correctly added to distributed cache keys.
+
+  TC-L2-08  DistributedCacheWireVersionNoneModeWorksAsync
+            Validates that no wire version modifier is applied when mode is None.
+
+  TC-L2-09  ReThrowsOriginalExceptionsAsync
+            Ensures original exceptions from the factory are re-thrown to the caller.
+
+  TC-L2-10  ReThrowsDistributedCacheExceptionsAsync
+            Validates distributed cache exceptions propagate when configured to do so.
+
+  TC-L2-11  ReThrowsSerializationExceptionsAsync
+            Ensures serialization errors from L2 are surfaced as exceptions.
+
+  TC-L2-12  SpecificDistributedCacheDurationWorksAsync
+            Tests that a custom distributed cache TTL differs from the L1 TTL.
+
+  TC-L2-13  SpecificDistributedCacheDurationWithFailSafeWorksAsync
+            Confirms custom distributed TTL integrates correctly with fail-safe.
+
+  TC-L2-14  DistributedCacheFailSafeMaxDurationWorksAsync
+            Validates the fail-safe max duration cap applies to distributed entries.
+
+  TC-L2-15  DistributedCacheFailSafeMaxDurationNormalizationOccursAsync
+            Checks normalization of fail-safe max duration against distributed TTL.
+
+  TC-L2-16  MemoryExpirationAlignedWithDistributedAsync
+            Ensures L1 expiry is aligned with the distributed cache entry's actual expiry.
+
+  TC-L2-17  CanSkipDistributedCacheAsync
+            Tests that the SkipDistributedCache flag prevents all L2 interactions.
+
+  TC-L2-18  CanSkipDistributedCacheOnReadOnlyAsync
+            Validates skipping distributed cache reads during read-only operations.
+
+  TC-L2-19  CanSkipDistributedReadWhenStaleAsync
+            Confirms L2 read is skipped when stale data is acceptable (SkipDistributedReadWhenStale).
+
+  TC-L2-20  DoesNotSkipOnMemoryCacheMissWhenSkipDistributedCacheReadWhenStaleIsTrueAsync
+            Ensures L2 is still read on a full cache miss even when skip-stale-read is set.
+
+  TC-L2-21  CanHandleConditionalRefreshAsync
+            Tests conditional refresh logic with a simulated HTTP ETag/304 pattern.
+
+  TC-L2-22  CanHandleEagerRefreshAsync
+            Validates eager background refresh with a two-layer cache setup.
+
+  TC-L2-23  EagerRefreshDoesNotBlockAsync
+            Confirms eager refresh in L1+L2 mode does not block the calling thread.
+
+  TC-L2-24  CanSkipMemoryCacheAsync
+            Verifies L1 can be skipped so all reads/writes go directly to L2.
+
+  TC-L2-25  CanExecuteBackgroundDistributedCacheOperationsAsync
+            Tests that write-behind to L2 executes asynchronously in the background.
+
+  TC-L2-26  FailSafeMaxDurationIsRespectedAsync
+            Validates fail-safe max duration is enforced in the L1+L2 scenario.
+
+  TC-L2-27  CanRemoveByTagAsync
+            Checks tag-based removal propagates to the distributed cache layer.
+
+  TC-L2-28  CanClearAsync
+            Verifies cache clear removes entries from both L1 and L2.
+
+  TC-L2-29  CanUseMultiNodeCachesWithSizeLimitAsync
+            Tests multi-node cache operation when a size limit is applied to L1.
+
+
+--------------------------------------------------------------------------------
+3. L1 + BACKPLANE TESTS  [L1BackplaneTests_Async.cs / L1BackplaneTests_Sync.cs]
+   Scope: Memory cache (L1) with a backplane for cross-node notification (no L2).
+--------------------------------------------------------------------------------
+
+  TC-BP1-01  WorksWithDifferentCachesAsync
+             Validates backplane notifications invalidate other nodes' L1 entries.
+
+  TC-BP1-02  CanSkipNotificationsAsync
+             Checks that backplane publish can be skipped on demand.
+
+  TC-BP1-03  ReThrowsBackplaneExceptionsAsync
+             Ensures backplane exceptions propagate when configured.
+
+  TC-BP1-04  CanClearAsync
+             Validates clear propagates across nodes via the backplane.
+
+  TC-BP1-05  CanRemoveByTagAsync
+             Tests tag-based removal broadcasts correctly via backplane.
+
+
+--------------------------------------------------------------------------------
+4. L1+L2 + BACKPLANE TESTS  [L1L2BackplaneTests_Async.cs / L1L2BackplaneTests_Sync.cs]
+   Scope: Full three-layer setup: memory cache, distributed cache, and backplane.
+--------------------------------------------------------------------------------
+
+  TC-BPF-01  BackplaneWorksAsync
+             Validates end-to-end backplane invalidation across nodes with L1+L2.
+
+  TC-BPF-02  CanIgnoreIncomingBackplaneNotificationsAsync
+             Confirms nodes can be configured to ignore incoming backplane messages.
+
+  TC-BPF-03  CanUseMultiNodeCachesWithSizeLimitAsync
+             Tests three-layer setup with L1 size limits across multiple nodes.
+
+  TC-BPF-04  CanHandleExpireOnMultiNodesAsync
+             Validates expiry is propagated to all nodes via backplane.
+
+  TC-BPF-05  BackgroundFactoryCompleteNotifyOtherNodesAsync
+             Ensures background factory completion sends backplane notifications.
+
+  TC-BPF-06  CanExecuteBackgroundBackplaneOperationsAsync
+             Tests that backplane publish operations execute asynchronously.
+
+  TC-BPF-07  CanRemoveByTagAsync
+             Validates tag-based removal is propagated via backplane to all nodes.
+
+  TC-BPF-08  CanRemoveByTagWithCacheKeyPrefixAsync
+             Checks tag removal works when entries use a cache key prefix.
+
+  TC-BPF-09  CanRemoveByTagMultiAsync
+             Tests multi-tag removal propagated via backplane.
+
+  TC-BPF-10  RemoveByTagDoesNotRemoveTaggingDataAsync
+             Ensures the internal tagging metadata is preserved after tag removal.
+
+  TC-BPF-11  CanClearAsync
+             Validates full cache clear propagated via backplane.
+
+  TC-BPF-12  CanClearWithColdStartsAsync
+             Tests cache clear behavior when some nodes are cold (no data yet).
+
+  TC-BPF-13  CanUseCustomInternalStringsAsync
+             Confirms customization of internal string keys does not break backplane sync.
+
+
+--------------------------------------------------------------------------------
+5. AUTO-RECOVERY TESTS  [AutoRecoveryTests_Async.cs / AutoRecoveryTests_Sync.cs]
+   Scope: Recovery behavior when distributed cache or backplane becomes temporarily
+   unavailable and reconnects.
+--------------------------------------------------------------------------------
+
+  TC-AR-01  CanBeDisabledAsync
+            Validates that auto-recovery can be explicitly disabled.
+
+  TC-AR-02  CanHandleIssuesWithBothDistributedCacheAndBackplaneAsync
+            Tests recovery when both L2 and backplane are simultaneously down.
+
+  TC-AR-03  CanHandleReconnectedBackplaneWithoutReconnectedDistributedCacheAsync
+            Checks behavior when backplane reconnects but distributed cache is still down.
+
+  TC-AR-04  CanHandleDistributedCacheErrorsWithBackplaneRetryAsync
+            Validates retry logic for distributed cache errors during recovery phase.
+
+  TC-AR-05  CanHandleIssuesWithOnlyMemoryCacheAndBackplaneAsync
+            Tests recovery in a setup with only L1 and backplane (no distributed cache).
+
+
+--------------------------------------------------------------------------------
+6. CACHE STAMPEDE TESTS  [CacheStampedeTests.cs]
+   Scope: Concurrency tests verifying that only one factory executes for a cache
+   miss even under heavy parallel load.
+--------------------------------------------------------------------------------
+
+  TC-CS-01  FusionAsync
+            Tests stampede prevention for FusionCache with multiple concurrent async callers.
+
+  TC-CS-02  FusionMixedAsync
+            Validates stampede prevention with a mix of async and sync callers.
+
+  TC-CS-03  FusionHybridAsync
+            Tests stampede prevention when using the HybridCache interface.
+
+  TC-CS-04  FusionAndFusionHybridAsync
+            Tests combined FusionCache and HybridCache concurrent access.
+
+  TC-CS-05  FusionAndFusionHybridAsyncAndSync
+            Validates stampede prevention across FusionCache, HybridCache, and sync callers together.
+
+  [OtherLibs comparisons - informational, not FusionCache-specific]
+  TC-CS-06  CacheStampedeTests_CacheManager     - Stampede test using CacheManager library
+  TC-CS-07  CacheStampedeTests_CacheTower        - Stampede test using CacheTower library
+  TC-CS-08  CacheStampedeTests_EasyCaching       - Stampede test using EasyCaching library
+  TC-CS-09  CacheStampedeTests_HybridCache       - Stampede test using Microsoft HybridCache
+  TC-CS-10  CacheStampedeTests_LazyCache         - Stampede test using LazyCache library
+
+
+--------------------------------------------------------------------------------
+7. SERIALIZATION TESTS  [SerializationTests_Async.cs / SerializationTests_Sync.cs]
+   Scope: Serializer correctness for all supported serializer backends
+   (SystemTextJson, NewtonsoftJson, MessagePack, MemoryPack, ProtoBufNet, ServiceStackJson).
+--------------------------------------------------------------------------------
+
+  TC-SER-01  LoopSucceedsWithSimpleTypesAsync
+             Verifies serialize → deserialize round-trip for primitive/simple types.
+
+  TC-SER-02  LoopSucceedsWithComplexTypesAsync
+             Validates round-trip for complex nested objects.
+
+  TC-SER-03  LoopSucceedsWithComplexTypesArrayAsync
+             Tests round-trip for arrays of complex types.
+
+  TC-SER-04  LoopDoesNotFailWithNullAsync
+             Ensures null values serialize and deserialize without exceptions.
+
+  TC-SER-05  LoopSucceedsWithDistributedEntryAndSimpleTypesAsync
+             Tests round-trip of a full FusionCacheDistributedEntry with simple values.
+
+  TC-SER-06  LoopSucceedsWithDistributedEntryAndNoMetadataAsync
+             Validates serialization of distributed entries that carry no metadata.
+
+  TC-SER-07  LoopSucceedsWithDistributedEntryAndComplexTypesAsync
+             Tests full distributed entry round-trip with complex object payloads.
+
+  TC-SER-08  CanWorkWithByteArraysAsync
+             Confirms byte array payloads survive serialization correctly.
+
+
+--------------------------------------------------------------------------------
+8. EVENTS TESTS  [EventsTests_Async.cs / EventsTests_Sync.cs]
+   Scope: Verifies that FusionCache fires the correct events at the right times.
+--------------------------------------------------------------------------------
+
+  TC-EV-01  EntryEventsWorkAsync
+            Validates that Hit, Miss, Set, Remove events fire as expected.
+
+  TC-EV-02  GetOrSetAsync
+            Checks events raised during a GetOrSet operation (miss + set).
+
+  TC-EV-03  GetOrSetStaleAsync
+            Verifies events raised when GetOrSet returns stale data.
+
+  TC-EV-04  TryGetAsync
+            Confirms correct events for a TryGet operation.
+
+  TC-EV-05  TryGetStaleFailSafeAsync
+            Validates events for TryGet returning stale data via fail-safe.
+
+  TC-EV-06  TryGetStaleNoAllowStaleOnReadOnlyAsync
+            Checks events when stale data is not allowed in read-only mode.
+
+  TC-EV-07  MemoryLevelEventsAsync
+            Validates events specific to the memory (L1) layer.
+
+  TC-EV-08  BackplaneEventsAsync
+            Verifies events fired on backplane send/receive operations.
+
+  TC-EV-09  StaleHitForOldStaleDataAsync
+            Confirms a StaleHit event is raised when old stale data is served.
+
+
+--------------------------------------------------------------------------------
+9. DEPENDENCY INJECTION TESTS  [DependencyInjectionTests.cs]
+   Scope: Registration, resolution, and configuration of FusionCache via
+   Microsoft.Extensions.DependencyInjection.
+--------------------------------------------------------------------------------
+
+  TC-DI-01  CanUseDependencyInjection
+            Validates basic AddFusionCache() registration and resolution.
+
+  TC-DI-02  EmptyBuilderDoesNotUseExtraComponents
+            Ensures empty builder does not auto-wire distributed cache, backplane, or locker.
+
+  TC-DI-03  CanConfigureVariousOptions
+            Tests chaining of WithOptions and WithDefaultEntryOptions configuration.
+
+  TC-DI-04  CannotSpecifyCacheNameOfDefaultCacheViaOptions
+            Validates that setting CacheName via options on the default cache throws.
+
+  TC-DI-05  CannotSpecifyCacheNameOfNamedCacheViaOptions
+            Ensures setting a conflicting name on a named cache throws.
+
+  TC-DI-06  CanDirectlyAddANamedCacheInstance
+            Tests registering pre-constructed FusionCache instances as named caches.
+
+  TC-DI-07  CanAddPlugins
+            Validates plugin registration and activation via DI.
+
+  TC-DI-08  CanUseRegisteredMemoryLocker
+            Confirms the registered IFusionCacheMemoryLocker is picked up automatically.
+
+  TC-DI-09  CanThrowWithoutRegisteredMemoryLocker
+            Ensures an exception is thrown when required memory locker is missing.
+
+  TC-DI-10  CanUseCustomMemoryLocker
+            Tests wiring a custom memory locker implementation via DI.
+
+  TC-DI-11  UsesStandardMemoryLockerByDefault
+            Confirms the default memory locker is used when none is explicitly registered.
+
+  TC-DI-12  CanUseRegisteredDistributedCache
+            Validates that IDistributedCache registered in DI is auto-connected to FusionCache.
+
+  TC-DI-13  CanUseRegisteredBackplane
+            Checks that a registered IFusionCacheBackplane is picked up automatically.
+
+  TC-DI-14  CanUseRegisteredDistributedLocker
+            Validates auto-wiring of a registered distributed locker.
+
+  TC-DI-15  TryAutoSetupWorks
+            Tests the TryAutoSetup method discovers and connects all registered components.
+
+  TC-DI-16  ThrowsIfMissingRegisteredLogger / DontThrowIfMissingRegisteredLogger
+            Validates behavior (throw vs. silent) when ILogger is absent.
+
+  TC-DI-17  ThrowsIfMissingRegisteredDistributedCache / DontThrowIfMissingRegisteredDistributedCache
+            Validates behavior when IDistributedCache is absent.
+
+  TC-DI-18  ThrowsIfMissingSerializerWhenUsingDistributedCache
+            Ensures an exception is thrown if a serializer is not registered with a distributed cache.
+
+  TC-DI-19  CanRegisterMultipleDefaultCaches
+            Checks multiple registrations of the default cache instance.
+
+  TC-DI-20  CanUseMultipleNamedCachesAndConfigureThem
+            Tests creation and independent configuration of multiple named cache instances.
+
+  TC-DI-21  CanUseDefaultCacheWithMultipleNamedCaches
+            Validates the default cache coexists cleanly with named cache registrations.
+
+  TC-DI-22  CanUsePostSetupActions
+            Tests that post-setup actions execute after the cache is fully built.
+
+  TC-DI-23  CanResetPostSetupActions
+            Confirms post-setup actions can be reset/cleared.
+
+  TC-DI-24  DontThrowWhenRequestingAnUnregisteredCache
+            Ensures TryGetCache returns null rather than throwing for an unknown name.
+
+  TC-DI-25  DefaultCacheIsTheSameWhenRequestedInDifferentWays
+            Validates the default cache is the same singleton regardless of how it is resolved.
+
+  TC-DI-26  ThrowsOrNotWhenRequestingUnregisteredNamedCaches
+            Tests GetCache vs TryGetCache behavior for unregistered names.
+
+  TC-DI-27  ThrowsOrNotWhenRequestingUnregisteredDefaultCache
+            Tests resolution behavior when the default cache has not been registered.
+
+  TC-DI-28  CacheInstancesAreAlwaysTheSame
+            Verifies all resolutions of the same named cache return the same instance.
+
+  TC-DI-29  DifferentNamedCachesDoNotShareTheSameMemoryCacheByDefault
+            Confirms each named cache gets its own isolated IMemoryCache by default.
+
+  TC-DI-30  DifferentNamedCachesCanShareTheSameMemoryCacheWithCollisions
+            Tests shared memory cache scenario where key collisions are possible.
+
+  TC-DI-31  DifferentNamedCachesCanShareTheSameMemoryCacheWithoutCollisions
+            Tests shared memory cache scenario with prefix isolation preventing collisions.
+
+  TC-DI-32  CanDoWithoutLogger
+            Ensures FusionCache functions normally without a logger configured.
+
+  TC-DI-33  CanActAsKeyedService
+            Tests registration and resolution of FusionCache as a keyed DI service.
+
+  TC-DI-34  CanUseKeyedLogger / CanUseKeyedMemoryCache / CanUseKeyedDistributedCache
+            Validates keyed DI services for logger, memory cache, and distributed cache.
+
+  TC-DI-35  CanUseKeyedMemoryLocker / CanUseKeyedBackplane / CanUseKeyedPlugins
+            Tests keyed DI support for memory locker, backplane, and plugin components.
+
+  TC-DI-36  CanUseKeyedServices
+            End-to-end test of all major components registered as keyed services.
+
+  TC-DI-37  CanUseNamedCachesWithoutDefaultCache
+            Validates the container works correctly with only named caches, no default.
+
+  TC-DI-38  CanUseASerializerWithoutADistributedCache
+            Ensures a serializer can be registered without causing errors in the absence of L2.
+
+  TC-DI-39  CanUseAsHybridCache
+            Tests that FusionCache can be registered and consumed as IHybridCache.
+
+  TC-DI-40  CanUseNullImplementation
+            Confirms the Null FusionCache implementation can be registered and resolved safely.
+
+
+--------------------------------------------------------------------------------
+10. PLUGINS TESTS  [PluginsTests_Async.cs / PluginsTests_Sync.cs]
+    Scope: Plugin lifecycle — registration, startup, DI auto-discovery.
+--------------------------------------------------------------------------------
+
+  TC-PLG-01  PluginBasicsWorkAsync
+             Validates that a plugin is started and stopped with the cache lifecycle.
+
+  TC-PLG-02  ThrowingDuringStartDoesNotAddPluginAsync
+             Ensures a plugin that throws on Start is not added to the active plugin list.
+
+  TC-PLG-03  DependencyInjectionAutoDiscoveryWorksAsync
+             Tests that plugins registered in DI are automatically discovered and started.
+
+
+--------------------------------------------------------------------------------
+11. RUN UTILS TESTS  [RunUtilsTests_Async.cs / RunUtilsTests_Sync.cs]
+    Scope: Internal timeout/cancellation utility used by FusionCache factory execution.
+--------------------------------------------------------------------------------
+
+  TC-RU-01  ZeroTimeoutDoesNotStartAsyncFuncAsync
+            Ensures a zero-timeout does not even begin executing the async function.
+
+  TC-RU-02  ZeroTimeoutDoesNotStartAsyncActionAsync
+            Same as above for async actions (void-returning delegates).
+
+  TC-RU-03  CanCancelAnAsyncFuncAsync
+            Validates cancellation token correctly aborts async function execution.
+
+  TC-RU-04  TimeoutEffectivelyWorksAsync
+            Confirms that the timeout fires and interrupts execution after the set time.
+
+  TC-RU-05  CancelWhenTimeoutActuallyWorksAsync
+            Tests cancel-on-timeout mode: the CancellationToken is cancelled when timeout fires.
+
+  TC-RU-06  DoNotCancelWhenTimeoutActuallyWorksAsync
+            Tests non-cancel-on-timeout mode: timeout fires but token is not cancelled.
+
+
+--------------------------------------------------------------------------------
+12. GENERAL TESTS  [GeneralTests.cs / GeneralTests_Async.cs / GeneralTests_Sync.cs]
+    Scope: Miscellaneous / cross-cutting tests.
+--------------------------------------------------------------------------------
+
+  TC-GEN-01  CanDisposeEverythingCorrectly
+             Validates that Dispose cleans up all internal resources without errors.
+
+  TC-GEN-02  CanUseNullFusionCacheAsync
+             Tests the Null FusionCache behaves correctly (no-ops, no exceptions).
+
+  TC-GEN-03  CanUseDefaultEntryOptionsProviderAsync
+             Validates the IFusionCacheDefaultEntryOptionsProvider is applied at runtime.
+
+  TC-GEN-04  CanHandleDisposeAsync
+             Confirms async disposal (IAsyncDisposable) works without resource leaks.
+
+
+--------------------------------------------------------------------------------
+13. LOGGING TESTS  [LoggingTests.cs]
+    Scope: Verifies log output correctness.
+--------------------------------------------------------------------------------
+
+  TC-LOG-01  CacheNameIsAlwaysThere
+             Validates that the cache name is included in every log message emitted.
+
+
+--------------------------------------------------------------------------------
+14. HYBRID CACHE TESTS  [FusionHybridCacheTests/]
+    Scope: Microsoft HybridCache-compatible interface backed by FusionCache.
+--------------------------------------------------------------------------------
+
+  HybridL1Tests.cs
+    TC-HYB-L1-xx  Tests covering HybridCache operations using only the L1 memory layer.
+
+  HybridL1L2Tests.cs
+    TC-HYB-L1L2-xx  Tests covering HybridCache operations with both L1 and L2 (distributed).
+
+
+================================================================================
+  SUMMARY TABLE
+================================================================================
+
+  Test Group                     | File(s)                        | Test Count (approx.)
+  -------------------------------|--------------------------------|---------------------
+  L1 Memory Cache                | L1Tests_Async/Sync             | 55
+  L1+L2 Distributed Cache        | L1L2Tests_Async/Sync           | 29
+  L1 + Backplane                 | L1BackplaneTests_Async/Sync    | 5
+  L1+L2 + Backplane              | L1L2BackplaneTests_Async/Sync  | 13
+  Auto-Recovery                  | AutoRecoveryTests_Async/Sync   | 5
+  Cache Stampede                 | CacheStampedeTests             | 5 (+5 other-lib)
+  Serialization                  | SerializationTests_Async/Sync  | 8
+  Events                         | EventsTests_Async/Sync         | 9
+  Dependency Injection           | DependencyInjectionTests       | 40
+  Plugins                        | PluginsTests_Async/Sync        | 3
+  Run Utils                      | RunUtilsTests_Async/Sync       | 6
+  General                        | GeneralTests_Async/Sync        | 4
+  Logging                        | LoggingTests                   | 1
+  Hybrid Cache                   | FusionHybridCacheTests/        | varies
+  -------------------------------|--------------------------------|---------------------
+  TOTAL (approx.)                |                                | ~188 unique cases
+                                 | (each run with multiple        |
+                                 | serializer/locker permutations)|
+
+================================================================================
+  END OF DOCUMENT
+================================================================================
