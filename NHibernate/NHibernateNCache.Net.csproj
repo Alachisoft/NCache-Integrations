@@ -9,7 +9,6 @@
 		<AssemblyName>Alachisoft.NCache.Integrations.NHibernate.Cache</AssemblyName>
 		<RootNamespace>Alachisoft.NCache.Integrations.NHibernate.Cache</RootNamespace>
 		<SignAssembly>True</SignAssembly>
-		<AssemblyOriginatorKeyFile>ncache.snk</AssemblyOriginatorKeyFile>
 		<FileVersion>5.3.6.2</FileVersion>
 		<AssemblyVersion>5.3.6.2</AssemblyVersion>
 	</PropertyGroup>
@@ -68,7 +67,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\Alachisoft.NCache.Client.Extension\Alachisoft.NCache.Client.Extension\Alachisoft.NCache.Client.Extension.csproj" />
+	  <ProjectReference Include="..\Extensions\Alachisoft.NCache.Client.Extension\Alachisoft.NCache.Client.Extension.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
