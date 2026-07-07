@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <ProjectReference Include="..\Extensions\Alachisoft.NCache.Client.Extension\Alachisoft.NCache.Client.Extension.csproj" />
+    <ProjectReference Include="..\..\Extensions\Alachisoft.NCache.Client.Extension\Alachisoft.NCache.Client.Extension.csproj" />
   </ItemGroup>
 	
   <ItemGroup>
