@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "D:\\NCache-Integrations\\CacheManager.Core\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{D1EA7D90-093A-4C26-84BC-D14B95ACFD13}|CacheManager\\CacheManager.csproj|d:\\ncache-integrations\\cachemanager.core\\cachemanager\\docs\\configuration guide.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{D1EA7D90-093A-4C26-84BC-D14B95ACFD13}|CacheManager\\CacheManager.csproj|solutionrelative:cachemanager\\docs\\configuration guide.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A490E35D-0AA4-BBE5-6D49-7F20B8798A91}|CacheManager.Core_TestApp\\CacheManager.Core_TestApp.csproj|d:\\ncache-integrations\\cachemanager.core\\cachemanager.core_testapp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A490E35D-0AA4-BBE5-6D49-7F20B8798A91}|CacheManager.Core_TestApp\\CacheManager.Core_TestApp.csproj|solutionrelative:cachemanager.core_testapp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -42,7 +46,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -62,7 +66,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
+              "Title": "Configuration guide.txt",
+              "DocumentMoniker": "D:\\NCache-Integrations\\CacheManager.Core\\CacheManager\\Docs\\Configuration guide.txt",
+              "RelativeDocumentMoniker": "CacheManager\\Docs\\Configuration guide.txt",
+              "ToolTip": "D:\\NCache-Integrations\\CacheManager.Core\\CacheManager\\Docs\\Configuration guide.txt",
+              "RelativeToolTip": "CacheManager\\Docs\\Configuration guide.txt",
+              "ViewState": "AgIAAHMAAAAAAAAAAAAiwKQAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
+              "WhenOpened": "2026-07-07T13:05:00.451Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "client.ncconf",
               "DocumentMoniker": "D:\\NCache-Integrations\\CacheManager.Core\\CacheManager.Core_TestApp\\client.ncconf",
               "RelativeDocumentMoniker": "CacheManager.Core_TestApp\\client.ncconf",
@@ -70,12 +87,11 @@
               "RelativeToolTip": "CacheManager.Core_TestApp\\client.ncconf",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-07-07T13:00:58.866Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-07T13:00:58.866Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\NCache-Integrations\\CacheManager.Core\\CacheManager.Core_TestApp\\Program.cs",
               "RelativeDocumentMoniker": "CacheManager.Core_TestApp\\Program.cs",
@@ -88,19 +104,18 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "CacheManager.Core_TestApp",
               "DocumentMoniker": "D:\\NCache-Integrations\\CacheManager.Core\\CacheManager.Core_TestApp\\CacheManager.Core_TestApp.csproj",
               "RelativeDocumentMoniker": "CacheManager.Core_TestApp\\CacheManager.Core_TestApp.csproj",
               "ToolTip": "D:\\NCache-Integrations\\CacheManager.Core\\CacheManager.Core_TestApp\\CacheManager.Core_TestApp.csproj",
               "RelativeToolTip": "CacheManager.Core_TestApp\\CacheManager.Core_TestApp.csproj",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-07-07T12:58:09.687Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-07T12:58:09.687Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "NCacheOptions.cs",
               "DocumentMoniker": "D:\\NCache-Integrations\\CacheManager.Core\\CacheManager\\NCacheOptions.cs",
               "RelativeDocumentMoniker": "CacheManager\\NCacheOptions.cs",
@@ -108,12 +123,11 @@
               "RelativeToolTip": "CacheManager\\NCacheOptions.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-07T12:53:17.258Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-07T12:53:17.258Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "NCacheCacheHandleImplementation.cs",
               "DocumentMoniker": "D:\\NCache-Integrations\\CacheManager.Core\\CacheManager\\NCacheCacheHandleImplementation.cs",
               "RelativeDocumentMoniker": "CacheManager\\NCacheCacheHandleImplementation.cs",
@@ -121,12 +135,11 @@
               "RelativeToolTip": "CacheManager\\NCacheCacheHandleImplementation.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-07T12:53:16.143Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-07T12:53:16.143Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "NCacheCacheBackplane.cs",
               "DocumentMoniker": "D:\\NCache-Integrations\\CacheManager.Core\\CacheManager\\NCacheCacheBackplane.cs",
               "RelativeDocumentMoniker": "CacheManager\\NCacheCacheBackplane.cs",
@@ -134,12 +147,11 @@
               "RelativeToolTip": "CacheManager\\NCacheCacheBackplane.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-07T12:53:15.365Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-07T12:53:15.365Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "NCacheBackplaneMessageWrapper.cs",
               "DocumentMoniker": "D:\\NCache-Integrations\\CacheManager.Core\\CacheManager\\NCacheBackplaneMessageWrapper.cs",
               "RelativeDocumentMoniker": "CacheManager\\NCacheBackplaneMessageWrapper.cs",
@@ -147,21 +159,19 @@
               "RelativeToolTip": "CacheManager\\NCacheBackplaneMessageWrapper.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-07T12:53:14.139Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-07T12:53:14.139Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "CacheManager",
+              "DocumentIndex": 8,
+              "Title": "CacheManager.csproj",
               "DocumentMoniker": "D:\\NCache-Integrations\\CacheManager.Core\\CacheManager\\CacheManager.csproj",
               "RelativeDocumentMoniker": "CacheManager\\CacheManager.csproj",
               "ToolTip": "D:\\NCache-Integrations\\CacheManager.Core\\CacheManager\\CacheManager.csproj",
               "RelativeToolTip": "CacheManager\\CacheManager.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-07-07T12:52:44.794Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-07T12:52:44.794Z"
             }
           ]
         }

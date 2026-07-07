@@ -25,12 +25,12 @@ namespace CacheManagerMultiLayerDemo
 
             var options = new NCacheOptions
             {
-                CacheName = "Cachy",
+                CacheName = "demoCache",
                 ServerList = new List<NCacheOptions.ServerConfig>
                         {
                             new NCacheOptions.ServerConfig
                             {
-                                Ip = "20.200.20.29"
+                                Ip = "127.0.0.1"
                             }
                         }
             }; 
