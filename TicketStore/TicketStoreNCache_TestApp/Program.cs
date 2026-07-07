@@ -71,8 +71,6 @@ app.MapGet("/ping", (ClaimsPrincipal user) =>
     return Results.Ok(DateTime.UtcNow);
 });
 
-// test-ticketstore API is used to test ALL implemented APIs 
-
 // Use login API, then constantly use ping API over and over until renew async is triggered (will trigger when sliding expiration is enabled in cookie middleware, observe the item does not expire even though expiration time will be passed)
 
 app.Run();
