@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36811.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CacheManager", "CacheManager\CacheManager.csproj", "{D1EA7D90-093A-4C26-84BC-D14B95ACFD13}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CacheManager.Core_TestApp", "CacheManager.Core_TestApp\CacheManager.Core_TestApp.csproj", "{A490E35D-0AA4-BBE5-6D49-7F20B8798A91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{D1EA7D90-093A-4C26-84BC-D14B95ACFD13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1EA7D90-093A-4C26-84BC-D14B95ACFD13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1EA7D90-093A-4C26-84BC-D14B95ACFD13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A490E35D-0AA4-BBE5-6D49-7F20B8798A91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A490E35D-0AA4-BBE5-6D49-7F20B8798A91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A490E35D-0AA4-BBE5-6D49-7F20B8798A91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A490E35D-0AA4-BBE5-6D49-7F20B8798A91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
