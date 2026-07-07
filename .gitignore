@@ -26,6 +26,9 @@
 **/bin/
 **/obj/
 
+# Visual Studio
+**/.vs/
+
 # Logs
 npm-debug.log*
 yarn-debug.log*
