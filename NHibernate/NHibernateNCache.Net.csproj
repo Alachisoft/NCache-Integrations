@@ -1,0 +1,74 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AssemblyName>Alachisoft.NCache.Integrations.NHibernate.Cache</AssemblyName>
+		<RootNamespace>Alachisoft.NCache.Integrations.NHibernate.Cache</RootNamespace>
+		<SignAssembly>True</SignAssembly>
+		<FileVersion>5.3.6.2</FileVersion>
+		<AssemblyVersion>5.3.6.2</AssemblyVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<DebugType>pdbonly</DebugType>
+		<Optimize>true</Optimize>
+		<TargetFrameworkVersion>netstandard2.0</TargetFrameworkVersion>
+		<BaseIntermediateOutputPath>obj\netstandard\</BaseIntermediateOutputPath>
+		<OutputPath>bin\Debug\</OutputPath>
+		<DefineConstants>TRACE;ENTERPRISE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+		<Prefer32Bit>false</Prefer32Bit>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<DebugType>portable</DebugType>
+		<Optimize>true</Optimize>
+		<TargetFrameworkVersion>netstandard2.0</TargetFrameworkVersion>
+		<BaseIntermediateOutputPath>obj\netstandard\</BaseIntermediateOutputPath>
+		<OutputPath>bin\Release\</OutputPath>
+		<DefineConstants>TRACE;ENTERPRISE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+		<Prefer32Bit>false</Prefer32Bit>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<DefineConstants>NETCORE</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="packages\**" />
+		<Compile Remove="Properties\**" />
+		<EmbeddedResource Remove="packages\**" />
+		<EmbeddedResource Remove="Properties\**" />
+		<None Remove="packages\**" />
+		<None Remove="Properties\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="NCacheNHibernate.xml" />
+		<None Remove="packages.config" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="NCacheNHibernate.xml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Alachisoft.NCache.Opensource.SDK" Version="5.3.6.2" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="NHibernate" Version="5.6.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Extensions\Alachisoft.NCache.Client.Extension\Alachisoft.NCache.Client.Extension.csproj" />
+	</ItemGroup>
+
+</Project>
