@@ -122,6 +122,10 @@ The integration provides the following registration APIs:
 
 After registration, ASP.NET Core middleware such as Session automatically uses NCache as the backing distributed cache provider.
 
+### 6. IDistributedCache Sample App
+
+You can use the IDistributedCache integration against the sample app that exists in the NCache-Samples repository [NCache Samples](https://github.com/Alachisoft/NCache-Samples/tree/master/dotnet/IDistributedCache/oss)
+
 ## License
 
 Copyright © 2005-2026 Alachisoft. All rights reserved.

@@ -10,11 +10,10 @@
     <OutputType>Library</OutputType>
     <StartupObject />
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageId>Alachisoft.NCacheDistributed.Professional</PackageId>
+    <PackageId>NCache.Microsoft.Extensions.Caching.Opensource</PackageId>
     <Version>5.3.0</Version>
     <Authors>Alachisoft</Authors>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Product>Alachisoft® NCache Professional</Product>
     <Description>Distributed Cache using NCache for ASP.NET Core</Description>
     <Copyright>Copyright © 2005-2026 Alachisoft</Copyright>
     <PackageProjectUrl>http://www.alachisoft.com/ncache/</PackageProjectUrl>
@@ -50,6 +49,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md" Link="README.md" />
+	</ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy /Y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)build\NetCore\Client\&quot;" />

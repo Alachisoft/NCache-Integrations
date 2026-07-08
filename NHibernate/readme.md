@@ -33,7 +33,7 @@ Install-Package NHibernate.NCache.Opensource
 
 Before using this package, ensure you have:
 
-1. **NCache Server** � a running NCache cluster (Open Source, Professional, or Enterprise)
+1. **NCache Server** � a running NCache cluster
 2. **Distributed Cache** � a cache created on the cluster whose name matches the `cache-name` referenced by your region configuration(s)
 3. **NHibernate 5.6.0+** � an existing NHibernate application with mapped entities
 
@@ -99,7 +99,7 @@ Tag an entity's mapping file:
 <cache usage="read-write" region="AbsoluteExpirationRegion"/>
 ```
 
-or flag individual queries in code, as shown in the sample `Program.cs`:
+or flag individual queries in code:
 
 ```csharp
 var customer = await session.CreateCriteria<Customer>()
@@ -119,6 +119,10 @@ _sessionFactory = Fluently.Configure()
 ```
 
 From here, any query marked `.SetCacheable(true)` is transparently served from the distributed cache, and `_sessionFactory.Evict(typeof(Customer))` (or `EvictQueries()`) clears cached entries when you need to invalidate manually.
+
+### 6. NHibernate Sample App
+
+You can use the NHibernate integration against the sample app that exists in the NCache-Samples repository [NCache Samples](https://github.com/Alachisoft/NCache-Samples/tree/master/dotnet-framework/NHibernate/oss/NHibernate)
 
 ## License
 
