@@ -106,11 +106,33 @@ builder.Services.AddNCacheTicketStore(options =>
 });
 ```
 
+## Sample
+
+Demonstrates configuring **ASP.NET Core Cookie Authentication** to use **NCache** as an `ITicketStore`. Authentication tickets are stored in NCache instead of client cookies, enabling authenticated sessions to be shared across multiple application instances in a distributed environment.
+
+Follow the following instructions to run the sample.
+
+```bash
+dotnet restore
+dotnet run
+```
+
+Once the application is running, use the following endpoints:
+
+```
+https://localhost:55211/login
+https://localhost:55211/
+https://localhost:55211/ping
+```
+
+Try the following to observe the TicketStore behavior:
+
+- Visit **`/login`** to authenticate the user and store the authentication ticket in NCache.
+- Navigate to **`/`** to verify that the authenticated user is recognized.
+- Call **`/ping`** repeatedly to verify that the authentication session remains valid while the ticket is stored in NCache.
+- Enable **`SlidingExpiration`** in the cookie configuration and repeatedly access **`/ping`** to observe the authentication ticket being renewed before expiration.
+
 Once registered, ASP.NET Core Cookie Authentication uses NCache as the backing store for authentication tickets, enabling distributed authentication across multiple application instances.
-
-## License
-
-Copyright © 2005-2026 Alachisoft. All rights reserved.
 
 ## Resources
 
@@ -118,4 +140,9 @@ Copyright © 2005-2026 Alachisoft. All rights reserved.
 - [NCache Open Source](https://github.com/Alachisoft/NCache)
 - [Microsoft ITicketStore Documentation](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.authentication.cookies.iticketstore)
 - [NCache ITicketStore Documentation](https://www.alachisoft.com/resources/docs/ncache/prog-guide/iticket-store-overview.html)
+- [NCache ITicketStore Nuget](https://www.nuget.org/packages/NCache.OSS.AspNetCore.Authentication.TicketStore)
 - [Alachisoft Website](https://www.alachisoft.com/ncache/)
+
+## License
+
+Copyright © 2005-2026 Alachisoft. All rights reserved.
