@@ -142,49 +142,49 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Alachisoft.NCache.Cache, Version=5.3.0.0, Culture=neutral, PublicKeyToken=1448e8d1123e9096, processorArchitecture=MSIL">
-      <HintPath>packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Cache.dll</HintPath>
+      <HintPath>..\packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Cache.dll</HintPath>
     </Reference>
     <Reference Include="Alachisoft.NCache.Client, Version=5.3.0.0, Culture=neutral, PublicKeyToken=1448e8d1123e9096, processorArchitecture=MSIL">
-      <HintPath>packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Client.dll</HintPath>
+      <HintPath>..\packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Client.dll</HintPath>
     </Reference>
     <Reference Include="Alachisoft.NCache.Cluster, Version=5.3.0.0, Culture=neutral, PublicKeyToken=1448e8d1123e9096, processorArchitecture=MSIL">
-      <HintPath>packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Cluster.dll</HintPath>
+      <HintPath>..\packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Cluster.dll</HintPath>
     </Reference>
     <Reference Include="Alachisoft.NCache.Common, Version=5.3.0.0, Culture=neutral, PublicKeyToken=1448e8d1123e9096, processorArchitecture=MSIL">
-      <HintPath>packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Common.dll</HintPath>
+      <HintPath>..\packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Common.dll</HintPath>
     </Reference>
     <Reference Include="Alachisoft.NCache.Instrumentation, Version=5.3.0.0, Culture=neutral, PublicKeyToken=1448e8d1123e9096, processorArchitecture=MSIL">
-      <HintPath>packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Instrumentation.dll</HintPath>
+      <HintPath>..\packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Instrumentation.dll</HintPath>
     </Reference>
     <Reference Include="Alachisoft.NCache.Management, Version=5.3.0.0, Culture=neutral, PublicKeyToken=1448e8d1123e9096, processorArchitecture=MSIL">
-      <HintPath>packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Management.dll</HintPath>
+      <HintPath>..\packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Management.dll</HintPath>
     </Reference>
     <Reference Include="Alachisoft.NCache.Runtime, Version=5.3.0.0, Culture=neutral, PublicKeyToken=1448e8d1123e9096, processorArchitecture=MSIL">
-      <HintPath>packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Runtime.dll</HintPath>
+      <HintPath>..\packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Alachisoft.NCache.RuntimeDependencies, Version=5.3.0.0, Culture=neutral, PublicKeyToken=1448e8d1123e9096, processorArchitecture=MSIL">
-      <HintPath>packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.RuntimeDependencies.dll</HintPath>
+      <HintPath>..\packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.RuntimeDependencies.dll</HintPath>
     </Reference>
     <Reference Include="Alachisoft.NCache.Serialization, Version=5.3.0.0, Culture=neutral, PublicKeyToken=1448e8d1123e9096, processorArchitecture=MSIL">
-      <HintPath>packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Serialization.dll</HintPath>
+      <HintPath>..\packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="Alachisoft.NCache.SocketServer, Version=5.3.0.0, Culture=neutral, PublicKeyToken=1448e8d1123e9096, processorArchitecture=MSIL">
-      <HintPath>packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.SocketServer.dll</HintPath>
+      <HintPath>..\packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.SocketServer.dll</HintPath>
     </Reference>
     <Reference Include="Alachisoft.NCache.Storage, Version=5.3.0.0, Culture=neutral, PublicKeyToken=1448e8d1123e9096, processorArchitecture=MSIL">
-      <HintPath>packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Storage.dll</HintPath>
+      <HintPath>..\packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\Alachisoft.NCache.Storage.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
-      <HintPath>packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\log4net.dll</HintPath>
+      <HintPath>..\packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\log4net.dll</HintPath>
     </Reference>
     <Reference Include="log4net.ext, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\log4net.ext.dll</HintPath>
+      <HintPath>..\packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\log4net.ext.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>F:\repos\AspNetOutputCache_TestApp\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net-ext, Version=2.3.5.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <HintPath>packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\protobuf-net-ext.dll</HintPath>
+      <HintPath>..\packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\protobuf-net-ext.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Name>System</Name>
@@ -193,7 +193,7 @@
       <Name>System.Configuration</Name>
     </Reference>
     <Reference Include="System.Management.Automation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\System.Management.Automation.dll</HintPath>
+      <HintPath>..\packages\Alachisoft.NCache.Opensource.SDK.5.3.6.2\lib\net40\System.Management.Automation.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
   </ItemGroup>
@@ -206,6 +206,12 @@
     <Compile Include="ReferenceEqualityComparer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="client.ncconf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="config.ncconf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
