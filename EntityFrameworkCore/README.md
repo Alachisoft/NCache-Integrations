@@ -64,26 +64,12 @@ NCache provides the following Entity Framework Core extension methods.
 | Synchronous | Asynchronous |
 |-------------|--------------|
 | `FromCache` | `FromCacheAsync` |
-| `LoadIntoCache` | `LoadIntoCacheAsync` |
-| `FromCacheOnly` | `FromCacheOnlyAsync` |
 
 ### FromCache
 
 `FromCache` executes the LINQ query against the database on the first request and stores the resulting dataset in NCache. Subsequent executions of the same query retrieve the result directly from the cache, reducing database round-trips.
 
 This API is recommended for **transactional data**, where database updates occur frequently but repeated reads can benefit from caching.
-
-### LoadIntoCache
-
-`LoadIntoCache` executes the query and stores the result in NCache without returning it directly to the application. It is intended for pre-loading frequently accessed datasets into cache before application requests are received.
-
-This API is commonly used for **reference data** and cache warm-up scenarios.
-
-### FromCacheOnly
-
-`FromCacheOnly` retrieves data exclusively from NCache and never queries the database. If the requested data does not exist in cache, an empty result is returned.
-
-This API requires entities to be stored using `StoreAs.SeparateEntities` and appropriate query indexes to be configured.
 
 ## Query Caching
 
