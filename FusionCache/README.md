@@ -89,13 +89,73 @@ services.AddFusionCache()
 
 Once subscribed, FusionCache handles calling `Publish`/`PublishAsync` when entries are set or removed, and `NCacheBackplane` forwards incoming messages from the NCache topic back into FusionCache via the configured `IncomingMessageHandler`/`IncomingMessageHandlerAsync`.
 
-## License
+## Using NCache as the L2 Distributed Cache
 
-Copyright © 2026 Alachisoft. All rights reserved.
+In addition to acting as the FusionCache backplane, NCache can also be configured as FusionCache's L2 distributed cache by using the IDistributedCache implementation provided by the NCache.Microsoft.Caching.Extension.Opensource package.
+
+This configuration gives you:
+
+- L1 Cache – FusionCache's in-memory cache (per application instance)
+- L2 Cache – NCache distributed cache via IDistributedCache
+- Backplane – NCache Messaging Service for cache synchronization and invalidation across application instances
+
+### Install
+
+```powershell
+Install-Package NCache.Microsoft.Caching.Extension.Opensource
+
+dotnet add package NCache.Microsoft.Caching.Extension.Opensource
+```
+
+### Configure NCache as L2 cache in FusionCache
+
+```csharp
+var cacheName = "demoCache";
+
+var config = new NCacheConfiguration
+{
+    CacheName = cacheName,
+    EnableLogs = true,
+    ExceptionsEnabled = true
+};
+
+var ncacheOptions = Options.Create(config);
+
+builder.Services.AddFusionCache(nodeName)
+    .WithDistributedCache(new NCacheDistributedCache(ncacheOptions));
+```
+
+## Sample
+
+### What it does: 
+
+Two simulated FusionCache "nodes" (Node A / Node B) share one Redis L2 cache and one Redis backplane. Each has its own in-memory L1, but a Set/Remove on either node updates Redis and notifies the other node so its L1 stays in sync — no manual invalidation needed.
+
+### How to run it:
+
+```powershell
+dotnet restore && dotnet run
+```
+
+Open the printed URL (e.g. http://localhost:5000)
+
+
+### How the results prove it's working:
+
+
+1) Set a value on Node A → it appears on Node B too (reading from the shared Redis L2).
+2) Set a different value on Node B.
+3) Watch Node A: its activity log shows 
+    ```⇦ backplane: received 'EntrySet' for key 'product:42'```, and its displayed value updates to match Node B's — without Node A ever calling Set itself.
+4) Click Remove on either node → the other node's log shows an EntryRemove notification and its value clears too.
+
+Note: If step 3/4 doesn't happen (each node updates itself but never reacts to the other), the backplane isn't wired correctly — see the notes in Program.cs about BackplaneChannelPrefix.
 
 ## Resources
 
-- [NCache Documentation](https://www.alachisoft.com/resources/docs/ncache/prog-guide/fusioncache-backplane.html) 
+- [NCache FusionCache](https://www.alachisoft.com/resources/docs/ncache/prog-guide/fusioncache.html) 
+- [NCache FusionCache Backplane](https://www.alachisoft.com/resources/docs/ncache/prog-guide/fusioncache-backplane.html)
+- [NCache FusionCache L2](https://www.alachisoft.com/resources/docs/ncache/prog-guide/fusioncache-provider.html)
 - [FusionCache](https://github.com/ZiggyCreatures/FusionCache)
 - [NuGet Package NCache.Fusion.Cache](https://www.nuget.org/packages/NCache.OSS.ZiggyCreatures.FusionCache.Backplane)
 - [NCache Open Source](https://github.com/Alachisoft/NCache)
@@ -108,6 +168,6 @@ Alachisoft© provides various sources of technical support.
 - Please refer to http://www.alachisoft.com/support.html to select a support resource you find suitable for your issue.
 - To request additional features in the future, or if you notice any discrepancy regarding this document, please drop an email to [support@alachisoft.com](mailto:support@alachisoft.com).
 
-## Copyrights
+## License
 
-Copyright 2026 Alachisoft©
+Copyright © 2026 Alachisoft. All rights reserved.
