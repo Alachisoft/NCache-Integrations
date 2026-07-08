@@ -104,7 +104,7 @@ https://www.alachisoft.com/resources/docs/ncache/prog-guide/entity-framework-cor
 
 - [NCache Documentation](https://www.alachisoft.com/resources/docs/)
 - [NCache Open Source](https://github.com/Alachisoft/NCache)
-- [EFCore Sample](https://github.com/Alachisoft/NCache-Samples/)
+- [EFCore Sample](https://github.com/Alachisoft/NCache-Samples/tree/master/dotnet/EFCoreCaching/oss)
 - [EFCore Nuget](https://www.nuget.org/packages/EntityFrameworkCore.NCache.OpenSource)
 - [NCache EntityFramework Core Sample](https://www.alachisoft.com/resources/docs/ncache/prog-guide/entity-framework-core-caching.html)
 - [Alachisoft Website](https://www.alachisoft.com/ncache/)

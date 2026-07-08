@@ -195,7 +195,7 @@ Observe the console output to verify that each operation completes successfully 
 - [NCache Documentation](https://www.alachisoft.com/resources/docs/)
 - [CacheManager.Core](https://github.com/MichaCo/CacheManager)
 - [NuGet Package NCache.OSS.CacheManager.Core](https://www.nuget.org/packages/NCache.OSS.CacheManager.Core)
-- [NCache CacheManager.Core](https://www.alachisoft.com/resources/docs/ncache/prog-guide/cache-manager.html)
+- [NCache CacheManager.Core Documentation](https://www.alachisoft.com/resources/docs/ncache/prog-guide/cache-manager.html)
 - [NCache Open Source](https://github.com/Alachisoft/NCache)
 - [Alachisoft Website](https://www.alachisoft.com/ncache/)
 
