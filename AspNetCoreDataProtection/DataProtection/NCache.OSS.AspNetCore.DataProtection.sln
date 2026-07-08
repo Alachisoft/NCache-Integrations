@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 18
-VisualStudioVersion = 18.7.11903.348 stable
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36811.4 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCache.OSS.AspNetCore.DataProtection", "NCache.OSS.AspNetCore.DataProtection.csproj", "{99C723E6-0158-49BB-815E-F2B6DD93952D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataProtectionTests", "..\DataProtectionTests\DataProtectionTests.csproj", "{C3830161-D3DA-499B-B2EC-EF5EA06D9F2B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alachisoft.NCache.Client.Extension", "..\Extensions\Alachisoft.NCache.Client.Extension\Alachisoft.NCache.Client.Extension.csproj", "{F987222A-229D-FA54-2BDC-53AE443EECC6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alachisoft.NCache.Client.Extension", "..\..\Extensions\Alachisoft.NCache.Client.Extension\Alachisoft.NCache.Client.Extension.csproj", "{125F2146-D943-E9D9-DB42-6CB3EED4A176}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +17,10 @@ Global
 		{99C723E6-0158-49BB-815E-F2B6DD93952D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99C723E6-0158-49BB-815E-F2B6DD93952D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99C723E6-0158-49BB-815E-F2B6DD93952D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C3830161-D3DA-499B-B2EC-EF5EA06D9F2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C3830161-D3DA-499B-B2EC-EF5EA06D9F2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C3830161-D3DA-499B-B2EC-EF5EA06D9F2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C3830161-D3DA-499B-B2EC-EF5EA06D9F2B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F987222A-229D-FA54-2BDC-53AE443EECC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F987222A-229D-FA54-2BDC-53AE443EECC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F987222A-229D-FA54-2BDC-53AE443EECC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F987222A-229D-FA54-2BDC-53AE443EECC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{125F2146-D943-E9D9-DB42-6CB3EED4A176}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{125F2146-D943-E9D9-DB42-6CB3EED4A176}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{125F2146-D943-E9D9-DB42-6CB3EED4A176}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{125F2146-D943-E9D9-DB42-6CB3EED4A176}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

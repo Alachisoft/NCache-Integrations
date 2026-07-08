@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NCache.OSS.AspNetCore.Authentication.TicketStore" Version="5.3.6.1" />
+    <ProjectReference Include="..\TicketStoreNCache\TicketStoreNCache.csproj" />
   </ItemGroup>
 
   <ItemGroup>

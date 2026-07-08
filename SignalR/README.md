@@ -2,45 +2,102 @@
 
 ## Overview
 
-SignalR is an ASP.NET Core library for real-time communication between server and clients.
-It automatically manages persistent connections using WebSockets, Server-Sent Events, or Long Polling depending on capability.
-It enables server-side code to push messages instantly to connected clients.
-It abstracts connection management, reconnection, and transport negotiation.
-Common use cases include chat systems, live dashboards, notifications, and real-time updates.
+**NCache implementation for ASP.NET Core SignalR**, allowing SignalR applications to use NCache as a distributed backplane for synchronizing messages across multiple application servers.
 
-In a multi-server SignalR setup, a backplane is used to synchronize messages across all server instances.
-The NCache SignalR backplane uses a distributed cache to propagate messages between nodes in a cluster.
-When one server sends a SignalR message, NCache ensures all other servers receive and forward it to their connected clients.
-This allows horizontal scaling of SignalR applications without losing message consistency.
-It improves performance and reliability by avoiding a single central broker and using a high-speed distributed cache instead.
+NCache extends the `ISignalRServerBuilder` interface through the `AddNCache` extension method, enabling SignalR applications to register an NCache backplane using a cache name and an application-specific event key. Once configured, SignalR messages published on one server are propagated through NCache so that all connected application instances can deliver them to their respective clients.
+
+**Key benefits:**
+
+- Distributed backplane for ASP.NET Core SignalR
+- Extends `ISignalRServerBuilder` through the `AddNCache` extension method
+- Supports horizontal scaling across multiple application servers
+- Uses NCache for fast, distributed message propagation
+- Supports configurable client connection options and cache security
+
+## Package Versions
+
+| Package | Version |
+|---------|---------|
+| Alachisoft.NCache.Opensource.SDK | >= 5.3.6.2 |
+| AspNetCore.SignalR.NCache.Opensource | Compatible with ASP.NET Core SignalR 1.1.0 |
+
+## Prerequisites
+
+Before using this package, ensure you have:
+
+1. **NCache Server** – a running NCache cluster.
+2. **An NCache cache** – created and running on the cluster.
+3. **ASP.NET Core SignalR** version **1.1.0**.
+4. Include the following namespaces in your application:
+   - `Alachisoft.NCache.AspNetCore.SignalR`
+   - `Microsoft.AspNetCore.SignalR`
+5. Ensure cached objects are serializable.
+
+## Configuration
+
+The SignalR integration is configured through the `AddNCache` extension method and an optional `NCacheConfiguration` object.
+
+Configuration can be supplied either directly in `Startup.cs` or through the application's `appsettings.json`.
+
+Example configuration:
+
+```json
+"NCacheConfiguration": {
+  "CacheName": "demoCache",
+  "EventKey": "chatApplication",
+  "ConnectionOptions": {
+    "AppName": "DemoAppName",
+    "LogLevel": "info",
+    "ServerList": [
+      {
+        "Name": "20.200.20.40",
+        "Port": 9800
+      }
+    ]
+  }
+}
+```
+
+`ConnectionOptions` maps directly to NCache client connection settings. Any property not specified uses the defaults defined in `client.ncconf`.
+
+| Property | Description |
+|----------|-------------|
+| `CacheName` | Name of the NCache cache used as the SignalR backplane. |
+| `EventKey` | Application-specific key used to identify SignalR events. |
+| `ConnectionOptions` | Optional NCache client connection settings. |
+| `ServerList` | List of NCache server nodes. |
+| `AppName` | Application name reported to NCache. |
+| `ClientBindIP` | Local IP address to bind the client connection. |
+| `LogLevel` | NCache client logging level. |
+| `UserCredentials` | Credentials used when cache security is enabled. |
+
+## Usage
+
+Register the NCache backplane using one of the provided `AddNCache` overloads.
+
+Supported overloads include:
+
+- `AddNCache(string cacheName, string eventKey)`
+- `AddNCache(string cacheName, string eventKey, string userId, string password)`
+- `AddNCache(Action<NCacheConfiguration> configure)`
+
+Once registered, SignalR automatically uses NCache as its distributed backplane. Messages published by one application server are propagated through NCache and delivered by every connected SignalR server, enabling consistent real-time communication across a server farm.
 
 ## References
 
 Reference documentation is available at:\
 https://www.alachisoft.com/resources/docs/ncache/prog-guide/ncache-extension-signalr.html?tabs=net
 
-## Additional Resources
+## Resources
 
-### Samples & Playground
-
-For more samples of NCache features on various platforms:\
-https://github.com/Alachisoft/NCache-Samples/
-
-You can also visit NCache Playground for an interactive feature demo:\
-https://www.alachisoft.com/nclive/
-
-### Documentation
-
-The complete online documentation for NCache is available at:\
-http://www.alachisoft.com/resources/docs/#ncache
-
-### Programmer's Guide
-The complete programmer's guide of NCache is available at:\
-http://www.alachisoft.com/resources/docs/ncache/prog-guide/
+- [NCache Documentation](https://www.alachisoft.com/resources/docs/)
+- [NCache SignalR Documentation](https://www.alachisoft.com/resources/docs/ncache/prog-guide/asp-net-core-signalr.html)
+- [Playground sample](https://github.com/Alachisoft/NCache-Samples/)
+- [Alachisoft Website](https://www.alachisoft.com/ncache/)
 
 ## Technical Support
 
-Alachisoft&copy; provides various sources of technical support. 
+Alachisoft&copy; provides various sources of technical support.
 
 - Please refer to http://www.alachisoft.com/support.html to select a support resource you find suitable for your issue.
 - To request additional features in the future, or if you notice any discrepancy regarding this document, please drop an email to [support@alachisoft.com](mailto:support@alachisoft.com).
