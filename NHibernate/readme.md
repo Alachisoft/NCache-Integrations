@@ -122,7 +122,7 @@ From here, any query marked `.SetCacheable(true)` is transparently served from t
 
 ### 6. NHibernate Sample App
 
-You can use NHibernate against the sample app that exists in the NCache-Samples repository [NCache Samples](https://github.com/Alachisoft/NCache-Samples/tree/master/dotnet-framework/NHibernate/oss/NHibernate)
+You can use the NHibernate integration against the sample app that exists in the NCache-Samples repository [NCache Samples](https://github.com/Alachisoft/NCache-Samples/tree/master/dotnet-framework/NHibernate/oss/NHibernate)
 
 ## License
 
