@@ -23,9 +23,9 @@ Install-Package AspNet.OutputCache.NCache.Opensource
 
 Before using this package, ensure you have:
 
-1. **NCache Server** � a running NCache cluster (Enterprise or Professional edition)
-2. **A Cache** � created on the cluster, matching the `cacheName` you configure below
-3. **A classic ASP.NET application** � Web Forms or MVC on .NET Framework
+1. **NCache Server** - a running NCache cluster (Enterprise or Professional edition)
+2. **A Cache** - created on the cluster, matching the `cacheName` you configure below
+3. **A classic ASP.NET application** - Web Forms or MVC on .NET Framework
 
 ## Overview
 
@@ -33,9 +33,9 @@ Before using this package, ensure you have:
 
 **Key benefits:**
 
-- Drop-in replacement for the default in-memory ASP.NET output cache � no changes to pages or controllers
+- Drop-in replacement for the default in-memory ASP.NET output cache - no changes to pages or controllers
 - Output is shared across all web servers in a load-balanced deployment
-- Non-primitive objects don't need to be marked `[Serializable]`: a reflection-based serializer (`InternalClassSerializer`) walks the object graph � including private fields, arrays, lists, and nested objects � into JSON, with circular-reference protection, instead of relying on `BinaryFormatter`
+- Non-primitive objects don't need to be marked `[Serializable]`: a reflection-based serializer (`InternalClassSerializer`) walks the object graph - including private fields, arrays, lists, and nested objects - into JSON, with circular-reference protection, instead of relying on `BinaryFormatter`
 - Per-provider toggles for exception propagation and NCache logging
 
 ## Configuration
@@ -44,7 +44,7 @@ The provider reads its settings from the attributes on its `<add>` entry in `web
 
 | Attribute | Required | Default | Description |
 |---|---|---|---|
-| `cacheName` | Yes | � | The NCache cache to connect to; startup fails with a `ConfigurationErrorsException` if missing |
+| `cacheName` | Yes | - | The NCache cache to connect to; startup fails with a `ConfigurationErrorsException` if missing |
 | `description` | No | `"NCache Output Cache Provider"` | Provider description |
 | `exceptionsEnabled` | No | `true` | When `true`, errors from cache operations are rethrown to the caller after being logged; when `false`, they're swallowed |
 | `enableLogs` | No | `false` | Enables NCache logging at `info` level |
@@ -53,7 +53,7 @@ The provider reads its settings from the attributes on its `<add>` entry in `web
 
 ## Usage
 
-Once registered as the default output cache provider, use the standard ASP.NET caching surface � no NCache-specific code is needed in your pages or controllers:
+Once registered as the default output cache provider, use the standard ASP.NET caching surface - no NCache-specific code is needed in your pages or controllers:
 
 ```aspx
 <%@ OutputCache Duration="60" VaryByParam="none" %>
@@ -94,4 +94,4 @@ Refresh the page multiple times to observe cached responses being served. After 
 
 ## License
 
-Copyright � 2026 Alachisoft. All rights reserved.
+Copyright © 2026 Alachisoft. All rights reserved.
