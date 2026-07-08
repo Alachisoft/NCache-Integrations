@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>FusionCache — NCache L2 + Backplane Demo</title>
+<style>
+  :root {
+    --bg: #0f1220;
+    --panel: #171b2e;
+    --panel-border: #2a2f4a;
+    --accent-a: #4f9cff;
+    --accent-b: #ff9f4f;
+    --text: #e7e9f2;
+    --muted: #8b90ab;
+    --good: #4fdc8f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px;
+  }
+  h1 { font-size: 20px; margin: 0 0 4px 0; }
+  p.subtitle { color: var(--muted); margin-top: 0; margin-bottom: 24px; font-size: 14px; }
+  .nodes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .node {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .node h2 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .node.a .dot { background: var(--accent-a); }
+  .node.b .dot { background: var(--accent-b); }
+  .value-box {
+    background: #0d0f1c;
+    border: 1px dashed var(--panel-border);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 14px;
+    min-height: 50px;
+    font-size: 14px;
+  }
+  .value-box .name { font-weight: 600; font-size: 15px; }
+  .value-box .price { color: var(--good); }
+  .value-box .empty { color: var(--muted); font-style: italic; }
+  form { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  input {
+    background: #0d0f1c;
+    border: 1px solid var(--panel-border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  input[name="name"] { flex: 1; min-width: 120px; }
+  input[name="price"] { width: 90px; }
+  button {
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .btn-set { background: var(--accent-a); color: #04101f; }
+  .btn-remove { background: #ff5f6d; color: #200; }
+  .node.b .btn-set { background: var(--accent-b); }
+  .log {
+    margin-top: 12px;
+    background: #0d0f1c;
+    border-radius: 8px;
+    padding: 10px;
+    height: 180px;
+    overflow-y: auto;
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 11.5px;
+    line-height: 1.6;
+  }
+  .log .entry { color: var(--muted); }
+  .log .entry .time { color: #565b78; margin-right: 6px; }
+  .log .entry.backplane { color: #ffd166; }
+</style>
+</head>
+<body>
+
+<h1>FusionCache — NCache L2 + Backplane</h1>
+<p class="subtitle">Two simulated app "nodes" sharing one NCache L2 cache and one NCache backplane. Change a value on one side and watch the other side's log react.</p>
+
+<div class="nodes">
+
+  <div class="node a">
+    <h2><span class="dot"></span> Node A</h2>
+    <div class="value-box" id="value-NodeA">Loading…</div>
+    <form onsubmit="return setValue('NodeA', event)">
+      <input name="name" placeholder="Product name" value="Wireless Mouse" />
+      <input name="price" placeholder="Price" type="number" step="0.01" value="19.99" />
+      <button type="submit" class="btn-set">Set</button>
+    </form>
+    <button class="btn-remove" onclick="removeValue('NodeA')">Remove</button>
+    <div class="log" id="log-NodeA"></div>
+  </div>
+
+  <div class="node b">
+    <h2><span class="dot"></span> Node B</h2>
+    <div class="value-box" id="value-NodeB">Loading…</div>
+    <form onsubmit="return setValue('NodeB', event)">
+      <input name="name" placeholder="Product name" value="Mechanical Keyboard" />
+      <input name="price" placeholder="Price" type="number" step="0.01" value="89.50" />
+      <button type="submit" class="btn-set">Set</button>
+    </form>
+    <button class="btn-remove" onclick="removeValue('NodeB')">Remove</button>
+    <div class="log" id="log-NodeB"></div>
+  </div>
+
+</div>
+
+<script>
+const nodes = ['NodeA', 'NodeB'];
+
+async function refreshValue(node) {
+    const res = await fetch(`/api/${node}/value`);
+    const box = document.getElementById(`value-${node}`);
+
+    let product = null;
+
+    if (res.ok && res.status !== 204) {
+        product = await res.json();
+    }
+
+    if (product) {
+        box.innerHTML = `
+    <div class="name">${escapeHtml(product.name)}</div>
+    <div class="price">$${Number(product.price).toFixed(2)}</div>
+  `;
+    } else {
+        box.innerHTML = `<div class="empty">— not cached —</div>`;
+    }
+}
+
+async function refreshLog(node) {
+  const res = await fetch(`/api/${node}/log`);
+  const entries = await res.json();
+  const el = document.getElementById(`log-${node}`);
+  el.innerHTML = entries.map(e => {
+    const isBackplane = e.message.includes('backplane');
+    return `<div class="entry${isBackplane ? ' backplane' : ''}"><span class="time">${e.time}</span>${escapeHtml(e.message)}</div>`;
+  }).join('');
+}
+
+async function setValue(node, evt) {
+  evt.preventDefault();
+  const form = evt.target;
+  const name = form.name.value;
+  const price = parseFloat(form.price.value);
+  await fetch(`/api/${node}/set`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, price })
+  });
+  await refreshAll();
+  return false;
+}
+
+async function removeValue(node) {
+  await fetch(`/api/${node}/remove`, { method: 'POST' });
+  await refreshAll();
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+async function refreshAll() {
+  for (const n of nodes) {
+    await refreshValue(n);
+    await refreshLog(n);
+  }
+}
+
+refreshAll();
+setInterval(refreshAll, 1200);
+</script>
+
+</body>
+</html>
