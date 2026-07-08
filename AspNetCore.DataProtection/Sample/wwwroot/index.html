@@ -1,0 +1,496 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Data Protection Vault — NCache</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0F1620;
+            --surface: #161F2B;
+            --surface-raised: #1C2733;
+            --border: #28384A;
+            --text: #E7ECF2;
+            --text-muted: #8397AC;
+            --teal: #49D9C4;
+            --teal-dim: #1F4A44;
+            --amber: #E8A85B;
+            --amber-dim: #4A3B22;
+            --danger: #E2685E;
+            --radius: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: radial-gradient(1100px 500px at 20% -10%, rgba(73,217,196,0.07), transparent 60%), radial-gradient(900px 500px at 90% 0%, rgba(232,168,91,0.06), transparent 60%), var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            min-height: 100vh;
+            padding: 48px 24px 80px;
+        }
+
+        .wrap {
+            max-width: 1040px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 44px;
+        }
+
+        .eyebrow {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12.5px;
+            color: var(--teal);
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+            .eyebrow .dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--teal);
+                box-shadow: 0 0 8px var(--teal);
+            }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(28px, 4vw, 38px);
+            font-weight: 700;
+            margin: 0 0 10px;
+            letter-spacing: -0.01em;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 15px;
+            max-width: 560px;
+            line-height: 1.55;
+            margin: 0;
+        }
+
+        /* Vault ring — the signature element: a shared key ring binding both panels */
+        .ring-seam {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            height: 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: var(--surface);
+            position: relative;
+        }
+
+        @media (max-width:760px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            padding: 32px;
+            position: relative;
+        }
+
+            .panel + .panel {
+                border-left: 1px solid var(--border);
+            }
+
+        @media (max-width:760px) {
+            .panel + .panel {
+                border-left: none;
+                border-top: 1px solid var(--border);
+            }
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+            .icon svg {
+                width: 17px;
+                height: 17px;
+            }
+
+        .encrypt .icon {
+            background: var(--teal-dim);
+            color: var(--teal);
+        }
+
+        .decrypt .icon {
+            background: var(--amber-dim);
+            color: var(--amber);
+        }
+
+        .panel-head h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .panel-head .sub {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        label {
+            display: block;
+            font-size: 12.5px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            letter-spacing: .02em;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 88px;
+            resize: vertical;
+            background: var(--surface-raised);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 12px 14px;
+            outline: none;
+            transition: border-color .15s ease;
+        }
+
+            textarea:focus {
+                border-color: var(--teal);
+            }
+
+        .decrypt textarea:focus {
+            border-color: var(--amber);
+        }
+
+        button {
+            margin-top: 14px;
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            padding: 11px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: filter .15s ease, transform .05s ease;
+        }
+
+            button:active {
+                transform: translateY(1px);
+            }
+
+        .encrypt button {
+            background: var(--teal);
+            color: #08201C;
+        }
+
+        .decrypt button {
+            background: var(--amber);
+            color: #241705;
+        }
+
+        button:hover {
+            filter: brightness(1.08);
+        }
+
+        button:disabled {
+            opacity: .55;
+            cursor: progress;
+            filter: none;
+        }
+
+        .result {
+            margin-top: 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface-raised);
+            padding: 14px;
+            display: none;
+        }
+
+            .result.show {
+                display: block;
+                animation: rise .18s ease;
+            }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result .payload {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12.5px;
+            word-break: break-all;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        .result.error .payload {
+            color: var(--danger);
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border);
+        }
+
+        .instance-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+            .instance-tag .led {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--teal);
+                box-shadow: 0 0 6px var(--teal);
+            }
+
+        .decrypt .instance-tag .led {
+            background: var(--amber);
+            box-shadow: 0 0 6px var(--amber);
+        }
+
+        .copy-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 11px;
+            padding: 4px 9px;
+            width: auto;
+            margin: 0;
+            border-radius: 6px;
+        }
+
+            .copy-btn:hover {
+                color: var(--text);
+                border-color: var(--text-muted);
+                filter: none;
+            }
+
+        footer {
+            margin-top: 28px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+            footer code {
+                font-family: 'IBM Plex Mono', monospace;
+                background: var(--surface-raised);
+                padding: 2px 6px;
+                border-radius: 4px;
+                border: 1px solid var(--border);
+            }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <header>
+            <div class="eyebrow"><span class="dot"></span> Key ring persisted in NCache · shared across instances</div>
+            <h1>Data Protection Vault</h1>
+            <p>Encrypt something on one server, decrypt it on another. Both panels call the same API — the key ring lives in NCache, not on either machine's disk, so it doesn't matter which instance handles which request.</p>
+        </header>
+
+        <div class="grid">
+            <section class="panel encrypt">
+                <div class="panel-head">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+                    </div>
+                    <div>
+                        <h2>Encrypt</h2>
+                        <div class="sub">Turn plain text into a protected payload</div>
+                    </div>
+                </div>
+
+                <label for="plain-input">Plain text</label>
+                <textarea id="plain-input" placeholder="e.g. session-token-abc123"></textarea>
+                <button id="encrypt-btn" type="button">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+                    Encrypt
+                </button>
+
+                <div class="result" id="encrypt-result">
+                    <div class="payload" id="encrypt-payload"></div>
+                    <div class="meta-row">
+                        <span class="instance-tag"><span class="led"></span><span id="encrypt-instance">—</span></span>
+                        <button class="copy-btn" type="button" data-copy-target="encrypt-payload">Copy</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel decrypt">
+                <div class="panel-head">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V8a4 4 0 0 1 7.87-1" /></svg>
+                    </div>
+                    <div>
+                        <h2>Decrypt</h2>
+                        <div class="sub">Recover plain text from a protected payload</div>
+                    </div>
+                </div>
+
+                <label for="cipher-input">Protected payload</label>
+                <textarea id="cipher-input" placeholder="Paste a payload produced by Encrypt"></textarea>
+                <button id="decrypt-btn" type="button">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V8a4 4 0 0 1 7.87-1" /></svg>
+                    Decrypt
+                </button>
+
+                <div class="result" id="decrypt-result">
+                    <div class="payload" id="decrypt-payload"></div>
+                    <div class="meta-row">
+                        <span class="instance-tag"><span class="led"></span><span id="decrypt-instance">—</span></span>
+                        <button class="copy-btn" type="button" data-copy-target="decrypt-payload">Copy</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            Calling <code>/api/protection/protect</code> and <code>/api/protection/unprotect</code> on this instance. Open the app on Server1 and Server2 to see the instance tag change while decryption still succeeds.
+        </footer>
+    </div>
+
+    <script>
+  const $ = (id) => document.getElementById(id);
+
+  async function callApi(path, param, value) {
+    const url = `${path}?${param}=${encodeURIComponent(value)}`;
+    const res = await fetch(url, { method: 'GET' });
+    const data = await res.json().catch(() => ({}));
+    return { ok: res.ok, data };
+  }
+
+  function showResult(resultEl, payloadEl, instanceEl, text, instanceName, isError) {
+    resultEl.classList.remove('error');
+    if (isError) resultEl.classList.add('error');
+    payloadEl.textContent = text;
+    instanceEl.textContent = instanceName ? `served by ${instanceName}` : '—';
+    resultEl.classList.add('show');
+  }
+
+  function withLoading(button, fn) {
+    return async (...args) => {
+      const original = button.innerHTML;
+      button.disabled = true;
+      button.textContent = 'Working…';
+      try {
+        await fn(...args);
+      } finally {
+        button.disabled = false;
+        button.innerHTML = original;
+      }
+    };
+  }
+
+  const encryptBtn = $('encrypt-btn');
+  const decryptBtn = $('decrypt-btn');
+
+  encryptBtn.addEventListener('click', withLoading(encryptBtn, async () => {
+    const plain = $('plain-input').value.trim();
+    const resultEl = $('encrypt-result');
+    if (!plain) {
+      showResult(resultEl, $('encrypt-payload'), $('encrypt-instance'), 'Enter some plain text first.', null, true);
+      return;
+    }
+    const { ok, data } = await callApi('/api/protection/protect', 'plainText', plain);
+    if (ok) {
+      showResult(resultEl, $('encrypt-payload'), $('encrypt-instance'), data.protectedPayload, data.instanceName, false);
+    } else {
+      showResult(resultEl, $('encrypt-payload'), $('encrypt-instance'), data.error || 'Encryption failed.', null, true);
+    }
+  }));
+
+  decryptBtn.addEventListener('click', withLoading(decryptBtn, async () => {
+    const cipher = $('cipher-input').value.trim();
+    const resultEl = $('decrypt-result');
+    if (!cipher) {
+      showResult(resultEl, $('decrypt-payload'), $('decrypt-instance'), 'Paste a protected payload first.', null, true);
+      return;
+    }
+    const { ok, data } = await callApi('/api/protection/unprotect', 'protectedPayload', cipher);
+    if (ok) {
+      showResult(resultEl, $('decrypt-payload'), $('decrypt-instance'), data.plainText, data.instanceName, false);
+    } else {
+      showResult(resultEl, $('decrypt-payload'), $('decrypt-instance'), data.detail || data.error || 'Decryption failed.', null, true);
+    }
+  }));
+
+  document.querySelectorAll('.copy-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = document.getElementById(btn.dataset.copyTarget);
+      if (!target || !target.textContent) return;
+      navigator.clipboard.writeText(target.textContent);
+      const original = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(() => (btn.textContent = original), 1200);
+    });
+  });
+    </script>
+</body>
+</html>

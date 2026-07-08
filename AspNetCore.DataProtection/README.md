@@ -23,7 +23,7 @@ ASP.NET Core Data Protection is a security system that protects sensitive inform
 
 ### Step 1: Configure your NCache connection
 
-Three configuration files are copied to your output directory on build: `client.ncconf`, `config.ncconf`, and `tls.ncconf`.
+Three configuration files are copied to your output directory on build: `client.ncconf`, and  `config.ncconf`.
 
 **`client.ncconf`** points the client at your NCache server. Set your server IP and make sure `cache id` matches the cache name you pass in code:
 
@@ -34,8 +34,6 @@ Three configuration files are copied to your output directory on build: `client.
 ```
 
 **`config.ncconf`**  holds cache side settings and ships with sensible defaults. Adjust only if your cache configuration requires it.
-
-**`tls.ncconf`** required only if your NCache server has TLS enabled. Configure your certificate details here; otherwise leave it as-is.
 
 ### Step 2: Register NCache as the key storage provider
 
@@ -57,6 +55,38 @@ Keys are stored as Base64 encoded XML elements and expire automatically based on
 
 Tag based grouping is implemented using a lock protected list stored under the tag key itself, ensuring safe concurrent writes across multiple app instances.
 
+## Sample
+
+Demonstrates configuring ASP.NET Core's **Data Protection API** to store its
+key ring in **NCache** instead of the local file system. This is the
+standard approach when an app runs across multiple servers/instances (web
+farm, containers, Kubernetes pods, Azure App Service scale-out, etc.),
+because every instance needs access to the same keys to decrypt cookies,
+antiforgery tokens, or anything else protected on another instance.
+
+Follow the follwing instructions to run sample.
+
+```bash
+dotnet restore
+dotnet run
+```
+
+Then run application on 2 different servers.
+
+```
+dotnet run --launch-profile Server1
+dotnet run --launch-profile Server2
+```
+
+Open both websites
+
+```
+http://localhost:5101/
+http://localhost:5102/
+```
+
+Now try to encrypt a text from Server1 (localhost:5101), and decrypt protected payload from Server2 (localhost:5102).
+
 ## Additional Resources
 
 #### Documentation
@@ -73,10 +103,10 @@ https://learn.microsoft.com/en-us/aspnet/core/security/data-protection/implement
 
 ## Technical Support
 
-Alachisoft © provides various sources of technical support.
+Alachisoft Â© provides various sources of technical support.
 - Refer to http://www.alachisoft.com/support.html to select a support resource suited to your issue.
 - To request additional features, or report a discrepancy in this document, email [support@alachisoft.com](mailto:support@alachisoft.com).
 
 ## License
 
-Copyright © 2005-2026 Alachisoft. All rights reserved.
+Copyright Â© 2005-2026 Alachisoft. All rights reserved.
