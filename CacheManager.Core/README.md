@@ -165,9 +165,30 @@ If validation fails or the cache cannot be reached, an exception is thrown durin
 - Use a dedicated NCache cluster for each environment.
 - Configure the backplane when multiple application instances share the same cache.
 
-## License
+## Sample
 
-Copyright © 2026 Alachisoft. All rights reserved.
+Demonstrates configuring **CacheManager.Core** to use **NCache** as a distributed cache handle and backplane. The sample shows how to configure `NCacheCacheHandle` and `NCacheCacheBackplane`, then perform common cache operations including CRUD operations, region-based caching, expiration, and cache synchronization.
+
+Follow the following instructions to run the sample.
+
+```bash
+dotnet restore
+dotnet run
+```
+
+The sample performs the following operations automatically:
+
+- Configures CacheManager with an in-memory dictionary handle, an NCache distributed cache handle, and an NCache backplane.
+- Adds an item with an absolute expiration.
+- Retrieves the cached item.
+- Checks whether the cached item exists.
+- Removes the cached item.
+- Adds multiple items to a cache region.
+- Retrieves an item from the region.
+- Checks whether the regional item exists.
+- Clears the entire cache region.
+
+Observe the console output to verify that each operation completes successfully and that cache operations are synchronized through the configured NCache backplane.
 
 ## Resources
 
@@ -185,6 +206,6 @@ Alachisoft© provides various sources of technical support.
 - Please refer to http://www.alachisoft.com/support.html to select a support resource suitable for your issue.
 - To request additional features in the future, or if you notice any discrepancy regarding this document, please drop an email to support@alachisoft.com.
 
-## Copyrights
+## License
 
 Copyright © 2026 Alachisoft. All rights reserved.
