@@ -103,10 +103,10 @@ https://learn.microsoft.com/en-us/aspnet/core/security/data-protection/implement
 
 ## Technical Support
 
-Alachisoft � provides various sources of technical support.
+Alachisoft © provides various sources of technical support.
 - Refer to http://www.alachisoft.com/support.html to select a support resource suited to your issue.
 - To request additional features, or report a discrepancy in this document, email [support@alachisoft.com](mailto:support@alachisoft.com).
 
 ## License
 
-Copyright � 2005-2026 Alachisoft. All rights reserved.
+Copyright © 2005-2026 Alachisoft. All rights reserved.
