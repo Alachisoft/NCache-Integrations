@@ -94,6 +94,10 @@ NCache supports two strategies for storing Entity Framework Core query results:
 
 For large datasets, bulk insertion can be optimized by configuring `bulkInsertChunkSize`, allowing entities to be cached in manageable chunks while avoiding connection timeouts.
 
+## Entity Framework Core Sample App
+
+You can use the Entity Framework Core integration against the sample app that exists in the NCache-Samples repository [NCache Samples](https://github.com/Alachisoft/NCache-Samples/tree/master/dotnet/EFCoreCaching/oss)
+
 ## References
 
 Reference documentation is available at:\
@@ -104,7 +108,6 @@ https://www.alachisoft.com/resources/docs/ncache/prog-guide/entity-framework-cor
 
 - [NCache Documentation](https://www.alachisoft.com/resources/docs/)
 - [NCache Open Source](https://github.com/Alachisoft/NCache)
-- [EFCore Sample](https://github.com/Alachisoft/NCache-Samples/tree/master/dotnet/EFCoreCaching/oss)
 - [EFCore Nuget](https://www.nuget.org/packages/EntityFrameworkCore.NCache.OpenSource)
 - [NCache EntityFramework Core Sample](https://www.alachisoft.com/resources/docs/ncache/prog-guide/entity-framework-core-caching.html)
 - [Alachisoft Website](https://www.alachisoft.com/ncache/)
