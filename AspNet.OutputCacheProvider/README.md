@@ -73,6 +73,6 @@ Copyright © 2026 Alachisoft. All rights reserved.
 ## Resources
 
 - [NCache Documentation](https://www.alachisoft.com/resources/docs/)
-- [ASP.NET Output Caching with NCache](https://www.alachisoft.com/resources/docs/ncache/prog-guide/configure-aspnet-output-caching.html)
+- [ASP.NET Output Caching with NCache](https://www.alachisoft.com/resources/docs/ncache/prog-guide/aspnet-output-cache.html)
 - [NCache Open Source](https://github.com/Alachisoft/NCache)
 - [Alachisoft Website](https://www.alachisoft.com/ncache/)
