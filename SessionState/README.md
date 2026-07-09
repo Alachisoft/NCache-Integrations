@@ -11,7 +11,7 @@
 | AspNet.SessionState.NCache.Opensource | 5.3.6.1 |
 | Alachisoft.NCache.Opensource.SDK | >= 5.3.6.2 |
 
-Targets `net462` and higher (built and tested against `net462`).
+Targets `net462` and higher.
 
 ### ASP.NET Core: `AspNetCore.Session.NCache.Opensource`
 
@@ -197,10 +197,6 @@ For More about samples and how to use the do read the ReadMe of the samples appl
 - Use a dedicated NCache cluster/cache per environment.
 - Keep `sessionAppId` / `SessionAppId` set whenever multiple applications share the same cache, so session IDs don't collide.
 
-## License
-
-Copyright © 2026 Alachisoft. All rights reserved.
-
 ## Resources
 
 - [ASP.NET Session-State Provider](https://www.alachisoft.com/resources/docs/ncache/prog-guide/aspnet-session-state-provider.html)
@@ -210,4 +206,7 @@ Copyright © 2026 Alachisoft. All rights reserved.
 - [NuGet Package AspNetCore.Session.NCache.Opensource](https://www.nuget.org/packages/AspNetCore.Session.NCache.Opensource)
 - [NCache Open Source](https://github.com/Alachisoft/NCache)
 
+## License
+
+Copyright © 2026 Alachisoft. All rights reserved.
 
