@@ -64,7 +64,7 @@ farm, containers, Kubernetes pods, Azure App Service scale-out, etc.),
 because every instance needs access to the same keys to decrypt cookies,
 antiforgery tokens, or anything else protected on another instance.
 
-Follow the follwing instructions to run sample.
+Follow given instructions to run sample.
 
 ```bash
 dotnet restore
@@ -93,7 +93,7 @@ Now try to encrypt a text from Server1 (localhost:5101), and decrypt protected p
 http://www.alachisoft.com/resources/docs/#ncache
 
 #### Programmer's Guide
-http://www.alachisoft.com/resources/docs/ncache/prog-guide/
+https://www.alachisoft.com/resources/docs/ncache/prog-guide/data-protection-providers-aspnet-core.html
 
 #### ASP.NET Core Data Protection
 https://learn.microsoft.com/en-us/aspnet/core/security/data-protection/introduction
