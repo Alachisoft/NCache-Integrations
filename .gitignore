@@ -29,6 +29,13 @@
 # Visual Studio
 **/.vs/
 
+# Visual Studio user files
+*.user
+*.suo
+
+# NuGet packages (for packages.config projects)
+**/packages/
+
 # Logs
 npm-debug.log*
 yarn-debug.log*
