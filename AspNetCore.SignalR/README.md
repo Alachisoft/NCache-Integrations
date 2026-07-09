@@ -1,4 +1,4 @@
-# NCache SIGNALR
+# NCache SignalR (ASP.NET Core)
 
 ## Overview
 
@@ -19,7 +19,7 @@ NCache extends the `ISignalRServerBuilder` interface through the `AddNCache` ext
 | Package | Version |
 |---------|---------|
 | Alachisoft.NCache.Opensource.SDK | >= 5.3.6.2 |
-| AspNetCore.SignalR.NCache.Opensource | Compatible with ASP.NET Core SignalR 1.1.0 |
+| Microsoft.AspNetCore.SignalR | Compatible with ASP.NET Core SignalR 1.2.9 |
 
 ## Prerequisites
 
@@ -27,7 +27,7 @@ Before using this package, ensure you have:
 
 1. **NCache Server** – a running NCache cluster.
 2. **An NCache cache** – created and running on the cluster.
-3. **ASP.NET Core SignalR** version **1.1.0**.
+3. **ASP.NET Core SignalR** version **1.2.9**.
 4. Include the following namespaces in your application:
    - `Alachisoft.NCache.AspNetCore.SignalR`
    - `Microsoft.AspNetCore.SignalR`
@@ -37,7 +37,7 @@ Before using this package, ensure you have:
 
 The SignalR integration is configured through the `AddNCache` extension method and an optional `NCacheConfiguration` object.
 
-Configuration can be supplied either directly in `Startup.cs` or through the application's `appsettings.json`.
+Configuration can be supplied either directly in `Startup.cs`/`Program.cs` or through the application's `appsettings.json`.
 
 Example configuration:
 
@@ -73,7 +73,21 @@ Example configuration:
 
 ## Usage
 
-Register the NCache backplane using one of the provided `AddNCache` overloads.
+Register the NCache backplane using one of the provided `AddNCache` overloads, on the `ISignalRServerBuilder` returned by `AddSignalR()`:
+
+```csharp
+using Alachisoft.NCache.AspNetCore.SignalR;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSignalR()
+    .AddNCache("demoCache", "chatApplication");
+    // or: .AddNCache(o => builder.Configuration.GetSection("NCacheConfiguration").Bind(o));
+
+var app = builder.Build();
+app.MapHub<ChatHub>("/chatHub");
+app.Run();
+```
 
 Supported overloads include:
 
@@ -83,10 +97,16 @@ Supported overloads include:
 
 Once registered, SignalR automatically uses NCache as its distributed backplane. Messages published by one application server are propagated through NCache and delivered by every connected SignalR server, enabling consistent real-time communication across a server farm.
 
+## Sample
+
+Sample for this application is given at the following link:
+
+[AspNetCore.SignalR.NCache Sample](https://github.com/Alachisoft/NCache-Samples/tree/master/dotnet/SignalRChat/oss)
+
 ## References
 
 Reference documentation is available at:\
-https://www.alachisoft.com/resources/docs/ncache/prog-guide/ncache-extension-signalr.html?tabs=net
+https://www.alachisoft.com/resources/docs/ncache/prog-guide/ncache-extension-signalr-core.html
 
 ## Resources
 
