@@ -11,7 +11,7 @@
 | AspNet.SessionState.NCache.Opensource | 5.3.6.1 |
 | Alachisoft.NCache.Opensource.SDK | >= 5.3.6.2 |
 
-Targets `net40` and higher (built and tested against `net462`).
+Targets `net462` and higher (built and tested against `net462`).
 
 ### ASP.NET Core: `AspNetCore.Session.NCache.Opensource`
 
@@ -26,7 +26,7 @@ Targets `net40` and higher (built and tested against `net462`).
 | Microsoft.Extensions.Options.ConfigurationExtensions | >= 2.1.0 |
 | System.Configuration.ConfigurationManager | >= 9.0.0 |
 
-Ships both a `net40` build (classic .NET Framework hosting) and a `netstandard2.0` build, so it works with ASP.NET Core on both .NET Framework and modern .NET (tested against `net8.0`).
+Ships both a `net462` build (classic .NET Framework hosting) and a `netstandard2.0` build, so it works with ASP.NET Core on both .NET Framework and modern .NET (tested against `net8.0`).
 
 ## Installation
 
@@ -39,15 +39,6 @@ dotnet add package AspNet.SessionState.NCache.Opensource --version 5.3.6.1
 Install-Package AspNetCore.Session.NCache.Opensource -Version 5.3.6.1
 dotnet add package AspNetCore.Session.NCache.Opensource --version 5.3.6.1
 ```
-
-## Prerequisites
-
-Before using either module, ensure you have:
-
-1. **NCache Server:** a running NCache Server
-2. **An NCache cache:** created on the cluster, matching the `cacheName` / `CacheName` used below
-3. **Serializable session objects:** custom types placed in session must be serializable. Mark them `[Serializable]`, or enable `useJsonSerialization` / `UseJsonSerialization` to use NCache's JSON based serialization instead
-
 ## Overview
 
 This integration provides two independent, interoperable session storage modules:
