@@ -4,13 +4,11 @@
 
 ## Package Versions
 
-| Package | Version |
+| **Package** | **Version** |
 |---|---|
 | Alachisoft.NCache.Opensource.SDK | >= 5.3.6.2 |
 | CacheManager.Core | Compatible with CacheManager.Core |
 | Microsoft.Extensions.Logging.Abstractions | Supported |
-
-Targets `netstandard2.0`.
 
 ## Installation
 
