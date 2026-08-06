@@ -1,212 +1,343 @@
-﻿# NCache Integration for ASP.NET Session State
+﻿# NCache ASP.NET Core Session Provider
 
-**NCache backed session storage for both classic ASP.NET (System.Web) and ASP.NET Core applications**, allowing session state to be stored in a distributed NCache cache instead of the default in process or SQL Server session providers.
+The `AspNetCore.Session.NCache.Opensource` NuGet package enables ASP.NET Core applications to store session state in a distributed NCache cluster instead of keeping sessions in the application process.
+
+The integration provides the `AddNCacheSession` and `UseNCacheSession` extension methods for configuring NCache as the ASP.NET Core Session provider. This allows session data to remain available across application instances in a load-balanced web farm while providing configurable session locking, retries, logging, and session options.
 
 ## Package Versions
 
-### Classic ASP.NET (.NET Framework): `AspNet.SessionState.NCache.Opensource`
+| **Package**                                             | **Version** |
+| ------------------------------------------------------- | ----------- |
+| `AspNetCore.Session.NCache.Opensource`                  | 5.3.6.1     |
+| `Alachisoft.NCache.Opensource.SDK`                      | >= 5.3.6.2  |
+| `Microsoft.AspNetCore.Http.Abstractions`                | >= 2.1.0    |
+| `Microsoft.Extensions.Caching.Abstractions`             | >= 2.1.0    |
+| `Microsoft.Extensions.Configuration`                    | >= 2.1.0    |
+| `Microsoft.Extensions.DependencyInjection.Abstractions` | >= 2.1.0    |
+| `Microsoft.Extensions.Options.ConfigurationExtensions`  | >= 2.1.0    |
+| `System.Configuration.ConfigurationManager`             | >= 9.0.0    |
 
-| Package | Version |
-|---|---|
-| AspNet.SessionState.NCache.Opensource | 5.3.6.1 |
-| Alachisoft.NCache.Opensource.SDK | >= 5.3.6.2 |
+## Overview
 
-Targets `net462` and higher.
+ASP.NET Core applications typically maintain session information associated with individual users. When session data is stored within an application process, it can be lost if the process restarts or the application server becomes unavailable.
 
-### ASP.NET Core: `AspNetCore.Session.NCache.Opensource`
+In a web farm, users can also be routed to different application servers. Keeping session state in a distributed cache allows every application instance to access the same session independently of the server handling the request.
 
-| Package | Version |
-|---|---|
-| AspNetCore.Session.NCache.Opensource | 5.3.6.1 |
-| Alachisoft.NCache.Opensource.SDK | >= 5.3.6.2 |
-| Microsoft.AspNetCore.Http.Abstractions | >= 2.1.0 |
-| Microsoft.Extensions.Caching.Abstractions | >= 2.1.0 |
-| Microsoft.Extensions.Configuration | >= 2.1.0 |
-| Microsoft.Extensions.DependencyInjection.Abstractions | >= 2.1.0 |
-| Microsoft.Extensions.Options.ConfigurationExtensions | >= 2.1.0 |
-| System.Configuration.ConfigurationManager | >= 9.0.0 |
+NCache provides distributed ASP.NET Core Session storage by moving session data outside the application process and into an NCache cluster. This allows session state to survive application process recycles and remain accessible across multiple application servers.
 
-Ships both a `net462` build (classic .NET Framework hosting) and a `netstandard2.0` build, so it works with ASP.NET Core on both .NET Framework and modern .NET (tested against `net8.0`).
+NCache supports ASP.NET Core sessions through two approaches:
+
+- **NCache Session Management Service:** Uses `AddNCacheSession` and `UseNCacheSession` to provide NCache-specific session management capabilities such as exclusive session locking and locking retries.
+- **ASP.NET Core Sessions with NCache Distributed Caching:** Uses NCache through the standard `IDistributedCache` abstraction for distributed data and session storage.
+
+## Key Features
+
+- **Distributed Session Storage:** Stores ASP.NET Core session data in a distributed NCache cluster.
+- **Web Farm Support:** Allows application instances on different servers to access the same session data.
+- **Session Persistence:** Keeps session data outside the ASP.NET Core application process so it can survive process restarts.
+- **Exclusive Session Locking:** Supports optional exclusive locking when concurrent requests access the same session.
+- **Locking Retries:** Supports configurable retries when another request already holds a session lock.
+- **High Availability:** Uses NCache clustering to keep session state available across cache servers.
+- **Horizontal Scalability:** Allows cache servers to be added as session workload increases.
+- **Configurable Session Options:** Supports ASP.NET Core session cookie and idle-timeout settings.
+- **Configurable Error Handling:** Controls whether NCache exceptions are propagated to the application.
+- **Operation Retries:** Supports retrying cache operations when connectivity is interrupted.
+- **Session Application ID:** Keeps session identifiers unique when multiple applications use the same cache.
+- **Read-Only Sessions:** Supports read-only session access that does not acquire an exclusive session lock or commit changes.
+- **Provider Logging:** Supports standard and detailed NCache session logs.
+
+## What Is Installed
+
+Installing `AspNetCore.Session.NCache.Opensource` adds the components required to use NCache for ASP.NET Core Session storage.
+
+The package provides:
+- The `AddNCacheSession` extension method
+- The `UseNCacheSession` middleware extension
+- NCache ASP.NET Core Session storage services
+- Session configuration support
+- Session locking and locking retry support
+- NCache client libraries required to communicate with the cache cluster
+
+The session provider must be registered in the application's service collection and added to the ASP.NET Core request pipeline.
+
+## Prerequisites
+
+Before using this package, ensure that you have:
+
+1. **ASP.NET Core Application:** An ASP.NET Core application that requires distributed session storage.
+2. **Supported .NET Version:** For .NET 6.0 and later, configure the provider through *Program.cs*.
+3. **NCache Installation:** NCache must be installed on the cache-server machines.
+4. **Running Cache:** A cache, such as `demoCache`, must already be created and running.
+5. **Cache Connectivity:** Every application instance must be able to communicate with the NCache servers.
+6. **Serializable Data:** Data stored in session must be serializable.
+7. **Required Namespace:** Include the following namespace in *Program.cs*:
+
+```csharp
+using Alachisoft.NCache.Web.SessionState;
+```
 
 ## Installation
 
+Install the Open Source ASP.NET Core Session provider through the NuGet Package Manager Console:
+
 ```powershell
-# Classic ASP.NET (.NET Framework)
-Install-Package AspNet.SessionState.NCache.Opensource -Version 5.3.6.1
-dotnet add package AspNet.SessionState.NCache.Opensource --version 5.3.6.1
-
-# ASP.NET Core
-Install-Package AspNetCore.Session.NCache.Opensource -Version 5.3.6.1
-dotnet add package AspNetCore.Session.NCache.Opensource --version 5.3.6.1
-```
-## Overview
-
-This integration provides two independent, interoperable session storage modules:
-
-- **`NSessionStoreProvider`** (classic ASP.NET / .NET Framework): a `SessionStateStoreProviderBase` implementation, registered through `Web.config` as a custom session state provider.
-- **NCache Session Storage Service** (ASP.NET Core): an `ISession` middleware and store, registered via `AddNCacheSession()` / `UseNCacheSession()`, replacing the default ASP.NET Core in-memory session provider.
-
-Because both modules read and write sessions against the same kind of NCache cache, they can point at a single shared cache to keep an ASP.NET Framework app and an ASP.NET Core app in sync on the same session which is useful during a Framework to Core migration, or for running both stacks side by side. See [Sample Projects](#sample-projects) below.
-
-**Key features:**
-
-- Out of process, distributed session storage, meaning it survives sessions survive app pool/process recycles and outlive any single server
-- Exclusive session locking, mirroring conventional ASP.NET session-locking behavior
-- Choice of NCache Compact (binary) serialization or JSON serialization
-- Configurable operation retries if the connection to the cache drops mid request
-- Session data is stored with the tag `NC_ASP.NET_session_data` and can be queried in bulk via `cache.SearchService.GetByTag(new Tag("NC_ASP.NET_session_data"))`
-
-> **Limitations**
->
-> - Some advanced functionality may be limited by the NCache Open Source edition compared to Enterprise.
-> - Location Affinity is currently available in both modules; however, it has been marked as deprecated. For new implementations requiring multi region session management, the Multi Region Session Provider is the recommended approach.
-
-## Classic ASP.NET (.NET Framework)
-
-### Configuration
-
-Edit `Web.config` and set `<sessionState>` to use the custom provider:
-
-```xml
-<system.web>
-  <sessionState cookieless="false" regenerateExpiredSessionId="true" mode="Custom" customProvider="NCacheSessionProvider" timeout="20">
-    <providers>
-      <add name="NCacheSessionProvider"
-           type="Alachisoft.NCache.Web.SessionState.NSessionStoreProvider"
-           cacheName="demoCache"
-           sessionAppId="MyApp"
-           writeExceptionsToEventLog="false"
-           enableLogs="false"
-           useJsonSerialization="false" />
-    </providers>
-  </sessionState>
-</system.web>
+Install-Package AspNetCore.Session.NCache.Opensource
 ```
 
-`timeout="20"` on `<sessionState>` sets the session idle timeout in minutes and is picked up automatically by the provider. There's no separate NCache specific timeout attribute to set.
+You can also install the package through the .NET CLI:
 
-#### Provider attributes
+```bash
+dotnet add package AspNetCore.Session.NCache.Opensource
+```
 
-| Attribute | Required | Description |
-|---|---|---|
-| `cacheName` | Yes | Name of the NCache cache used for session storage. |
-| `sessionAppId` | No | Identifier that keeps session IDs unique when multiple applications share the same cache. |
-| `enableSessionLocking` | No | Exclusively locks a session item while a request is using it. Default `false`. |
-| `sessionLockingRetry` | No | Retries to acquire the lock before returning an empty session, when `enableSessionLocking` is `true`. `-1` = wait indefinitely. Default `-1`. |
-| `emptySessionWhenLocked` | No | Return an empty session instead of waiting when the session is locked. Default `false`. |
-| `useJsonSerialization` | No | Serialize session items as JSON instead of NCache's compact binary format. Default `false`. |
-| `enableLogs` / `enableDetailLogs` | No | Enable NCache session-provider logging / detailed logging. Default `false`. |
-| `writeExceptionsToEventLog` | No | Write provider exceptions to the Windows Event Log. Default `false`. |
-| `exceptionsEnabled` | No | Propagate cache exceptions to the calling page instead of swallowing them. Default `false`. |
-| `operationRetry` / `operationRetryInterval` | No | Retry count / interval (ms) for a cache operation if the connection drops mid-operation. Default `0`. |
+Alternatively, install it through the Visual Studio NuGet Package Manager:
 
-### Usage
+1. Right-click the ASP.NET Core project in **Solution Explorer**.
+2. Select **Manage NuGet Packages**.
+3. Search for `AspNetCore.Session.NCache.Opensource`.
+4. Select the package.
+5. Select **Install**.
 
-No further code changes are required. Once the provider is registered in `Web.config`, `Session["key"] = value;` and `var value = Session["key"];` work exactly as they do with any other ASP.NET session-state provider.
+## Configure the Session Provider through Program.cs
 
-## ASP.NET Core
+Use `AddNCacheSession` to register NCache Session Management directly in *Program.cs*:
 
-### Configuration
+```csharp
+using Alachisoft.NCache.Web.SessionState;
 
-Add an `NCacheSettings` section to `appsettings.json`:
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllersWithViews();
+
+builder.Services.AddNCacheSession(options =>
+{
+    options.CacheName = "demoCache";
+    options.EnableLogs = true;
+    options.SessionAppId = "demoApp";
+
+    options.SessionOptions.IdleTimeout = 5;
+    options.SessionOptions.CookieName = "AspNetCore.Session";
+});
+
+var app = builder.Build();
+```
+
+`CacheName` is required and must identify an existing and running NCache cache.
+
+`SessionAppId` should use the same value for every instance of the same application in a web farm.
+
+## Configure the Session Provider through appsettings.json
+
+Session settings can also be maintained outside application code in *appsettings.json*.
+
+Add an `NCacheSettings` section:
 
 ```json
 {
   "NCacheSettings": {
+    "SessionAppId": "demoApp",
     "CacheName": "demoCache",
-    "SessionAppId": "MyApp",
-    "UseJsonSerialization": true,
-    "EnableLogs": false,
+    "EnableLogs": true,
+    "RequestTimeout": 90,
     "WriteExceptionsToEventLog": false,
-    "RequestTimeout": 120,
     "SessionOptions": {
-      "CookieName": ".NCache.AspNetCore.Session",
+      "CookieName": "AspNetCore.Session",
+      "CookieDomain": null,
       "CookiePath": "/",
       "CookieHttpOnly": true,
-      "IdleTimeout": 20,
+      "IdleTimeout": 5,
       "CookieSecure": "None"
     }
   }
 }
 ```
 
-### Usage
+Register the configuration section in *Program.cs*:
 
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-// Register NCache as the session provider, reading settings from appsettings.json
-builder.Services.AddNCacheSession(builder.Configuration.GetSection("NCacheSettings"));
+builder.Services.AddNCacheSession(
+    builder.Configuration.GetSection("NCacheSettings"));
+```
 
-// ...or configure it directly in code instead:
-// builder.Services.AddNCacheSession(options => { options.CacheName = "demoCache"; });
+This approach allows session settings to be changed between environments without modifying application code.
 
+## Add NCache Session Middleware
+
+After registering the Session Management Service, add `UseNCacheSession` to the ASP.NET Core request pipeline.
+
+```csharp
 var app = builder.Build();
 
-app.UseRouting();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
 
-// Must be registered before any middleware/endpoint that reads session data
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
 app.UseNCacheSession();
 
+app.UseRouting();
 app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.Run();
 ```
 
-If `services.AddSession()` or `app.UseSession()` are already present, remove them as they will interfere with NCache Session Services.
+Place `UseNCacheSession()` before middleware or endpoints that require access to session data.
 
-Use the NCache extension methods to store and retrieve typed objects in session:
+## Use ASP.NET Core Sessions
+
+After NCache Session Management is registered, continue using ASP.NET Core session APIs through `HttpContext.Session`.
+
+For example:
 
 ```csharp
-HttpContext.Session.Set("cartId", cart);
-HttpContext.Session.TryGetValue("cartId", out var cart);
+public IActionResult SetSession()
+{
+    HttpContext.Session.SetString(
+        "UserName",
+        "John Smith");
+
+    return Ok();
+}
 ```
 
-#### Configuration options (`NCacheSessionConfiguration`)
+Retrieve the value:
 
-| Property | Required | Description |
-|---|---|---|
-| `CacheName` | Yes | Name of the NCache cache used for session storage. |
-| `SessionAppId` | No | Identifier that keeps session IDs unique when multiple applications share the same cache. |
-| `UseJsonSerialization` | No | Serialize session items as JSON instead of NCache's compact binary format. Default `false`. |
-| `RequestTimeout` | No | Time after which a new request forcefully releases a lock held by an older, unfinished request. Default `120`. |
-| `ReadOnlyFlag` | No | `HttpContext.Items` key an application can set to `true` to mark the current request's session access as read-only (changes won't be committed). Default `.NCache.AspNetCore.IsReadOnly`. |
-| `EnableLogs` / `EnableDetailLogs` | No | Enable NCache session-provider logging / detailed logging. Default `false`. |
-| `WriteExceptionsToEventLog` | No | Write provider exceptions to the Windows Event Log. Default `false`. |
-| `ExceptionsEnabled` | No | Propagate cache exceptions instead of swallowing them. Default `false`. |
-| `OperationRetry` / `OperationRetryInterval` | No | Retry count / interval for a cache operation if the connection drops mid-operation. Default `0`. |
-| `SessionOptions.CookieName` / `CookieDomain` / `CookiePath` / `CookieHttpOnly` / `CookieSecure` | No | Standard session cookie options. |
-| `SessionOptions.IdleTimeout` | No | Session idle timeout, in minutes. |
-| `EnableLocationAffinity` / `AffinityMapping` | No | Enables multi cache Location Affinity (see Limitations above). `AffinityMapping` is an array of `{ CacheName, CachePrefix }`; `CachePrefix` must be at least 4 characters. |
+```csharp
+public IActionResult GetSession()
+{
+    string userName =
+        HttpContext.Session.GetString("UserName");
 
-## Sample Projects
+    return Ok(userName);
+}
+```
 
-Working, end-to-end samples are available in the [NCache-Samples](https://github.com/Alachisoft/NCache-Samples) repository:
+## How NCache Session Management Works
 
-- [.NET Framework: Session Sharing (OSS)](https://github.com/Alachisoft/NCache-Samples/tree/master/dotnet-framework/SessionSharing/oss)
-- [.NET / ASP.NET Core Session Sharing (OSS)](https://github.com/Alachisoft/NCache-Samples/tree/master/dotnet/SessionSharing/oss)
+When ASP.NET Core Session Management uses NCache:
 
-For More about samples and how to use the do read the ReadMe of the samples applications .
+1. The application registers the provider through `AddNCacheSession`.
+2. `UseNCacheSession` adds NCache Session handling to the ASP.NET Core request pipeline.
+3. A client request contains the ASP.NET Core session identifier.
+4. NCache retrieves the corresponding session data from the distributed cache.
+5. If session locking is enabled, NCache acquires an exclusive lock before allowing the request to update the session.
+6. The application accesses the session through `HttpContext.Session`.
+7. Updated session state is stored back in NCache.
+8. Any application instance connected to the same cache can retrieve the session on subsequent requests.
+9. Session data remains outside the application process and can survive application server or process restarts.
 
+This allows ASP.NET Core applications in a web farm to share session state without relying on local in-process storage.
+
+## Run the Sample
+
+Open Source ASP.NET Core Session samples are available in the NCache Samples repository:
+
+- [ASP.NET Core Session Sharing Sample](https://github.com/Alachisoft/NCache-Samples/tree/master/dotnet/SessionSharing/oss)
+- [ASP.NET Framework Session Sharing Sample](https://github.com/Alachisoft/NCache-Samples/tree/master/dotnet-framework/SessionSharing/oss)
+
+### Using Visual Studio
+
+1. Clone or download the NCache Samples repository.
+2. Open the ASP.NET Core Session sample in Visual Studio.
+3. Restore the NuGet packages.
+4. Make sure that NCache is running.
+5. Create and start the cache configured by the sample.
+6. Verify that the application can connect to the NCache cluster.
+7. Build the application.
+8. Run the sample.
+9. Create or update session data.
+10. Access the application through multiple instances to verify that the session remains available.
+
+### Using the Command Line
+
+Restore the application dependencies:
+
+```bash
+dotnet restore
+```
+
+Build the application:
+
+```bash
+dotnet build
+```
+
+Run the application:
+
+```bash
+dotnet run
+```
+
+Use multiple application instances when testing distributed session behavior.
+
+## Validation
+
+Before running the application, verify the following:
+
+- `AspNetCore.Session.NCache.Opensource` is installed.
+- The configured NCache cache exists.
+- The cache is running.
+- Every application instance can connect to the NCache cluster.
+- `Alachisoft.NCache.Web.SessionState` is included.
+- `AddNCacheSession` is registered in the service collection.
+- `CacheName` specifies an existing and running cache.
+- `UseNCacheSession` is added to the request pipeline.
+- `UseNCacheSession` appears before middleware or endpoints that access session data.
+- Every instance of the same application uses the same `SessionAppId` when one is configured.
+- Session data stored by the application is serializable.
+- `EnableSessionLocking` and its retry settings are configured according to the application's concurrency requirements.
+- `RequestTimeout` is appropriate for the expected request duration.
+
+If `CacheName` is missing, the provider throws a configuration exception.
+
+If the configured cache does not exist, is not running, or cannot be reached, NCache cannot retrieve or persist ASP.NET Core session data.
 
 ## Best Practices
 
-- Create the NCache cache before starting your application.
-- Mark custom session objects `[Serializable]`, or turn on JSON serialization if you'd rather not modify your types.
-- Use a dedicated NCache cluster/cache per environment.
-- Keep `sessionAppId` / `SessionAppId` set whenever multiple applications share the same cache, so session IDs don't collide.
+- Use the same NCache cache across application instances that need to share session state.
+- Use the same `SessionAppId` across all instances of the same application.
+- Use different `SessionAppId` values when unrelated applications share the same cache.
+- Enable exclusive session locking only when concurrent requests can modify the same session and require serialization.
+- Configure `SessionLockingRetry` according to the application's expected level of concurrent access.
+- Configure `RequestTimeout` so abandoned locks can be released without prematurely unlocking valid long-running requests.
+- Use read-only sessions for requests that only need to inspect session data.
+- Keep NCache Session middleware before components that access `HttpContext.Session`.
+- Keep configuration in *appsettings.json* when settings vary between deployment environments.
+- Enable detailed logs only while troubleshooting.
+- Avoid enabling `WriteExceptionsToEventLog` in production environments.
+- Configure operation retries according to the application's connectivity requirements.
+- Use separate cache configurations for development, testing, and production environments.
+- Monitor the NCache cluster to ensure sufficient capacity for the expected session workload.
 
 ## Resources
 
-- [ASP.NET Session-State Provider](https://www.alachisoft.com/resources/docs/ncache/prog-guide/aspnet-session-state-provider.html)
+- [NCache Documentation](https://www.alachisoft.com/resources/docs/)
 - [ASP.NET Core Session Provider](https://www.alachisoft.com/resources/docs/ncache/prog-guide/ncache-aspnet-core-session-provider.html)
-- [Session Sharing between ASP.NET and ASP.NET Core](https://www.alachisoft.com/resources/docs/ncache-5-2/prog-guide/aspnet-session-sharing.html)
-- [NuGet Package AspNet.SessionState.NCache.Opensource](https://www.nuget.org/packages/AspNet.SessionState.NCache.Opensource)
-- [NuGet Package AspNetCore.Session.NCache.Opensource](https://www.nuget.org/packages/AspNetCore.Session.NCache.Opensource)
+- [NCache IDistributedCache Provider](https://www.alachisoft.com/resources/docs/ncache/prog-guide/aspnetcore-sessions-ncache-idistributedcache-provider.html?tabs=net)
+- [AspNetCore.Session.NCache.Opensource](https://www.nuget.org/packages/AspNetCore.Session.NCache.Opensource)
+- [ASP.NET Core Session Sharing Sample](https://github.com/Alachisoft/NCache-Samples/tree/master/dotnet/SessionSharing/oss)
 - [NCache Open Source](https://github.com/Alachisoft/NCache)
+- [Alachisoft Website](https://www.alachisoft.com/ncache/)
 
-## License
+## Technical Support
+
+Alachisoft provides various technical support resources.
+
+- Visit the [Alachisoft Support Center](https://www.alachisoft.com/support.html) to select a support resource appropriate for your issue.
+- To request an additional feature or report a documentation discrepancy, contact [support@alachisoft.com](mailto:support@alachisoft.com).
+
+## Copyrights
 
 Copyright © 2026 Alachisoft. All rights reserved.
-
