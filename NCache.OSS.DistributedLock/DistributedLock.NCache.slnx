@@ -1,4 +1,0 @@
-<Solution>
-  <Project Path="../Extensions/Alachisoft.NCache.Client.Extension/Alachisoft.NCache.Client.Extension.csproj" />
-  <Project Path="NCache.DistributedLock.csproj" />
-</Solution>
