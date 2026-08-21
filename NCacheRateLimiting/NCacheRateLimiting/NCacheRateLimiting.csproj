@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>NCache.OSS.RateLimiting</RootNamespace> 
+		<Version>5.3.6.1</Version>  
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Alachisoft.NCache.Opensource.SDK" Version="5.3.6.2" />
+		<PackageReference Include="System.Threading.RateLimiting" Version="10.0.8" />
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Extensions\Alachisoft.NCache.Client.Extension\Alachisoft.NCache.Client.Extension.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="client.ncconf">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+</Project>
