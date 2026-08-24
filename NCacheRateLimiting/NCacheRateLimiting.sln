@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36811.4
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11205.157 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCacheRateLimiting", "NCacheRateLimiting\NCacheRateLimiting.csproj", "{04939FFB-FF94-4310-A8C5-5649B9E47504}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alachisoft.NCache.Client.Extension", "..\Extensions\Alachisoft.NCache.Client.Extension\Alachisoft.NCache.Client.Extension.csproj", "{F987222A-229D-FA54-2BDC-53AE443EECC6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCacheRateLimiting_TestApp", "NCache RateLimiting_TestApp\NCacheRateLimiting_TestApp.csproj", "{CF5FC458-64A5-4F34-9982-C650C4DAF023}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{F987222A-229D-FA54-2BDC-53AE443EECC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F987222A-229D-FA54-2BDC-53AE443EECC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F987222A-229D-FA54-2BDC-53AE443EECC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF5FC458-64A5-4F34-9982-C650C4DAF023}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF5FC458-64A5-4F34-9982-C650C4DAF023}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF5FC458-64A5-4F34-9982-C650C4DAF023}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF5FC458-64A5-4F34-9982-C650C4DAF023}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
