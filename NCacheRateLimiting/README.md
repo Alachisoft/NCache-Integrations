@@ -105,3 +105,8 @@ A guide to NCache API can be found at:
 - [NCache Integration Docs](https://www.alachisoft.com/resources/docs/ncache/prog-guide/dot-net-third-party-integrations.html)
 
 - [ASP.NET Core Rate Limiting Docs](https://learn.microsoft.com/en-us/aspnet/core/performance/rate-limit)
+
+
+# License
+
+Copyright © 2026 Alachisoft. All rights reserved.

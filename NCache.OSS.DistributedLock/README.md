@@ -24,7 +24,7 @@ Installing this package adds the following NCache configuration files to your pr
 # Prerequisites
 
 - Targets **.NET Standard 2.0**.
-- An NCache OSS **5.3.6.1** (or later) server should be up and running, with the target cache already created/registered on it.
+- An NCache OSS **5.3.6.2** (or later) server should be up and running, with the target cache already created/registered on it.
 
 # Getting Started
 
