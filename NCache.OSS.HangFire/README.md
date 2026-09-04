@@ -21,9 +21,7 @@ dotnet add package NCache.OSS.Hangfire
 ## Requirements
 
 - .NET Standard 2.0 / .NET Framework 4.6.2 or higher
-- An NCache client connection (`Alachisoft.NCache.Client`) to a running NCache OSS cache/cluster
-- References `Hangfire.Core` (1.8.24) and `Alachisoft.NCache.Opensource.SDK`
-
+- An NCache client connection (`Alachisoft.NCache.Client`) to a running NCache OSS cache/cluster 
 ## Usage
 
 ### Point the client at your server
@@ -88,12 +86,6 @@ If NCache is not installed on the machine, you must ensure that `client.ncconf` 
 - [NCache Programmer Guide](http://www.alachisoft.com/resources/docs/ncache/prog-guide/)
 - [NCache Documentation](http://www.alachisoft.com/resources/docs/#ncache)
 - [Hangfire Documentation](https://docs.hangfire.io/)
-
-## Technical Support
-
-Alachisoft® provides various sources of technical support.
-- Refer to http://www.alachisoft.com/support.html to select a support resource suited to your issue.
-- To request additional features, or report a discrepancy in this document, email [support@alachisoft.com](mailto:support@alachisoft.com).
-
+ 
 ## License
 Copyrights 2026: Alachisoft, all rights reserved.
