@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCache.OSS.Hangfire Demo</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f6fa; color: #333; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header { background: #2c3e50; color: white; padding: 30px; border-radius: 8px; margin-bottom: 20px; }
+        header h1 { font-size: 28px; margin-bottom: 10px; }
+        header a { color: #3498db; text-decoration: none; font-weight: 600; }
+        header a:hover { text-decoration: underline; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .card h3 { color: #2c3e50; margin-bottom: 12px; font-size: 18px; border-bottom: 2px solid #3498db; padding-bottom: 8px; }
+        .card p { color: #666; font-size: 14px; margin-bottom: 12px; }
+        button { background: #3498db; color: white; border: none; padding: 10px 18px; border-radius: 5px; cursor: pointer; font-size: 14px; margin: 4px 4px 4px 0; transition: background 0.2s; }
+        button:hover { background: #2980b9; }
+        button.secondary { background: #e74c3c; }
+        button.secondary:hover { background: #c0392b; }
+        button.success { background: #27ae60; }
+        button.success:hover { background: #219a52; }
+        button.warning { background: #f39c12; }
+        button.warning:hover { background: #e67e22; }
+        input[type="text"] { padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-right: 8px; width: 200px; }
+        .log { background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 13px; height: 300px; overflow-y: auto; white-space: pre-wrap; }
+        .log .success { color: #7ee787; }
+        .log .error { color: #f85149; }
+        .log .info { color: #79c0ff; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .stat-box { background: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-box .number { font-size: 28px; font-weight: bold; color: #2c3e50; }
+        .stat-box .label { font-size: 12px; color: #666; text-transform: uppercase; margin-top: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>NCache.OSS.Hangfire Integration Demo</h1>
+            <p>Test every feature of the storage provider. Open the <a href="/hangfire" target="_blank">Hangfire Dashboard</a> in another tab to watch jobs in real-time.</p>
+        </header>
+
+        <div class="stats" id="stats">
+            <div class="stat-box"><div class="number" id="stat-enqueued">-</div><div class="label">Enqueued</div></div>
+            <div class="stat-box"><div class="number" id="stat-processing">-</div><div class="label">Processing</div></div>
+            <div class="stat-box"><div class="number" id="stat-succeeded">-</div><div class="label">Succeeded</div></div>
+            <div class="stat-box"><div class="number" id="stat-failed">-</div><div class="label">Failed</div></div>
+            <div class="stat-box"><div class="number" id="stat-scheduled">-</div><div class="label">Scheduled</div></div>
+            <div class="stat-box"><div class="number" id="stat-recurring">-</div><div class="label">Recurring</div></div>
+            <div class="stat-box"><div class="number" id="stat-deleted">-</div><div class="label">Deleted</div></div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h3>1. Fire-and-Forget</h3>
+                <p>Enqueues a welcome email job immediately.</p>
+                <input type="text" id="email" placeholder="user@example.com" value="ashar@company.com">
+                <input type="text" id="userName" placeholder="User Name" value="Ashar">
+                <button onclick="post('enqueue-email', {email: val('email'), userName: val('userName')})">Send Email</button>
+            </div>
+
+            <div class="card">
+                <h3>2. Delayed Job</h3>
+                <p>Schedules a monthly report generation 15 seconds from now.</p>
+                <button class="success" onclick="post('schedule-report')">Schedule Report (+15s)</button>
+            </div>
+
+            <div class="card">
+                <h3>3. Recurring Job</h3>
+                <p>Registers a job that runs on a schedule. Pick a preset or enter a custom cron expression.</p>
+
+                <select id="cronPreset" onchange="handleCronChange()" style="padding:8px; border:1px solid #ddd; border-radius:4px; margin-bottom:8px; width:100%;">
+                    <option value="* * * * *">Every minute (* * * * *)</option>
+                    <option value="*/5 * * * *">Every 5 minutes</option>
+                    <option value="0 * * * *">Every hour (on the hour)</option>
+                    <option value="0 0 * * *">Every day at midnight</option>
+                    <option value="0 9 * * 1">Every Monday at 9:00 AM</option>
+                    <option value="custom">Custom cron...</option>
+                </select>
+
+                <input type="text" id="customCron" placeholder="* * * * *" value="* * * * *"
+                       style="display:none; padding:8px; border:1px solid #ddd; border-radius:4px; margin-bottom:8px; width:100%;">
+
+                <input type="text" id="recurringJobId" placeholder="Job ID (e.g., cleanup-old-logs)"
+                       value="cleanup-old-logs" style="padding:8px; border:1px solid #ddd; border-radius:4px; margin-bottom:8px; width:100%;">
+
+                <button class="warning" onclick="postRecurring()">Add Recurring Job</button>
+            </div>
+
+            <div class="card">
+                <h3>4. Failing Job</h3>
+                <p>Enqueues a job that throws an exception (tests FailedState + counter).</p>
+                <button class="secondary" onclick="post('failing-job')">Trigger Failure</button>
+            </div>
+
+            <div class="card">
+                <h3>5. Continuations (Chaining)</h3>
+                <p>Generates a report, then notifies admin when done.</p>
+                <button onclick="post('continuation')">Create Chain</button>
+            </div>
+
+            <div class="card">
+                <h3>6. Custom Queue</h3>
+                <p>Enqueues to a "critical" queue instead of "default".</p>
+                <button onclick="post('custom-queue')">Critical Order</button>
+            </div>
+
+            <div class="card">
+                <h3>7. Bulk Enqueue</h3>
+                <p>Enqueues 100 email jobs to test list trimming in ExpirationManager.</p>
+                <button onclick="post('bulk-emails')">Bulk 10 Emails</button>
+            </div>
+
+
+            <div class="card">
+                <h3>8. Long-Running / Delete</h3>
+                <p>Enqueues a 30-second job. You can delete it from the Hangfire Dashboard.</p>
+                <button onclick="post('long-job')">Start Long Job</button>
+            </div>
+
+            <div class="card">
+                <h3>9. Delete Programmatically</h3>
+                <p>Delete a job by ID (use the JobId returned above).</p>
+                <input type="text" id="deleteId" placeholder="Job ID to delete">
+                <button class="secondary" onclick="delJob()">Delete Job</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Response Log</h3>
+            <div class="log" id="log"></div>
+            <button onclick="clearLog()" style="margin-top:10px;">Clear Log</button>
+            <button onclick="loadStats()" style="margin-top:10px; background:#27ae60;">Refresh Stats</button>
+        </div>
+    </div>
+
+    <script>
+        const log = document.getElementById('log');
+        function val(id) { return document.getElementById(id).value; }
+        function time() { return new Date().toLocaleTimeString(); }
+
+        function write(msg, type = 'info') {
+            const span = document.createElement('div');
+            span.className = type;
+            span.textContent = `[${time()}] ${msg}`;
+            log.appendChild(span);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function clearLog() { log.innerHTML = ''; }
+
+        async function post(endpoint, body = null) {
+            try {
+                const res = await fetch(`/api/jobs/${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: body ? JSON.stringify(body) : null
+                });
+                const data = await res.json();
+                write(`${endpoint}: ${JSON.stringify(data)}`, 'success');
+            } catch (e) {
+                write(`${endpoint}: ERROR - ${e.message}`, 'error');
+            }
+            loadStats();
+        }
+
+        async function delJob() {
+            const id = val('deleteId');
+            if (!id) return write('Enter a Job ID first', 'error');
+            try {
+                const res = await fetch(`/api/jobs/delete/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                write(`delete: ${JSON.stringify(data)}`, 'success');
+            } catch (e) {
+                write(`delete: ERROR - ${e.message}`, 'error');
+            }
+            loadStats();
+        }
+
+         async function loadStats() {
+            try {
+                const res = await fetch('/api/jobs/stats');
+                const data = await res.json();
+                const s = data.stats;
+                document.getElementById('stat-enqueued').textContent = s.enqueued || 0;
+                document.getElementById('stat-processing').textContent = s.processing || 0;
+                document.getElementById('stat-succeeded').textContent = s.succeeded || 0;
+                document.getElementById('stat-failed').textContent = s.failed || 0;
+                document.getElementById('stat-scheduled').textContent = s.scheduled || 0;
+                document.getElementById('stat-recurring').textContent = s.recurring || 0;
+                document.getElementById('stat-deleted').textContent = s.deleted || 0;   
+            } catch (e) {
+                write('Stats refresh failed', 'error');
+            }
+        }
+
+        setInterval(loadStats, 3000);
+        loadStats();
+
+                function handleCronChange() {
+            const preset = document.getElementById('cronPreset').value;
+            const customInput = document.getElementById('customCron');
+            if (preset === 'custom') {
+                customInput.style.display = 'block';
+                customInput.focus();
+            } else {
+                customInput.style.display = 'none';
+                customInput.value = preset;
+            }
+        }
+
+        function postRecurring() {
+            const preset = document.getElementById('cronPreset').value;
+            const cron = preset === 'custom' ? document.getElementById('customCron').value : preset;
+            const jobId = document.getElementById('recurringJobId').value || 'cleanup-old-logs';
+
+            post('recurring-cleanup', { cronExpression: cron, jobId: jobId });
+        }
+    </script>
+</body>
+</html>

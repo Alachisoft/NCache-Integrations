@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../Extensions/Alachisoft.NCache.Client.Extension/Alachisoft.NCache.Client.Extension.csproj" />
+  <Project Path="Hangfire.NCache.Demo/Hangfire.NCache.Demo.csproj" Id="1b6e5487-27d7-4c68-b725-b54f94c1a195" />
+  <Project Path="HangFire/HangFire.csproj" />
+</Solution>
