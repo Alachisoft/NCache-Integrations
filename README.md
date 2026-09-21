@@ -19,6 +19,9 @@ The integrations in this repository provide support for:
 - [`IDistributedCache`](https://www.alachisoft.com/resources/docs/ncache/prog-guide/aspnet-core-idistributedcache.html) integration
 - [CacheManager.Core](https://www.alachisoft.com/resources/docs/ncache/prog-guide/cache-manager.html) integration
 - [FusionCache](https://www.alachisoft.com/resources/docs/ncache/prog-guide/fusioncache.html) backplane synchronization
+- [DistributedLock.Core](https://www.alachisoft.com/resources/docs/ncache/prog-guide/idistributed-lock.html) integration
+- [Hangfire](https://www.alachisoft.com/resources/docs/ncache/prog-guide/hangfire.html) integration
+- [NCacheRateLimiting](https://www.alachisoft.com/resources/docs/ncache/prog-guide/rate-limiting-overview.html) integration
 - Multi-server, containerized, and cloud deployments
 
 ## Getting Started
