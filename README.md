@@ -1,5 +1,7 @@
 # NCache Integrations for .NET
 
+[![Build](https://github.com/Alachisoft/NCache-Integrations/actions/workflows/build.yml/badge.svg)](https://github.com/Alachisoft/NCache-Integrations/actions/workflows/build.yml)
+
 NCache Integrations provides open-source integrations that enable .NET and ASP.NET applications to use [NCache](https://www.alachisoft.com/ncache/) for distributed caching, application-state management, output caching, real-time messaging, and other scalability requirements.
 
 These integrations help applications share cached data and application state across multiple servers in web farms, containerized environments, and cloud deployments.
