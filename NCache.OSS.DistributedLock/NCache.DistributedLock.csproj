@@ -8,6 +8,9 @@
 
 		<!-- Versioning -->
 		<Version>5.3.6.1</Version>
+
+		<!-- The test project lives under Tests/; keep its sources out of this library -->
+		<DefaultItemExcludes>$(DefaultItemExcludes);Tests/**</DefaultItemExcludes>
 	</PropertyGroup>
 
 	<ItemGroup>
