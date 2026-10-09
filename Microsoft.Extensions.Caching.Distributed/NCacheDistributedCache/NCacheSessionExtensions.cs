@@ -29,7 +29,7 @@ namespace Alachisoft.NCache.Caching.Distributed
                 throw new ArgumentNullException(nameof(configure));
             }
             
-            services.Configure(configure);
+            services.AddOptions().Configure(configure);
             return services.AddSingleton<IDistributedCache, NCacheDistributedCache>();
         }
         
