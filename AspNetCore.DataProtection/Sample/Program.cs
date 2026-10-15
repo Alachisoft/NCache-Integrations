@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.DataProtection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Read NCache settings from appsettings.json
-var cacheName = builder.Configuration["NCacheSettings:CacheName"] ?? "demoCache";
+var cacheName = builder.Configuration["NCacheSettings:CacheName"] ?? "defaultCache";
 var appId = builder.Configuration["NCacheSettings:ApplicationId"] ?? "NCacheDataProtectionSample";
 var keyName = builder.Configuration["NCacheSettings:KeyName"] ?? "DataProtection-Keys";
 
