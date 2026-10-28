@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>5.3.0</Version>
+    <Version>5.3.603</Version>
     <Authors>Alachisoft</Authors>
     <Company>Alachisoft</Company>
     <Product>NCacheEFCoreCachingPorvider</Product>
@@ -47,7 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Alachisoft.NCache.Opensource.SDK" Version="5.3.6.2" />
+    <PackageReference Include="Alachisoft.NCache.Opensource.SDK" Version="5.3.603" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="2.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.0" />

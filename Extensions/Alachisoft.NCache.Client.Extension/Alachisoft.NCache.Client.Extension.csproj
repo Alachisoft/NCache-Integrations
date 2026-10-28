@@ -5,7 +5,7 @@
 	  <Nullable>enable</Nullable>
 	  <LangVersion>latest</LangVersion>
 	  <AssemblyName>Alachisoft.NCache.Client.Extension</AssemblyName>
-	  <Version>5.3.6</Version>
+	  <Version>5.3.603</Version>
 	  <AssemblyVersion>5.3.0.0</AssemblyVersion>
 	  <FileVersion>5.3.6.0</FileVersion>
   </PropertyGroup>

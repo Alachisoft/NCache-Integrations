@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../NCache.DistributedLock.csproj" />
+  <Project Path="IDistribtuedLockTest.csproj" />
+</Solution>

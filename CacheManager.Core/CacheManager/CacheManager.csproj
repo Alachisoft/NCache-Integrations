@@ -7,7 +7,7 @@
 
 	  <!-- NuGet Package Configuration -->
 	  <PackageId>NCache.OSS.CacheManager.Core</PackageId>
-	  <Version>5.3.6.1</Version>
+	  <Version>5.3.603</Version>
 	  <Authors>Alachisoft</Authors>
 	  <Company>Alachisoft</Company>
 	  <Description>NCache Opensource implementation for CacheManager.Core providing distributed caching and NCache backplane synchronization.</Description>
@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Alachisoft.NCache.Opensource.SDK" Version="5.3.6.2" />
+    <PackageReference Include="Alachisoft.NCache.Opensource.SDK" Version="5.3.603" />
     <PackageReference Include="CacheManager.Core" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.7" />
   </ItemGroup>

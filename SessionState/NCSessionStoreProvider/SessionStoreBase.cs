@@ -530,6 +530,9 @@ namespace Alachisoft.NCache.Web.SessionState
 
                     lock (_cache)
                     {
+#if NO_LOCKING
+                        _cache.Remove(locationID, GetUniqueSessionId(id), true);
+#else
                         bool removeFromCache = true;
                         if (lockID is LockHandle) removeFromCache = (((LockHandle)lockID).LockId != null);
 
@@ -542,6 +545,7 @@ namespace Alachisoft.NCache.Web.SessionState
                             else
                                 _cache.Remove(locationID, GetUniqueSessionId(id), true);
                         }
+#endif
                     }
                 }
                 if (_detailedLogs) LogDebug("Session removed from cache.", id);
@@ -556,12 +560,16 @@ namespace Alachisoft.NCache.Web.SessionState
 
                         lock (_cache)
                         {
+#if NO_LOCKING
+                            _cache.Remove(locationID, GetUniqueSessionId(id), false);
+#else
                             if (_lockSessions)
                             {
                                 _cache.Remove(locationID, GetUniqueSessionId(id), lockID as LockHandle, false);
                             }
                             else
                                 _cache.Remove(locationID, GetUniqueSessionId(id), false);
+#endif
                         }
                     }
 
@@ -583,12 +591,15 @@ namespace Alachisoft.NCache.Web.SessionState
             ///current request completes or is forced to complete.
             context.RemoveItem(SESSION_LOCK_COUNT);
 
+#if !NO_LOCKING
             if (_lockSessions)
             {
                 ReleaseSessionItemLock(context, id, lockID);
             }
+#endif
         }
 
+#if !NO_LOCKING
         private bool ReleaseSessionItemLock(IAspEnvironmentContext context, string sessionid, object lockID)
         {
             string locationID = sessionid;
@@ -612,6 +623,7 @@ namespace Alachisoft.NCache.Web.SessionState
             }
             return false;
         }
+#endif
         public virtual void InitializeRequest(IAspEnvironmentContext context) { }
 
         public virtual void EndRequest(IAspEnvironmentContext context) { }
@@ -630,7 +642,9 @@ namespace Alachisoft.NCache.Web.SessionState
             action = SessionInitializationActions.InitializeItem;
             DateTime lockDate = DateTime.UtcNow;
 
+#if !NO_LOCKING
             LockHandle lockHandle = new LockHandle(null, lockDate);
+#endif
             object items = null;
             SessionMetaWithData table = null;
             bool lockTimedOut = false;
@@ -651,6 +665,7 @@ namespace Alachisoft.NCache.Web.SessionState
                 {
                     if (s_cacheNeedInit) InitializeCache();
                 }
+#if !NO_LOCKING
                 if (_lockSessions)
                 {
                     try
@@ -667,6 +682,7 @@ namespace Alachisoft.NCache.Web.SessionState
                     lockDate = lockHandle == null ? DateTime.UtcNow : lockHandle.LockDate;
                 }
                 else
+#endif
                 {
                     try
                     {
@@ -694,6 +710,7 @@ namespace Alachisoft.NCache.Web.SessionState
 
                 }
 
+#if !NO_LOCKING
                 if (_lockSessions && !String.IsNullOrEmpty(lockHandle.LockId))
                 {
                     DateTime now = DateTime.UtcNow;
@@ -741,6 +758,7 @@ namespace Alachisoft.NCache.Web.SessionState
                         return null;
                     }
                 }
+#endif
 
                 /// If item exists in cahce and lock acqusition was successfull or locking was disabled.
                 if (table != null)
@@ -861,11 +879,13 @@ namespace Alachisoft.NCache.Web.SessionState
                 return;
             }
 
+#if !NO_LOCKING
             if (_lockSessions)
             {
                 _cache.Insert(locationID, GetUniqueSessionId(id), sessionItem, lockID as LockHandle, true, enableRetry);
             }
             else
+#endif
                 _cache.Insert(locationID, GetUniqueSessionId(id), sessionItem, enableRetry);
             _cache.CurrentSessionCache = null;
         }

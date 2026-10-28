@@ -188,6 +188,17 @@ namespace NCache.OSS.CacheManager.Core
             }
         }
 
+        // The SDK may report an expiry type without a remaining timeout; CacheManager rejects that combination.
+        private ExpirationMode ToItemExpirationMode(Alachisoft.NCache.Runtime.Caching.Expiration expiration)
+        {
+            return expiration.ExpireAfter > TimeSpan.Zero ? ToCacheManagerExpiration(expiration.Type) : ExpirationMode.None;
+        }
+
+        private static TimeSpan ToItemExpirationTimeout(Alachisoft.NCache.Runtime.Caching.Expiration expiration)
+        {
+            return expiration.ExpireAfter > TimeSpan.Zero ? expiration.ExpireAfter : TimeSpan.Zero;
+        }
+
         protected override CacheItem<T> GetCacheItemInternal(string key)
         {
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
@@ -202,8 +213,8 @@ namespace NCache.OSS.CacheManager.Core
                 return new CacheItem<T>(
                     key,
                     value.GetValue<T>(),
-                    ToCacheManagerExpiration(value.Expiration.Type),
-                    value.Expiration.ExpireAfter);
+                    ToItemExpirationMode(value.Expiration),
+                    ToItemExpirationTimeout(value.Expiration));
             }
             catch (Exception ex)
             {
@@ -225,8 +236,8 @@ namespace NCache.OSS.CacheManager.Core
                     key,
                     region,
                     value.GetValue<T>(),
-                    ToCacheManagerExpiration(value.Expiration.Type),
-                    value.Expiration.ExpireAfter);
+                    ToItemExpirationMode(value.Expiration),
+                    ToItemExpirationTimeout(value.Expiration));
         }
 
         protected override bool RemoveInternal(string key)

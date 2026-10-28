@@ -7,7 +7,7 @@
     <Company>Alachisoft</Company> 
     <Description>The NCache.OSS.AspNetCore.DataProtection package allows storing ASP.NET Core DataProtection keys in NCache. Keys can be shared across several instances of a web app.</Description>
     <PackageTags>Alachisoft AspNetCore DataProtection Data Protection NCache Cache Caching DistributedCache In-Memory DotNet NetStandard2.0</PackageTags>
-    <Version>5.3.6</Version> 
+    <Version>5.3.603</Version> 
   </PropertyGroup>
 
   <ItemGroup>

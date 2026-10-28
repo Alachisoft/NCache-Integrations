@@ -11,6 +11,7 @@
 		<SignAssembly>True</SignAssembly>
 		<FileVersion>5.3.6.2</FileVersion>
 		<AssemblyVersion>5.3.6.2</AssemblyVersion>
+		<DefaultItemExcludes>$(DefaultItemExcludes);NHibernateNCache.Tests/**</DefaultItemExcludes>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

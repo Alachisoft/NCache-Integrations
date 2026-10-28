@@ -332,6 +332,7 @@ namespace Alachisoft.NCache.Web.SessionStateManagement
         }
         #endregion
 
+#if !NO_LOCKING
         #region ISessionCache Members
 
 		[CLSCompliant(false)]
@@ -484,6 +485,7 @@ namespace Alachisoft.NCache.Web.SessionStateManagement
         }
 
         #endregion
+#endif
 
         
     }
