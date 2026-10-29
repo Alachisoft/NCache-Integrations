@@ -19,7 +19,7 @@
     <PackageProjectUrl>http://www.alachisoft.com/ncache/</PackageProjectUrl>
     <PackageIconUrl>http://www.alachisoft.com/images/ext-logos/nuget/ncache-insignia-logo-155X155.png</PackageIconUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
-    <FileVersion>5.3.6.2</FileVersion>
+    <FileVersion>5.3.603</FileVersion>
     <AssemblyVersion>5.3.0</AssemblyVersion>
     <RootNamespace>Alachisoft.NCache.Caching.Distributed</RootNamespace>
     <AssemblyName>Alachisoft.NCache.DistributedCache</AssemblyName>

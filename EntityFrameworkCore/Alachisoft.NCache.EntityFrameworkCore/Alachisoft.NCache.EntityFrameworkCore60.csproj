@@ -21,7 +21,7 @@
   <PropertyGroup>
     <DefineConstants>EFCORE;RELEASE;FULL;</DefineConstants>
     <Description>Entity Framework Core for NCache lets you use NCache as a cache for Entity Framework Core using extension methods. NCache is an extremely fast and scalable in-memory distributed cache that removes performance bottlenecks related to data storage and databases.Note:This integration is only supported with Entity Framework core 3.1.x for the early version of Microsoft.EntityFrameworkCore use Alachisoft.NCache.Professional.EFCore 5.2.0.</Description>
-    <FileVersion>5.3.6.0</FileVersion>
+    <FileVersion>5.3.603</FileVersion>
     <AssemblyVersion>5.3.0.0</AssemblyVersion>
   </PropertyGroup>
   <!--Define Debug and trace-->

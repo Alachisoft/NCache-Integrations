@@ -125,7 +125,12 @@ namespace Alachisoft.NCache.EntityFrameworkCore
             {
                 try
                 {
-                    cacheHit = QueryCacheManager.Cache.GetByKey<T>(queryStoreKey, out cacheResult, optionsCloned.StoreAs, throwError);
+                    // Read in the mode the result is written in: a SeparateEntities query that is not eligible
+                    // for separate storage is stored as a collection (see NCacheEnumerator.MoveNext).
+                    StoreAs readAs = optionsCloned.StoreAs == StoreAs.SeparateEntities && !QueryHelper.IsSeperateStorageEligible(query, optionsCloned)
+                        ? StoreAs.Collection
+                        : optionsCloned.StoreAs;
+                    cacheHit = QueryCacheManager.Cache.GetByKey<T>(queryStoreKey, out cacheResult, readAs, throwError);
                 }
                 catch (Exception ex)
                 {

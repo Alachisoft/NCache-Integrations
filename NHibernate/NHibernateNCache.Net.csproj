@@ -9,8 +9,8 @@
 		<AssemblyName>Alachisoft.NCache.Integrations.NHibernate.Cache</AssemblyName>
 		<RootNamespace>Alachisoft.NCache.Integrations.NHibernate.Cache</RootNamespace>
 		<SignAssembly>True</SignAssembly>
-		<FileVersion>5.3.6.2</FileVersion>
-		<AssemblyVersion>5.3.6.2</AssemblyVersion>
+		<FileVersion>5.3.603</FileVersion>
+		<AssemblyVersion>5.3.0.0</AssemblyVersion>
 		<DefaultItemExcludes>$(DefaultItemExcludes);NHibernateNCache.Tests/**</DefaultItemExcludes>
 	</PropertyGroup>
 
@@ -66,6 +66,8 @@
 		<PackageReference Include="Alachisoft.NCache.Opensource.SDK" Version="5.3.603" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="NHibernate" Version="5.7.0" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.12" />
+		<PackageReference Include="Microsoft.Extensions.ObjectPool" Version="10.0.12" />
 	</ItemGroup>
 
 	<ItemGroup>

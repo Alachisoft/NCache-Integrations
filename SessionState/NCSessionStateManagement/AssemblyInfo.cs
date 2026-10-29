@@ -96,6 +96,6 @@ using System.Runtime.InteropServices;
 //   (*) Delay Signing is an advanced option - see the Microsoft .NET Framework
 //       documentation for more information on this.
 //
-[assembly: AssemblyFileVersionAttribute("5.3.6.0")]
+[assembly: AssemblyFileVersionAttribute("5.3.603")]
 [assembly: AssemblyDescriptionAttribute("Session State Management")]
-[assembly: AssemblyInformationalVersion("5.3.0")]
+[assembly: AssemblyInformationalVersion("5.3.603")]

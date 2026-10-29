@@ -4,12 +4,6 @@ The `AspNet.SignalR.NCache.OpenSource` NuGet package enables classic ASP.NET Sig
 
 The integration extends SignalR's `IDependencyResolver` interface through the `UseNCache` extension method. This allows ASP.NET SignalR applications running on multiple web servers to synchronize messages through an NCache cluster.
 
-## Package Versions
-
-| **Package**                        | **Version** |
-| ---------------------------------- | ----------- |
-| `Alachisoft.NCache.Opensource.SDK` | 5.3.6.2     |
-| `Microsoft.AspNet.SignalR.Core`    | 2.4.3       |
 
 ## Overview
 

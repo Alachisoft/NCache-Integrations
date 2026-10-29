@@ -4,15 +4,6 @@ The `EntityFrameworkCore.NCache.OpenSource` NuGet package enables Entity Framewo
 
 The integration extends Entity Framework Core with synchronous and asynchronous LINQ extension methods for caching database query results, preloading reference data, querying cached entities without accessing the database, and directly managing cached entities through an EF Core `DbContext`.
 
-## Package Versions
-
-| **Package**                                | **Version**            |
-| ------------------------------------------ | ---------------------- |
-| `EntityFrameworkCore.NCache.OpenSource`    | Current NCache version |
-| `Alachisoft.NCache.Opensource.SDK`         | >= 5.3.6.2             |
-| `Microsoft.EntityFrameworkCore.Relational` | >= 8.0.16              |
-| `Microsoft.Extensions.Caching.Memory`      | >= 8.0.1               |
-
 ## Overview
 
 Entity Framework Core abstracts relational database access through object models and LINQ queries. In high-transaction applications, repeated database queries can become a performance and scalability bottleneck.

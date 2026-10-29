@@ -235,6 +235,13 @@ namespace Alachisoft.NCache.EntityFrameworkCore.NCache
 
                             // Invoke 'SetThingsUpForAttachment' now
                             genericSetThingsUpForAttachment.Invoke(this, new object[] { entityReferenceMap, entityStateManager, hashSet, entityTrack });
+
+                            // Write the tracked instance from the temporary set back to the relation.
+                            object resolved = ((IEnumerable)hashSet).Cast<object>().First();
+                            if (!ReferenceEquals(resolved, relationMemberValue))
+                            {
+                                SetMemberValue(member, entityAtHand, resolved);
+                            }
                         }
                         else
                         {

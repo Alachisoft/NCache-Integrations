@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -32,9 +32,9 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("5.3.6.2")]
-[assembly: AssemblyFileVersion("5.3.6.2")]
-[assembly: AssemblyInformationalVersion("5.3.6.2")]
+[assembly: AssemblyVersion("5.3.0.0")]
+[assembly: AssemblyFileVersion("5.3.603")]
+[assembly: AssemblyInformationalVersion("5.3.603")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 

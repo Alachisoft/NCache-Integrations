@@ -2,14 +2,6 @@
 
 The `NCache.OSS.AspNetCore.DataProtection` NuGet package enables ASP.NET Core applications to store Data Protection keys in NCache. The integration extends ASP.NET Core Data Protection through the `PersistKeysToNCache` method. This allows multiple application instances to access the same cryptographic keys from a distributed NCache cluster.
 
-## Package Versions
-
-| **Package**                            | **Version**            |
-| -------------------------------------- | ---------------------- |
-| `NCache.OSS.AspNetCore.DataProtection` | Current NCache version |
-| `Alachisoft.NCache.Opensource.SDK`     | >= 5.3.6.2             |
-| `Microsoft.AspNetCore.DataProtection`  | 10.0.0                 |
-
 
 ## Overview
 

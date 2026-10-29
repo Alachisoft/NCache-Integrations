@@ -2,14 +2,6 @@
 
 **NCache implementation of CacheManager.Core cache handles and backplane**, allowing **CacheManager.Core** to use an NCache cache as its distributed cache handle while leveraging NCache's Messaging Service as a backplane for cache synchronization across multiple application instances.
 
-## Package Versions
-
-| **Package** | **Version** |
-|---|---|
-| Alachisoft.NCache.Opensource.SDK | >= 5.3.6.2 |
-| CacheManager.Core | Compatible with CacheManager.Core |
-| Microsoft.Extensions.Logging.Abstractions | Supported |
-
 ## Installation
 
 ```powershell
