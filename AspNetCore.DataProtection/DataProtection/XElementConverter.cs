@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 
-namespace NCache.OSS.AspNetCore.DataProtection
+namespace NCache.AspNetCore.DataProtection
 {
     public static class DPXElementConverter
     {

@@ -68,7 +68,7 @@ namespace NCache.OSS.CacheManager.Core
             err = string.Empty;
 
             // Validate that the Distributed CacheName property is not null or empty
-            if (string.IsNullOrEmpty(CacheName))
+            if (string.IsNullOrWhiteSpace(CacheName))
             {
                 err = $"{nameof(CacheName)} is required.";
                 return false;
@@ -79,6 +79,11 @@ namespace NCache.OSS.CacheManager.Core
             {
                 foreach (var server in ServerList)
                 {
+                    if (server == null)
+                    {
+                        err = "ServerList must not contain null entries.";
+                        return false;
+                    }
                     if (!server.isValid(out err))
                         return false;
                 }

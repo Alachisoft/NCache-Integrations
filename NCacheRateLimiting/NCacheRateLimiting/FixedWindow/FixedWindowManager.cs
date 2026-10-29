@@ -24,7 +24,7 @@ namespace NCache.OSS.RateLimiting
         {
             _options = options;
 
-            _cache = CacheManager.GetCache(options.CacheName);
+            _cache = CacheManager.GetCache(options.CacheName, options.GetCacheConnectionOptions());
 
             _windowKey = $"rl:fw:{partitionKey}";
             _lockKey = $"rl:fw:{partitionKey}:lock";

@@ -81,12 +81,12 @@ namespace Alachisoft.NCache.AspNetCore.DataProtection
         {
             while (true)
             {
-                //lockKey refuses a key that does not exist 
+                // LockKey refuses a key that does not exist
                 if (!cache.Contains(tag))
                     return;
 
-                // the lock expires on its own 
-                bool locked = cache.LockKey(tag, out var lockToken, TimeSpan.FromSeconds(19));
+                // The lock expires on its own
+                bool locked = cache.LockKey(tag, out var lockToken, TimeSpan.FromSeconds(10));
 
                 if (!locked)
                 {
@@ -99,16 +99,15 @@ namespace Alachisoft.NCache.AspNetCore.DataProtection
 
                     if (keys != null && keys.Count > 0)
                         cache.RemoveBulk<object>(keys, out var removedKeys);
+
                     cache.Remove(tag);
                 }
                 finally
                 {
                     cache.UnlockKey(tag, lockToken);
-
                 }
                 break;
             }
-           
         }
     }
 }

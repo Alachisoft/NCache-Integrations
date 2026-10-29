@@ -1,13 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
 	<Copyright>Copyright 2005-2026 Alachisoft. All rights reserved.</Copyright>
     <Authors>Alachisoft</Authors>
     <Company>Alachisoft</Company> 
     <Description>The NCache.OSS.AspNetCore.DataProtection package allows storing ASP.NET Core DataProtection keys in NCache. Keys can be shared across several instances of a web app.</Description>
     <PackageTags>Alachisoft AspNetCore DataProtection Data Protection NCache Cache Caching DistributedCache In-Memory DotNet NetStandard2.0</PackageTags>
-    <Version>5.3.603</Version> 
+    <Version>5.3.603</Version>
+    <AssemblyVersion>5.3.0.0</AssemblyVersion>
+    <FileVersion>5.3.603</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
