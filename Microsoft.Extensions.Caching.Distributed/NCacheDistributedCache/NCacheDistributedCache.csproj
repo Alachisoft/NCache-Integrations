@@ -135,10 +135,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="client.ncconf">
+    <None Include="client.ncconf" Condition="Exists('client.ncconf')">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="config.ncconf">
+    <None Include="config.ncconf" Condition="Exists('config.ncconf')">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
