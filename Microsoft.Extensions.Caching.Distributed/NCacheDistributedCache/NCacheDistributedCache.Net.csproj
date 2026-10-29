@@ -24,7 +24,7 @@
     <RootNamespace>Alachisoft.NCache.Caching.Distributed</RootNamespace>
     <AssemblyName>Alachisoft.NCache.DistributedCache</AssemblyName>
   </PropertyGroup>
-
+  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;RELEASE;NETCORE;NETCOREAPP2_0</DefineConstants>
   </PropertyGroup>
@@ -36,15 +36,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="client.ncconf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="config.ncconf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 	<ItemGroup>
