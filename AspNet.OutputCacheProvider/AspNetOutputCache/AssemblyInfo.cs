@@ -8,7 +8,7 @@
 [assembly: System.Reflection.AssemblyTrademark("NCache ™ is a registered trademark of Alachisoft.")]
 [assembly: System.Runtime.InteropServices.ComVisible(false)]
 [assembly: System.Runtime.InteropServices.Guid("47ec45ba-2c3f-41ec-902a-18082401a37e")]
-[assembly: System.Reflection.AssemblyFileVersion("5.3.6.0")]
+[assembly: System.Reflection.AssemblyFileVersion("5.3.603")]
 [assembly: System.Diagnostics.Debuggable(System.Diagnostics.DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]
 [assembly: System.Runtime.CompilerServices.CompilationRelaxations(8)]
 [assembly: System.Runtime.CompilerServices.RuntimeCompatibility(WrapNonExceptionThrows=true)]

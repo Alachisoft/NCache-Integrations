@@ -4,13 +4,6 @@ The `NCache.OSS.AspNetCore.OutputCaching` NuGet package enables ASP.NET Core app
 
 The integration implements ASP.NET Core's `IOutputCacheStore` interface and registers NCache through the `AddNCacheOutputCacheProvider` extension method. This allows cached HTTP responses to be shared across multiple application instances instead of being stored separately in each server's local memory.
 
-## Package Versions
-
-| **Package**                           | **Version**            |
-| ------------------------------------- | ---------------------- |
-| `NCache.OSS.AspNetCore.OutputCaching` | Current NCache version |
-| `Microsoft.AspNetCore.OutputCaching`  | .NET 7+                |
-| `Alachisoft.NCache.Opensource.SDK`    | >= 5.3.6.2             |
 
 
 ## Overview

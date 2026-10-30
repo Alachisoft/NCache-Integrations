@@ -4,15 +4,6 @@ The `NHibernate.NCache.Opensource` NuGet package enables NHibernate applications
 
 The integration implements NHibernate's `ICacheProvider` and `ICache` interfaces through `NCacheProvider` and NCache's cache implementation. This allows cached entities and query results to be shared across multiple application instances instead of remaining limited to individual NHibernate sessions or application processes.
 
-## Package Versions
-
-| **Package**                                 | **Version** |
-| ------------------------------------------- | ----------- |
-| `NHibernate.NCache.Opensource`              | 5.3.6.2     |
-| `Alachisoft.NCache.Opensource.SDK`          | >= 5.3.6.2  |
-| `NHibernate`                                | >= 5.6.0    |
-| `System.Configuration.ConfigurationManager` | >= 8.0.0    |
-
 ## Overview
 
 NHibernate provides a first-level cache for each session. Objects retrieved within a session are stored in that session's local cache and reused during the lifetime of the session. However, the first-level cache is not shared with other sessions and is discarded when the session closes.

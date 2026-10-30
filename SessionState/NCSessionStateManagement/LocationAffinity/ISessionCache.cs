@@ -56,16 +56,7 @@ namespace Alachisoft.NCache.Web.SessionStateManagement
         object Get(string sessionId, string key, string group, string subGroup);
         bool Contains(string sessionId, string key);
 
-        #region Overloads with locking support
-		[CLSCompliant(false)]
-        object Get(string sessionId, string key, ref LockHandle lockHandle, bool acquireLock, bool enableRetry);
-        object Remove(string sessionId, string key, LockHandle lockHandle, bool enableRetry);
-
-        void Insert(string sessionId, string key, CacheItem item, LockHandle lockHandle, bool releaseLock, bool enableRetry);
         void Insert(string sessionId, string key, CacheItem item, bool enableRetry);
-
-        void Unlock(string sessionId, string key);
-        #endregion
         void Add(string sessionId, string key, object value, DateTime absoluteExpiration, TimeSpan slidingExpiration, CacheItemPriority priority);
         void Insert(string sessionId, string key, object value,  DateTime absoluteExpiration, TimeSpan slidingExpiration, CacheItemPriority priority);
 

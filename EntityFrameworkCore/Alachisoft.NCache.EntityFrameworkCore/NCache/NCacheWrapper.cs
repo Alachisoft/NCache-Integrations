@@ -288,52 +288,47 @@ namespace Alachisoft.NCache.EntityFrameworkCore
             {
                 try
                 {
-                    if (storeAs == StoreAs.Collection)
+                    // The query key holds a different shape depending on how the result was stored
+                    // (see NCacheWrapperExtensions.Set), and StoreAs is not part of the key, so the
+                    // same query run with the other StoreAs reads what the earlier run left. Read it
+                    // untyped and branch on what is actually there:
+                    //   Collection       -> CacheEntry<IList<T>> holding the whole result
+                    //   SeparateEntities -> the keys of the entities, each entity stored under its own key
+                    //   single result    -> CacheEntry<T> (SetAsCacheEntry)
+                    //
+                    // Only a shape that matches the requested StoreAs is a hit. A mismatch means the key was
+                    // written by a different query (two queries sharing a QueryIdentifier) or by the same
+                    // query in the other mode; returning it would hand back another query's rows, so it is a
+                    // miss and the query goes to the database.
+                    object firstResult = _nCache.Get<object>(key);
+
+                    if (firstResult is CacheEntry<IList<T>> collection)
                     {
-                        object firstResult;
-
-                        firstResult = _nCache.Get<CacheEntry<IList<T>>>(key);
-                        if (firstResult != null)
-                        {
-                            var keys = firstResult as IList<string>;
-                            if (keys == null)
-                            {
-                                var ValueList = firstResult as CacheEntry<IList<T>>;
-                                resultSet.Add(key, ValueList);
-                            }
-                            else
-                            {
-                                resultSet = (Dictionary<string, T>)_nCache.GetBulk<T>(keys);
-                            }
-
-                        }
-
-                        value = resultSet;
-                        return resultSet.Count > 0;
+                        if (storeAs == StoreAs.Collection)
+                            resultSet.Add(key, collection);
                     }
-                    else
+                    else if (firstResult is CacheEntry<T> entry)
                     {
-                        object firstResult;
-                        firstResult = _nCache.Get<CacheEntry<IList<T>>>(key);
-                        if (firstResult != null)
-                        {
-                            var keys = firstResult as IList<string>;
-                            if (keys == null)
-                            {
-                                CacheEntry<T> entry = firstResult as CacheEntry<T>;
-                                //to do:: Get Values from Cache against keys
-                                resultSet.Add(key, entry.Value);
-                            }
-                            else
-                            {
-                                resultSet = (Dictionary<string, T>)_nCache.GetBulk<T>(keys);
-                            }
-                        }
-
-
-                        value = resultSet;
-                        return resultSet.Count > 0;
+                        resultSet.Add(key, entry.Value);
                     }
+                    else if (firstResult != null && storeAs == StoreAs.SeparateEntities)
+                    {
+                        string[] entityKeys = firstResult as string[] ?? _nCache.Get<string[]>(key);
+                        IDictionary<string, T> entities = _nCache.GetBulk<T>(entityKeys);
+
+                        // An entity that expired or was evicted makes the stored result incomplete;
+                        // returning the rest would silently drop rows, so treat it as a miss.
+                        if (entities.Count == entityKeys.Length)
+                        {
+                            var ordered = new System.Collections.Specialized.OrderedDictionary(entityKeys.Length);
+                            foreach (string entityKey in entityKeys)
+                                ordered.Add(entityKey, entities[entityKey]);
+                            resultSet = ordered;
+                        }
+                    }
+
+                    value = resultSet;
+                    return resultSet.Count > 0;
                 }
                 catch (Exception ex)
                 {

@@ -4,19 +4,6 @@ The `NCache.Microsoft.Extensions.Caching.Opensource` NuGet package enables ASP.N
 
 The integration registers NCache with ASP.NET Core dependency injection through the `AddNCacheDistributedCache` extension method. Applications can continue using the standard `IDistributedCache` interface while cached data is stored in a distributed NCache cluster.
 
-## Package Versions
-
-| **Package**                                            | **Version** |
-| ------------------------------------------------------ | ----------- |
-| `NCache.Microsoft.Extensions.Caching.Opensource`       | 5.3.6.2     |
-| `Alachisoft.NCache.Opensource.SDK`                     | >= 5.3.6.2  |
-| `Microsoft.AspNetCore.DataProtection`                  | >= 2.0.0    |
-| `Microsoft.AspNetCore.Http.Abstractions`               | >= 2.0.0    |
-| `Microsoft.Extensions.Caching.Abstractions`            | >= 2.0.0    |
-| `Microsoft.Extensions.Configuration.Abstractions`      | >= 2.0.0    |
-| `Microsoft.Extensions.Configuration.Json`              | >= 2.0.0    |
-| `Microsoft.Extensions.Options.ConfigurationExtensions` | >= 2.0.0    |
-
 ## Overview
 
 ASP.NET Core provides the `IDistributedCache` interface as a standard abstraction for distributed caching. Applications can use this interface without depending directly on a specific distributed cache implementation.

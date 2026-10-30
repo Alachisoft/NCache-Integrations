@@ -79,37 +79,35 @@ namespace Alachisoft.NCache.AspNetCore.DataProtection
 
         public static void RemoveUsingTag(this ICache cache, string tag)
         {
-            LockHandle lockHandle = null;
-
             while (true)
             {
+                // LockKey refuses a key that does not exist
+                if (!cache.Contains(tag))
+                    return;
+
+                // The lock expires on its own
+                bool locked = cache.LockKey(tag, out var lockToken, TimeSpan.FromSeconds(10));
+
+                if (!locked)
+                {
+                    continue;
+                }
+
                 try
                 {
                     var keys = cache.Get<List<string>>(tag);
 
+                    if (keys != null && keys.Count > 0)
+                        cache.RemoveBulk<object>(keys, out var removedKeys);
 
-                    if (keys == null)
-                        return;
-
-
-                    keys = cache.Get<List<string>>(tag, true, TimeSpan.FromSeconds(10), ref lockHandle);
-
-                    if (keys == null && lockHandle == null)
-                        continue;
-
-                    cache.RemoveBulk<object>(keys, out var removedKeys);
-
-                    // Remove tag itself
                     cache.Remove(tag);
                 }
                 finally
                 {
-                    if (lockHandle != null)
-                        cache.Unlock(tag, lockHandle);
+                    cache.UnlockKey(tag, lockToken);
                 }
                 break;
             }
-           
         }
     }
 }

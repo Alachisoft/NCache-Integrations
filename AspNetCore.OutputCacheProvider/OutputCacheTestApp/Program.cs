@@ -12,7 +12,7 @@ builder.Services.AddOutputCache(options =>
 
 builder.Services.AddNCacheOutputCacheProvider(options =>
 {
-    options.CacheName = "demoCache";
+    options.CacheName = "defaultCache";
 
     options.ServerList = new List<NCacheOutputCacheOptions.ServerConfig>
     {

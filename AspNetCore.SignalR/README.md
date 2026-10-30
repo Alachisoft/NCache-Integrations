@@ -4,14 +4,6 @@ The `AspNetCore.SignalR.NCache.OpenSource` NuGet package enables ASP.NET Core Si
 
 The integration extends SignalR's `ISignalRServerBuilder` interface through the `AddNCache` extension method. This allows ASP.NET Core SignalR applications running on multiple application servers to synchronize real-time updates through an NCache cluster.
 
-## Package Versions
-
-| **Package**                            | **Version**            |
-| -------------------------------------- | ---------------------- |
-| `AspNetCore.SignalR.NCache.OpenSource` | >= 5.3.6.2             |
-| `Alachisoft.NCache.Opensource.SDK`     | >= 5.3.6.2             |
-| ASP.NET Core SignalR                   | 1.1.0                  |
-
 ## Overview
 
 ASP.NET Core SignalR enables servers to send real-time updates to connected clients as soon as an event occurs. This eliminates the need for clients to repeatedly poll the server or refresh a webpage to receive updated information.

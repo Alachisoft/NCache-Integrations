@@ -4,13 +4,6 @@ The `AspNet.OutputCache.NCache.Opensource` NuGet package enables classic ASP.NET
 
 The provider implements `System.Web.Caching.OutputCacheProvider` and allows ASP.NET Web Forms and ASP.NET MVC applications running on .NET Framework to store generated page and action output in an NCache cluster instead of maintaining a separate output cache in each ASP.NET worker process.
 
-## Package Versions
-
-| **Package**                            | **Version** |
-| -------------------------------------- | ----------- |
-| `AspNet.OutputCache.NCache.Opensource` | 5.3.6.1     |
-| `Alachisoft.NCache.SDK`                | >= 5.3.6.2  |
-
 ## Overview
 
 ASP.NET Output Caching stores generated page or action responses and reuses them for subsequent requests. Different versions of a response can be cached based on request information such as query string parameters.

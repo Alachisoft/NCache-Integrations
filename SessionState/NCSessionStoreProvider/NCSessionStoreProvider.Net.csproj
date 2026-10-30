@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -33,7 +33,7 @@
     <ProjectReference Include="..\NCSessionStateManagement\NCSessionStateManagement.Net.csproj" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(SolutionDir)' != '' And '$(SolutionDir)' != '*Undefined*'">
     <Exec Command="xcopy /Y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)build\NetCore\&quot;" />
   </Target>
 </Project>

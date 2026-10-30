@@ -2,16 +2,6 @@
 
 **NCache implementation of `ZiggyCreatures.Caching.Fusion.Backplane.IFusionCacheBackplane`**, letting [FusionCache](https://github.com/ZiggyCreatures/FusionCache) use an NCache topic as its backplane so that cache invalidation/eviction notifications are propagated across every node sharing the same distributed cache.
 
-## Package Versions
-
-| Package | Version |
-|---|---|
-| Alachisoft.NCache.Opensource.SDK | >= 5.3.6.2 |
-| ZiggyCreatures.FusionCache | >= 2.6.0 |
-| Newtonsoft.Json | (used internally for message serialization) |
-
-Targets `netstandard2.0`.
-
 ## Installation
 
 ```powershell

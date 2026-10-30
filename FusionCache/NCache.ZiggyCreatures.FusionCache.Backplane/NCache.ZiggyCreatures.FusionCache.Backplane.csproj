@@ -6,14 +6,14 @@
     </PropertyGroup>
 
     <PropertyGroup>
-	    <Version>5.3.6.0</Version>
-		<FileVersion>5.3.6.0</FileVersion>
-	    <AssemblyVersion>5.3.0.0</AssemblyVersion>
+	    <Version>5.3.603</Version>
+		<AssemblyVersion>5.3.0</AssemblyVersion>
+		<FileVersion>5.3.603</FileVersion>
     </PropertyGroup>
 	
     <ItemGroup>
-    <PackageReference Include="Alachisoft.NCache.Opensource.SDK" Version="5.3.6.2" />
-    <PackageReference Include="ZiggyCreatures.FusionCache" Version="2.6.0" />
+    <PackageReference Include="Alachisoft.NCache.Opensource.SDK" Version="5.3.603" />
+    <PackageReference Include="ZiggyCreatures.FusionCache" Version="2.9.0" />
     </ItemGroup>
 
     <ItemGroup>

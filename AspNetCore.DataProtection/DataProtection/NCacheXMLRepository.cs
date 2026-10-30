@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Alachisoft.NCache.Runtime.Caching;
 using Alachisoft.NCache.Runtime.Exceptions;
-using NCache.OSS.AspNetCore.DataProtection;
+using NCache.AspNetCore.DataProtection;
 
 namespace Alachisoft.NCache.AspNetCore.DataProtection
 {

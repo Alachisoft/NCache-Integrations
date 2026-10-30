@@ -187,7 +187,11 @@ namespace Alachisoft.NCache.Integrations.NHibernate.Cache
             {
                 if (!LockingExtension.LockKey(_cacheHandler.Cache, cacheKey, out lockToken))
                 {
-                    throw new CacheException("Unable to acquire lock on the key provided.");
+                    // A key that is not cached yet has nothing to protect; only a held lock is a failure.
+                    if (_cacheHandler.Cache.Contains(cacheKey))
+                        throw new CacheException("Unable to acquire lock on the key provided.");
+
+                    lockToken = new LockToken();
                 }
             }
             catch (Exception e)

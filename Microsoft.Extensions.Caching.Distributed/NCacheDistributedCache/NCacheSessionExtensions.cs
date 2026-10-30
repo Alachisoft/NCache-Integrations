@@ -1,7 +1,6 @@
 ﻿using System;
 using Alachisoft.NCache.Caching.Distributed.Configuration;
 using Alachisoft.NCache.Serialization.Formatters;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +28,7 @@ namespace Alachisoft.NCache.Caching.Distributed
                 throw new ArgumentNullException(nameof(configure));
             }
             
-            services.Configure(configure);
+            services.AddOptions().Configure(configure);
             return services.AddSingleton<IDistributedCache, NCacheDistributedCache>();
         }
         

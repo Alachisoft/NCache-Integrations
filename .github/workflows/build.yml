@@ -115,3 +115,49 @@ jobs:
           if [ "${{ needs.build.result }}" != "success" ]; then
             exit 1
           fi
+
+  test:
+    name: Integration tests
+    # Linux, because the tests need a live NCache server and the NCache image is a
+    # Linux container. Windows runners cannot run it.
+    runs-on: ubuntu-latest
+    # Every integration has to build before anything is tested.
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+
+      # Starts the container, registers NCache Open Source and starts defaultCache.
+      - name: Start NCache
+        env:
+          NCACHE_REGISTRATION_KEY: ${{ secrets.NCACHE_REGISTRATION_KEY }}
+        run: bash .github/scripts/start-ncache.sh
+
+      # Builds each net8.0 test project, points it at the container and runs it.
+      # The .NET Framework (net48) test projects only run on Windows, so they are
+      # covered by the build matrix above but not executed here.
+      - name: Run tests
+        run: bash .github/scripts/run-tests.sh
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/*.trx
+          if-no-files-found: ignore
+
+      - name: NCache server logs
+        if: failure()
+        run: docker logs ncache
+
+      - name: Stop NCache
+        if: always()
+        run: docker rm --force ncache
