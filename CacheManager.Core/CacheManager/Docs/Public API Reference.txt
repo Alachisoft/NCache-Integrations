@@ -5,6 +5,34 @@ CacheManager.Core Public API Reference
 Package: NCache.OSS.CacheManager.Core
 Namespace: NCache.OSS.CacheManager.Core
 
+NAMED CONFIGURATION APIs
+------------------------
+Configuration builder extensions (namespace CacheManager.Core):
+    WithNCacheConfiguration(string key, Action<NCacheConfigurationBuilder> configure)
+    WithNCacheConfiguration(string key, NCacheOptions options)
+    WithNCacheCacheHandle(string key, bool isBackplaneSource = true)
+    WithNCacheBackplane(string key)
+    WithNCacheBackplane(string key, string topicName)
+
+NCacheConfigurationBuilder (namespace NCache.OSS.CacheManager.Core):
+    WithCacheName(string cacheName)
+    WithEndpoint(string ip)
+    WithEndpoint(string ip, int port)
+
+IServiceCollection extensions (namespace NCache.OSS.CacheManager.Core):
+    AddNCacheConfiguration(string key, Action<NCacheOptions> configure)
+    AddNCacheConfiguration(string key, IConfigurationSection section)
+
+NCacheConfigurations (namespace NCache.OSS.CacheManager.Core):
+    AddConfiguration(string key, NCacheOptions options)
+    GetConfiguration(string key)
+
+The registry is process-wide. Registration validates options immediately.
+Duplicate keys replace options for subsequent lookups. Handles and backplanes
+capture options when added to a builder; existing managers are not reconfigured.
+Register at startup and do not mutate options in use. Direct-options construction
+remains supported, using the existing OSS constructors and OSS SDK.
+
 ================================================================================
 OVERVIEW
 ================================================================================

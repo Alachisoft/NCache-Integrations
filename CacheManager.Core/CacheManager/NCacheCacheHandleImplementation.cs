@@ -5,7 +5,6 @@ using CacheManager.Core.Internal;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 
 namespace NCache.OSS.CacheManager.Core
 {
@@ -38,6 +37,19 @@ namespace NCache.OSS.CacheManager.Core
         }
 
         protected override ILogger Logger => _logger;
+
+        public NCacheCacheHandle(
+            ICacheManagerConfiguration managerConfiguration,
+            CacheHandleConfiguration configuration,
+            ILoggerFactory loggerFactory)
+            : this(
+                managerConfiguration,
+                configuration,
+                loggerFactory,
+                NCacheConfigurations.GetConfiguration(
+                    configuration?.Name ?? throw new ArgumentNullException(nameof(configuration))))
+        {
+        }
 
         public NCacheCacheHandle(ICacheManagerConfiguration managerConfiguration, CacheHandleConfiguration configuration, ILoggerFactory loggerFactory, NCacheOptions options) : base(managerConfiguration, configuration)
         {
@@ -95,7 +107,7 @@ namespace NCache.OSS.CacheManager.Core
 
                 foreach (var key in keys)
                 {
-                    _cache.Remove(key);
+                    _cache.Remove(GetItemKey(key, region));
                 }
 
                 _cache.Remove(GetRegionKey(region));
@@ -115,7 +127,7 @@ namespace NCache.OSS.CacheManager.Core
 
             try
             {
-                bool keyExists = _cache.Contains(key);
+                bool keyExists = _cache.Contains(GetItemKey(key));
                 if (!keyExists)
                     _logger.LogInformation($"EXISTS miss key={key}");
 
@@ -135,12 +147,7 @@ namespace NCache.OSS.CacheManager.Core
 
             try
             {
-                if (!_cache.Contains(key))
-                    return false;
-
-                var regionKeys = GetRegionKeys(region);
-
-                bool keyExists = regionKeys.Contains(key);
+                bool keyExists = _cache.Contains(GetItemKey(key, region));
 
                 if (!keyExists)
                     _logger.LogInformation($"EXISTS(region) miss key={key} region={region}");
@@ -160,9 +167,9 @@ namespace NCache.OSS.CacheManager.Core
 
             try
             {
-               var ncacheItem = CreateCacheItem(item);
+                var cacheItem = CreateCacheItem(item);
 
-                _cache.Add(item.Key, ncacheItem);
+                _cache.Add(GetItemKey(item.Key, item.Region), cacheItem);
 
                 if (!string.IsNullOrEmpty(item.Region))
                 {
@@ -188,33 +195,18 @@ namespace NCache.OSS.CacheManager.Core
             }
         }
 
-        // The SDK may report an expiry type without a remaining timeout; CacheManager rejects that combination.
-        private ExpirationMode ToItemExpirationMode(Alachisoft.NCache.Runtime.Caching.Expiration expiration)
-        {
-            return expiration.ExpireAfter > TimeSpan.Zero ? ToCacheManagerExpiration(expiration.Type) : ExpirationMode.None;
-        }
-
-        private static TimeSpan ToItemExpirationTimeout(Alachisoft.NCache.Runtime.Caching.Expiration expiration)
-        {
-            return expiration.ExpireAfter > TimeSpan.Zero ? expiration.ExpireAfter : TimeSpan.Zero;
-        }
-
         protected override CacheItem<T> GetCacheItemInternal(string key)
         {
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
 
             try
             {
-                var value = _cache.GetCacheItem(key);
+                var value = _cache.GetCacheItem(GetItemKey(key));
 
                 if (value == null)
                     return null;
 
-                return new CacheItem<T>(
-                    key,
-                    value.GetValue<T>(),
-                    ToItemExpirationMode(value.Expiration),
-                    ToItemExpirationTimeout(value.Expiration));
+                return ToCacheManagerItem(value);
             }
             catch (Exception ex)
             {
@@ -227,17 +219,12 @@ namespace NCache.OSS.CacheManager.Core
         {
             if (string.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
             if (string.IsNullOrEmpty(region)) throw new ArgumentNullException(nameof(region));
-            var value = _cache.GetCacheItem(key);
+            var value = _cache.GetCacheItem(GetItemKey(key, region));
 
             if (value == null)
                 return null;
 
-            return new CacheItem<T>(
-                    key,
-                    region,
-                    value.GetValue<T>(),
-                    ToItemExpirationMode(value.Expiration),
-                    ToItemExpirationTimeout(value.Expiration));
+            return ToCacheManagerItem(value);
         }
 
         protected override bool RemoveInternal(string key)
@@ -246,10 +233,11 @@ namespace NCache.OSS.CacheManager.Core
 
             try
             {
-                if (!_cache.Contains(key))
+                var cacheKey = GetItemKey(key);
+                if (!_cache.Contains(cacheKey))
                     return false;
 
-                _cache.Remove(key);
+                _cache.Remove(cacheKey);
 
                 _logger.LogInformation($"REMOVE key={key}");
 
@@ -269,10 +257,11 @@ namespace NCache.OSS.CacheManager.Core
 
             try
             {
-                if (!_cache.Contains(key))
+                var cacheKey = GetItemKey(key, region);
+                if (!_cache.Contains(cacheKey))
                     return false;
 
-                _cache.Remove(key);
+                _cache.Remove(cacheKey);
 
                 if (!string.IsNullOrEmpty(region))
                 {
@@ -317,7 +306,7 @@ namespace NCache.OSS.CacheManager.Core
             {
                 var cacheItem = CreateCacheItem(item);
 
-                _cache.Insert(item.Key, cacheItem);
+                _cache.Insert(GetItemKey(item.Key, item.Region), cacheItem);
 
                 if (!string.IsNullOrEmpty(item.Region))
                 {
@@ -365,28 +354,21 @@ namespace NCache.OSS.CacheManager.Core
             }
         }
 
-        private ExpirationMode ToCacheManagerExpiration(ExpirationType source)
+        private CacheItem<T> ToCacheManagerItem(Alachisoft.NCache.Client.CacheItem stored)
         {
-            switch (source)
+            // NCache can return an entry whose absolute lifetime has elapsed.
+                 if (stored.Expiration != null && stored.Expiration.Type == ExpirationType.Absolute
+                && stored.Expiration.ExpireAfter <= TimeSpan.Zero)
             {
-                case ExpirationType.None:
-                    return ExpirationMode.None;
-
-                case ExpirationType.Absolute:
-                    return ExpirationMode.Absolute;
-
-                case ExpirationType.Sliding:
-                    return ExpirationMode.Sliding;
-
-                default:
-                    throw new NotSupportedException(
-                        $"Unsupported expiration type: {source}");
+                return null;
             }
+
+            return stored.GetValue<NCacheCacheItem>().Restore<T>();
         }
 
         private Alachisoft.NCache.Client.CacheItem CreateCacheItem(CacheItem<T> item)
         {
-            Alachisoft.NCache.Client.CacheItem cacheItem = new Alachisoft.NCache.Client.CacheItem(item.Value);
+            var cacheItem = new Alachisoft.NCache.Client.CacheItem(NCacheCacheItem.From(item));
 
             var expirationType = ToNCacheExpiration(item.ExpirationMode);
 
@@ -400,6 +382,14 @@ namespace NCache.OSS.CacheManager.Core
             }
 
             return cacheItem;
+        }
+
+        private static string GetItemKey(string key, string region = null)
+        {
+            //attach a default value or the given region to the key
+            return string.IsNullOrEmpty(region)
+                ? $"NCacheCMItem:0:{key}"
+                : $"NCacheCMItem:1:{region.Length.ToString()}:{region}{key}";
         }
 
         private string GetRegionKey(string region)
