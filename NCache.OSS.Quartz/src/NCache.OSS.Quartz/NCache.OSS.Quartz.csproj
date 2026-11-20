@@ -24,6 +24,7 @@
     <PackageReference Include="Alachisoft.NCache.Opensource.SDK" Version="5.3.603" />
     <PackageReference Include="NCache.OSS.DistributedLock" Version="5.3.603" />
     <PackageReference Include="Quartz" Version="4.6.2" />
+	<InternalsVisibleTo Include="NCache.OSS.Quartz.Tests" />
   </ItemGroup>
 
   <ItemGroup>
