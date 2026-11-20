@@ -53,7 +53,19 @@
 	</ItemGroup>
 
   <ItemGroup>
+	  <None Include="README.md"
+          Pack="true"
+          PackagePath="\" />
+
+	  <None Include="Icon.png"
+			Pack="true"
+			PackagePath="\" />
+
+	  <None Include="LICENSE.txt"
+			Pack="true"
+			PackagePath="\" />
     <None Update="client.ncconf">
+		
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="config.ncconf">
