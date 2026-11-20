@@ -45,6 +45,22 @@ write_client_config() {
 EOF
 }
 
+CONTAINER="${NCACHE_CONTAINER:-ncache}"
+TOOLS="/opt/ncache/bin/tools"
+
+# Every project shares one cache, so empty it before each project. Otherwise a project
+# can trip over entries an earlier one left behind (e.g. Quartz's cleanup failing to
+# deserialize Hangfire's types, which it doesn't load).
+# The tools report failures on stdout and do not always exit non-zero, so check both.
+clear_cache() {
+  local output
+  if ! output=$(docker exec "$CONTAINER" "$TOOLS/clear-cache" -Name "$NCACHE_CACHE_NAME" -Force 2>&1) \
+      || printf '%s' "$output" | grep -qiE "error|fail|exception"; then
+    echo "$output"
+    return 1
+  fi
+}
+
 mapfile -t projects < <(grep -rl --include=*.csproj "Microsoft.NET.Test.Sdk" . | sort)
 
 passed=()
@@ -60,6 +76,13 @@ for project in "${projects[@]}"; do
   dir=$(dirname "$project")
   name=$(basename "$dir")
   echo "::group::$name ($FRAMEWORK)"
+
+  if ! clear_cache; then
+    echo "::error::Could not clear cache '$NCACHE_CACHE_NAME' before $name."
+    failed+=("$name (cache clear)")
+    echo "::endgroup::"
+    continue
+  fi
 
   if dotnet build "$project" --configuration "$CONFIGURATION" --framework "$FRAMEWORK"; then
     output="$dir/bin/$CONFIGURATION/$FRAMEWORK"
