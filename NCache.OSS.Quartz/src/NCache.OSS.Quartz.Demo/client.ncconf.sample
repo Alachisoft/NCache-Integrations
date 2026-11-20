@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SAMPLE NCache client configuration.
+
+  By default the demo uses the machine-wide client configuration of the NCache
+  installation (%NCHOME%\config\client.ncconf). The NCache client also honours a
+  client.ncconf in the process's current directory / base directory, which is why this
+  file is named *.sample: with `dotnet run` the current directory is the project folder,
+  and a client.ncconf here would silently replace the installed configuration.
+
+  To give the demo its own configuration: copy this file to client.ncconf next to the
+  built NCache.OSS.Quartz.Demo.dll (or add it to the .csproj with
+  CopyToOutputDirectory="PreserveNewest"), point <server name="..."/> at your NCache OSS
+  server(s) and keep the cache id in sync with Quartz:NCache:CacheName in appsettings.json.
+-->
+<configuration>
+  <ncache-server connection-retries="5" retry-connection-delay="0" retry-interval="1" client-request-timeout="90" connection-timeout="5" port="9800" />
+  <cache id="defaultCache" enable-client-logs="False" log-level="error">
+    <server name="20.200.20.44"/>
+  </cache>
+</configuration>
