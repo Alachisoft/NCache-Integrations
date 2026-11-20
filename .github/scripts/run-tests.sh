@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 #
-# Builds and runs every xunit project in the repo that targets net8.0 against the
-# NCache server started by start-ncache.sh. Keeps going when a project fails so one
-# run reports every broken integration, then exits non-zero if any of them failed.
+# Builds and runs every xunit project in the repo that targets a modern .NET
+# framework against the NCache server started by start-ncache.sh. Keeps going when a
+# project fails so one run reports every broken integration, then exits non-zero if
+# any of them failed.
 #
 # The .NET Framework test projects (net48) need Windows and cannot reach the Linux
-# container, so only the net8.0 target of each project is built and run here.
+# container, so only one modern .NET target of each project is built and run here.
 
 set -uo pipefail
 
@@ -13,7 +14,22 @@ set -uo pipefail
 : "${NCACHE_CACHE_NAME:?NCACHE_CACHE_NAME is not set}"
 
 CONFIGURATION="${CONFIGURATION:-Release}"
-FRAMEWORK="net8.0"
+
+# Frameworks the workflow installs an SDK for, in order of preference. A project that
+# targets several of them is run once, on the first one listed here.
+FRAMEWORKS=(net8.0 net10.0)
+
+# Prints the first framework from FRAMEWORKS that the project targets, or nothing.
+pick_framework() {
+  local targets
+  targets=$(sed -n 's/.*<TargetFrameworks\{0,1\}>\([^<]*\)<.*/\1/p' "$1" | head -n 1 | tr -d '[:space:]')
+  for framework in "${FRAMEWORKS[@]}"; do
+    if [[ ";$targets;" == *";$framework;"* ]]; then
+      echo "$framework"
+      return
+    fi
+  done
+}
 
 # Tests connect by cache name only, so each output folder gets a client.ncconf that
 # points at the container.
@@ -29,20 +45,44 @@ write_client_config() {
 EOF
 }
 
+CONTAINER="${NCACHE_CONTAINER:-ncache}"
+TOOLS="/opt/ncache/bin/tools"
+
+# Every project shares one cache, so empty it before each project. Otherwise a project
+# can trip over entries an earlier one left behind (e.g. Quartz's cleanup failing to
+# deserialize Hangfire's types, which it doesn't load).
+# The tools report failures on stdout and do not always exit non-zero, so check both.
+clear_cache() {
+  local output
+  if ! output=$(docker exec "$CONTAINER" "$TOOLS/clear-cache" -Name "$NCACHE_CACHE_NAME" -Force 2>&1) \
+      || printf '%s' "$output" | grep -qiE "error|fail|exception"; then
+    echo "$output"
+    return 1
+  fi
+}
+
 mapfile -t projects < <(grep -rl --include=*.csproj "Microsoft.NET.Test.Sdk" . | sort)
 
 passed=()
 failed=()
 
 for project in "${projects[@]}"; do
-  if ! grep -Eq "<TargetFrameworks?>[^<]*${FRAMEWORK//./\\.}[;<]" "$project"; then
-    echo "::notice::Skipping $project (no $FRAMEWORK target)"
+  FRAMEWORK=$(pick_framework "$project")
+  if [ -z "$FRAMEWORK" ]; then
+    echo "::notice::Skipping $project (no ${FRAMEWORKS[*]} target)"
     continue
   fi
 
   dir=$(dirname "$project")
   name=$(basename "$dir")
-  echo "::group::$name"
+  echo "::group::$name ($FRAMEWORK)"
+
+  if ! clear_cache; then
+    echo "::error::Could not clear cache '$NCACHE_CACHE_NAME' before $name."
+    failed+=("$name (cache clear)")
+    echo "::endgroup::"
+    continue
+  fi
 
   if dotnet build "$project" --configuration "$CONFIGURATION" --framework "$FRAMEWORK"; then
     output="$dir/bin/$CONFIGURATION/$FRAMEWORK"

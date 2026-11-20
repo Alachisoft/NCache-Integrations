@@ -1,0 +1,25 @@
+<!--
+  SAMPLE server-side cache definition for NCache.OSS.Quartz (reference only; not copied to output).
+
+  Notes for a cache that backs a Quartz job store:
+  * eviction: the store marks every item NotRemovable, which the priority policy
+    honours; if you switch to LRU/LFU disable eviction or size the cache for the
+    scheduling data plus whatever else shares it.
+  * cleanup interval: absolute expirations (used by the TRIGGER_ACCESS/STATE_ACCESS
+    locks' crash-safety expiry) are enforced by this thread, so a crashed lock holder
+    blocks the cluster for up to lockExpiration + this interval.
+-->
+<configuration>
+  <cache-config cache-name="defaultCache" alias="" config-id="147de838-263d-4fd6-bd91-edcbf6cf950f" config-version="0" store-type="distributed-cache">
+    <cache-settings inproc="False" data-format="Serialized" serialization="Json">
+      <logging enable-logs="True" trace-errors="True" trace-debug="False" log-path=""/>
+      <performance-counters enable-counters="True" snmp-port="0"/>
+      <compression enable-compression="False" threshold="100kb"/>
+      <cleanup interval="15sec"/>
+      <storage type="heap" cache-size="1024mb"/>
+      <eviction-policy enabled-eviction="True" default-priority="normal" policy="priority" eviction-ratio="5%"/>
+      <cache-topology topology="replicated"/>
+      <client-death-detection enable="False" grace-interval="60sec"/>
+    </cache-settings>
+  </cache-config>
+</configuration>

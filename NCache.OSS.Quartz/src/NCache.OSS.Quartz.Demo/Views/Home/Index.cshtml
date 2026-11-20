@@ -1,0 +1,721 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCache.OSS.Quartz Demo</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; width: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.6;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app { display: flex; height: 100vh; }
+
+        .sidebar {
+            width: 440px;
+            min-width: 440px;
+            background: #0d0d0d;
+            border-right: 1px solid #1a1a1a;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header { padding: 18px 24px; border-bottom: 1px solid #1a1a1a; background: #111; }
+
+        .sidebar-header h3 {
+            color: #00d4aa;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .sidebar-header h3::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #00d4aa;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00d4aa;
+            animation: pulse 2s infinite;
+        }
+
+        @@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        .log {
+            flex: 1;
+            background: #080808;
+            padding: 16px 20px;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 12px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.8;
+        }
+
+        .log .success { color: #7ee787; }
+        .log .error { color: #ff7b72; }
+        .log .info { color: #79c0ff; }
+        .log .warn { color: #ffa657; }
+        .log .muted { color: #666; }
+        .log .tag { color: #888; }
+
+        .sidebar-actions {
+            padding: 14px 20px;
+            border-top: 1px solid #1a1a1a;
+            display: flex;
+            gap: 10px;
+            background: #111;
+        }
+
+        .sidebar-actions button {
+            flex: 1;
+            background: #1a1a1a;
+            color: #888;
+            border: 1px solid #2a2a2a;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .sidebar-actions button:hover { background: #222; color: #fff; border-color: #444; }
+        .sidebar-actions button.refresh { color: #00d4aa; border-color: #004d3d; }
+        .sidebar-actions button.refresh:hover { background: #002a22; border-color: #00d4aa; }
+
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #0a0a0a; }
+        .main-scroll { flex: 1; overflow-y: auto; padding: 24px 28px; }
+
+        header {
+            background: #111;
+            border: 1px solid #1f1f1f;
+            padding: 22px 28px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        header h1 { font-size: 20px; margin-bottom: 6px; color: #fff; font-weight: 700; letter-spacing: -0.3px; }
+        header p { color: #777; font-size: 13px; }
+        header a { color: #00d4aa; text-decoration: none; font-weight: 600; }
+        header a:hover { text-decoration: underline; }
+
+        .scheduler-info {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 11px;
+            color: #666;
+            text-align: right;
+            white-space: nowrap;
+            line-height: 1.7;
+        }
+
+        .scheduler-info b { color: #aaa; font-weight: 600; }
+        .scheduler-info .ok { color: #7ee787; }
+        .scheduler-info .bad { color: #ff7b72; }
+
+        .stats { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; margin-bottom: 20px; }
+
+        .stat-box {
+            background: #111;
+            border: 1px solid #1f1f1f;
+            padding: 14px 8px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .stat-box:hover { border-color: #333; background: #161616; }
+        .stat-box .number { font-size: 22px; font-weight: 700; color: #fff; }
+        .stat-box .label { font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 0.8px; margin-top: 4px; font-weight: 600; }
+
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+
+        .card {
+            background: #111;
+            border: 1px solid #1f1f1f;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.2s, transform 0.15s;
+        }
+
+        .card:hover { border-color: #2a2a2a; transform: translateY(-2px); }
+
+        .card h3 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card h3::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 2px; flex-shrink: 0; }
+        .card:nth-child(1) h3::before { background: #3498db; }
+        .card:nth-child(2) h3::before { background: #27ae60; }
+        .card:nth-child(3) h3::before { background: #f39c12; }
+        .card:nth-child(4) h3::before { background: #e74c3c; }
+        .card:nth-child(5) h3::before { background: #9b59b6; }
+        .card:nth-child(6) h3::before { background: #1abc9c; }
+        .card:nth-child(7) h3::before { background: #e67e22; }
+        .card:nth-child(8) h3::before { background: #3498db; }
+        .card:nth-child(9) h3::before { background: #e74c3c; }
+        .card:nth-child(10) h3::before { background: #27ae60; }
+        .card:nth-child(11) h3::before { background: #f39c12; }
+        .card:nth-child(12) h3::before { background: #ff7b72; }
+        .card:nth-child(13) h3::before { background: #9b59b6; }
+        .card:nth-child(14) h3::before { background: #1abc9c; }
+        .card:nth-child(15) h3::before { background: #e67e22; }
+
+        .card p { color: #777; font-size: 12px; margin-bottom: 14px; line-height: 1.55; flex: 1; }
+        .card-actions { margin-top: auto; display: flex; flex-direction: column; gap: 6px; }
+
+        input[type="text"], select {
+            background: #0a0a0a;
+            color: #e0e0e0;
+            border: 1px solid #2a2a2a;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12.5px;
+            width: 100%;
+            margin-bottom: 6px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, select:focus { border-color: #444; }
+        input[type="text"]::placeholder { color: #444; }
+
+        button {
+            background: #1a1a1a;
+            color: #ccc;
+            border: 1px solid #2a2a2a;
+            padding: 9px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12.5px;
+            font-weight: 500;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        button:hover { background: #222; border-color: #555; color: #fff; }
+        button.primary { background: #0d3b2e; border-color: #00d4aa; color: #00d4aa; }
+        button.primary:hover { background: #00d4aa; color: #000; }
+        button.secondary { background: #3b0d0d; border-color: #ff7b72; color: #ff7b72; }
+        button.secondary:hover { background: #ff7b72; color: #000; }
+        button.success { background: #0d3b1f; border-color: #7ee787; color: #7ee787; }
+        button.success:hover { background: #7ee787; color: #000; }
+        button.warning { background: #3b280d; border-color: #ffa657; color: #ffa657; }
+        button.warning:hover { background: #ffa657; color: #000; }
+
+        .panel { background: #111; border: 1px solid #1f1f1f; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .panel h2 { color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .panel .hint { color: #666; font-size: 12px; margin-bottom: 12px; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { text-align: left; color: #555; font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; padding: 6px 8px; border-bottom: 1px solid #1f1f1f; }
+        td { padding: 7px 8px; border-bottom: 1px solid #161616; vertical-align: top; color: #bbb; }
+        tr:hover td { background: #141414; }
+        td.mono { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 11.5px; }
+        td .sub { color: #666; font-size: 11px; }
+        td .flag { display: inline-block; font-size: 9px; padding: 1px 6px; border-radius: 4px; border: 1px solid #2a2a2a; color: #888; margin-left: 4px; vertical-align: middle; }
+
+        .state { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 10.5px; font-weight: 600; }
+        .state.Normal { background: #0d3b2e; color: #00d4aa; }
+        .state.Executing, .state.Alive { background: #0d3b1f; color: #7ee787; }
+        .state.Paused { background: #3b280d; color: #ffa657; }
+        .state.Blocked { background: #2b2b0d; color: #e6e657; }
+        .state.Awaiting { background: #1c1a3b; color: #b8a9ff; }
+        .state.Error, .state.Failed { background: #3b0d0d; color: #ff7b72; }
+        .state.Complete, .state.None, .state.Overdue { background: #1a1a1a; color: #888; }
+
+        .row-actions { display: flex; gap: 4px; }
+        .row-actions button { width: auto; padding: 4px 10px; font-size: 11px; border-radius: 6px; }
+        .empty { color: #555; font-size: 12px; padding: 10px 8px; }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
+
+        @@media (max-width: 1200px) { .grid { grid-template-columns: repeat(2, 1fr); } .stats { grid-template-columns: repeat(4, 1fr); } }
+        @@media (max-width: 900px) {
+            .app { flex-direction: column; }
+            .sidebar { width: 100%; min-width: auto; height: 240px; min-height: 240px; border-right: none; border-bottom: 1px solid #1a1a1a; }
+            .grid { grid-template-columns: repeat(2, 1fr); }
+            header { flex-direction: column; }
+            .scheduler-info { text-align: left; }
+        }
+        @@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2, 1fr); } .main-scroll { padding: 16px; } }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>Response &amp; Execution Log</h3>
+            </div>
+            <div class="log" id="log"></div>
+            <div class="sidebar-actions">
+                <button onclick="clearLog()">Clear</button>
+                <button class="refresh" onclick="loadStats()">Refresh Stats</button>
+            </div>
+        </aside>
+
+        <div class="main">
+            <div class="main-scroll">
+                <header>
+                    <div>
+                        <h1>Quartz.NET NCache Job Store Demo</h1>
+                        <p>Every job and trigger on this page is persisted in NCache by <b>NCache.OSS.Quartz</b>. Open the <a href="/quartz" target="_blank">Quartz Dashboard</a> in another tab to watch them in real time, or start a second copy of this app (profile <i>second-node</i>) and the two schedulers share the work.</p>
+                    </div>
+                    <div class="scheduler-info" id="scheduler-info">loading…</div>
+                </header>
+
+                <div class="stats" id="stats">
+                    <div class="stat-box"><div class="number" id="stat-jobs">-</div><div class="label">Jobs</div></div>
+                    <div class="stat-box"><div class="number" id="stat-triggers">-</div><div class="label">Triggers</div></div>
+                    <div class="stat-box"><div class="number" id="stat-executing">-</div><div class="label">Executing</div></div>
+                    <div class="stat-box" title="Quartz's JobsExecuted counts a job when it is fired, so this moves the moment a run starts"><div class="number" id="stat-fired">-</div><div class="label">Fired</div></div>
+                    <div class="stat-box" title="Runs that finished on this node (the demo's job listener)"><div class="number" id="stat-completed">-</div><div class="label">Completed</div></div>
+                    <div class="stat-box"><div class="number" id="stat-paused">-</div><div class="label">Paused</div></div>
+                    <div class="stat-box"><div class="number" id="stat-blocked">-</div><div class="label">Blocked</div></div>
+                    <div class="stat-box"><div class="number" id="stat-errors">-</div><div class="label">In Error</div></div>
+                    <div class="stat-box"><div class="number" id="stat-awaiting">-</div><div class="label">Awaiting</div></div>
+                    <div class="stat-box"><div class="number" id="stat-nodes">-</div><div class="label">Cluster Nodes</div></div>
+                </div>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>1. Fire-and-Forget</h3>
+                        <p>Schedules a welcome email job with a trigger that starts now. The job is not durable, so the store removes it once it has run.</p>
+                        <div class="card-actions">
+                            <input type="text" id="email" placeholder="user@example.com" value="ashar@company.com">
+                            <input type="text" id="userName" placeholder="User Name" value="Ashar">
+                            <button class="primary" onclick="post('enqueue-email', {email: val('email'), userName: val('userName')})">Send Email</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>2. Delayed Job</h3>
+                        <p>Schedules a monthly report generation 15 seconds from now (<code>StartAt</code>). Restart the app in between: the trigger survives in the cache.</p>
+                        <div class="card-actions">
+                            <button class="success" onclick="post('schedule-report')">Schedule Report (+15s)</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>3. Recurring Job / Reschedule</h3>
+                        <p>Registers a durable job with a cron trigger (Quartz cron has seconds first: <code>sec min hour dom mon dow</code>). Re-registering the same id <b>reschedules in place</b> (<code>ReplaceTrigger</code>): state and last fire time survive. <i>Update details</i> shows the one call the store does not support; <i>Update priority</i> makes the same change the supported way (rebuild the trigger, <code>RescheduleJob</code>).</p>
+                        <div class="card-actions">
+                            <select id="cronPreset" onchange="handleCronChange()">
+                                <option value="0 * * * * ?">Every minute (0 * * * * ?)</option>
+                                <option value="*/15 * * * * ?">Every 15 seconds</option>
+                                <option value="0 */5 * * * ?">Every 5 minutes</option>
+                                <option value="0 0 * * * ?">Every hour (on the hour)</option>
+                                <option value="0 0 0 * * ?">Every day at midnight</option>
+                                <option value="0 0 9 ? * MON">Every Monday at 9:00 AM</option>
+                                <option value="custom">Custom cron...</option>
+                            </select>
+                            <input type="text" id="customCron" placeholder="0 * * * * ?" value="0 * * * * ?" style="display:none;">
+                            <input type="text" id="recurringJobId" placeholder="Job ID (e.g., cleanup-old-logs)" value="cleanup-old-logs">
+                            <button class="warning" onclick="postRecurring()">Add / Reschedule Recurring Job</button>
+                            <button onclick="post('update-details', {group: 'recurring', name: val('recurringJobId') || 'cleanup-old-logs', priority: 9})">Update details (UpdateTriggerDetails)</button>
+                            <button onclick="post('update-details-reschedule', {group: 'recurring', name: val('recurringJobId') || 'cleanup-old-logs', priority: 9})">Update priority (rebuild + RescheduleJob)</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>4. Failing Job + Retries</h3>
+                        <p>Schedules a job that always throws, with a trigger retry policy of 3 attempts 5s apart. The store persists the retry instant and attempt count between them.</p>
+                        <div class="card-actions">
+                            <button class="secondary" onclick="post('failing-job')">Trigger Failure</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>5. Continuations (Quartz 4.2)</h3>
+                        <p>A report plus two follow-ups built with <code>StartAfter(parent)</code>: the notification runs only if the report succeeded, the alert only if it failed. Both sit in the store as <b>Awaiting</b> until the report's firing ends; the store releases the one the outcome names and deletes the other.</p>
+                        <div class="card-actions">
+                            <button class="primary" onclick="post('continuation', {parentFails: false})">Chain (report succeeds)</button>
+                            <button class="secondary" onclick="post('continuation', {parentFails: true})">Chain (report fails)</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>6. Non-Concurrent Job</h3>
+                        <p>A <code>[DisallowConcurrentExecution]</code> job with <b>two</b> triggers, each firing every second five times, each run ~1s. While one trigger's run is in progress (it reads <b>Executing</b>) the store keeps the other <b>Blocked</b>, so nothing overlaps — even across nodes. Watch the Blocked counter and the second trigger's row.</p>
+                        <div class="card-actions">
+                            <button class="primary" onclick="post('non-concurrent')">Critical Order ×2 triggers ×5</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>7. Priorities + Execution Limits</h3>
+                        <p>Three jobs due at the same instant with priorities 1, 5 and 10, all in the <code>serial</code> execution group (limit 1, cluster-wide). The store hands them out highest priority first and one at a time: high → normal → low.</p>
+                        <div class="card-actions">
+                            <button class="primary" onclick="post('priority')">Schedule 3 Prioritised Jobs</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>8. Bulk Schedule + Node Limit</h3>
+                        <p>Schedules 25 email jobs in one <code>ScheduleJobs</code> call — a single locked, bulk write. They sit in the <code>emails</code> execution group (limit 3, <b>node</b> scope), so each node starts them in waves of three.</p>
+                        <div class="card-actions">
+                            <button class="primary" onclick="post('bulk-emails')">Bulk 25 Emails</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>9. Long-Running Job</h3>
+                        <p>A 30-second job marked <code>RequestsRecovery</code>. While it runs the job shows <i>executing</i>, its one-shot trigger reads <b>Executing</b>, and the <b>Fired</b> counter has already moved (Quartz counts a job when it fires; <b>Completed</b> moves when it finishes). It cannot be paused — the trigger has already fired for the last time — but the row gets an <b>Interrupt</b> button; card 12 crashes a node mid-run for real.</p>
+                        <div class="card-actions">
+                            <button class="primary" onclick="post('long-job')">Start Long Job</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>10. Calendars</h3>
+                        <p>A calendar excludes times from a schedule. The store persists it, links triggers to it by name and recomputes their fire times when it is replaced. <i>Skip today</i> makes the effect visible right now: next fire jumps to tomorrow.</p>
+                        <div class="card-actions">
+                            <select id="calendarMode">
+                                <option value="weekends">Skip weekends (WeeklyCalendar)</option>
+                                <option value="today">Skip today (HolidayCalendar)</option>
+                            </select>
+                            <button class="primary" onclick="post('calendar-job', {mode: val('calendarMode')})">Schedule Calendar Job (every 30s)</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>11. Preferred Node (Affinity)</h3>
+                        <p>Pins a job to one scheduler instance: other nodes skip it while that node is alive and take over if it dies. <i>Auto</i> pins to whichever node fires it first. Needs a second node to be interesting.</p>
+                        <div class="card-actions">
+                            <select id="pinNode"><option value="auto">Auto (claimed by first node to fire)</option></select>
+                            <button class="primary" onclick="post('pinned-job', {node: val('pinNode')})">Schedule Pinned Job (every 10s)</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>12. Crash This Node (Recovery)</h3>
+                        <p>Starts a 20-second <code>RequestsRecovery</code> job pinned to <b>this</b> node, then kills this process 4 seconds later — no shutdown. Open the other node's page: once it notices the missed check-ins (≈ check-in interval + threshold) it creates a <code>RECOVERING_JOBS</code> trigger and re-runs the job with <code>[RECOVERING]</code>, and jobs pinned to the dead node fail over to it.</p>
+                        <div class="card-actions">
+                            <button class="secondary" onclick="if (confirm('Kill this node\'s process in 4 seconds?')) post('crash')">Start Job + Crash This Node</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>13. Misfires</h3>
+                        <p>Schedules a trigger every 10s, pauses it immediately and resumes it after the misfire threshold (15s in this demo). On resume the store applies the misfire instruction you pick: fire once now, skip to the next occurrence, or fire every missed one.</p>
+                        <div class="card-actions">
+                            <select id="misfireInstruction">
+                                <option value="FireAndProceed">FireAndProceed — fire once now, then continue</option>
+                                <option value="DoNothing">DoNothing — skip to the next occurrence</option>
+                                <option value="IgnoreMisfires">IgnoreMisfires — fire every missed occurrence</option>
+                            </select>
+                            <button class="warning" onclick="post('misfire', {instruction: val('misfireInstruction')})">Run Misfire Scenario (~27s)</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>14. Finite Repeat / Complete</h3>
+                        <p><i>3 fires</i>: after the last occurrence Quartz deletes the trigger and the durable job stays with no triggers. <i>Complete</i>: the job asks Quartz to unschedule its trigger (<code>UnscheduleFiringTrigger</code>), so the store keeps it in the <b>Complete</b> state.</p>
+                        <div class="card-actions">
+                            <button class="success" onclick="post('finite-job')">Schedule 3 Fires (5s apart)</button>
+                            <button class="success" onclick="post('complete-job')">Job That Completes Its Trigger</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>15. Other Trigger Kinds</h3>
+                        <p>Besides cron and simple, the store persists daily-time-interval, calendar-interval and recurrence (RRULE) triggers — including their time zones.</p>
+                        <div class="card-actions">
+                            <select id="intervalKind">
+                                <option value="daily">DailyTimeIntervalTrigger — every 30s in a daily window</option>
+                                <option value="calendar">CalendarIntervalTrigger — every 1 minute</option>
+                                <option value="recurrence">RecurrenceTrigger — FREQ=MINUTELY</option>
+                            </select>
+                            <button class="primary" onclick="post('interval-job', {kind: val('intervalKind')})">Schedule</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>16. Overlap Policy (Quartz 4.3)</h3>
+                        <p>A trigger that fires every 2s, six times, for a job that takes 5s, so occurrences come due while a run is in progress. The trigger's <code>OverlapPolicy</code> decides what the store does with them: <b>Skip</b> drops them (<i>SKIP</i> in the log), <b>BufferOne</b> holds the trigger <b>Blocked</b> and fires one when the run ends, <b>CancelPrevious</b> interrupts the run and starts the new one, <b>AllowAll</b> lets them overlap.</p>
+                        <div class="card-actions">
+                            <select id="overlapPolicy">
+                                <option value="Skip">Skip — drop the occurrence</option>
+                                <option value="BufferOne">BufferOne — hold one back, run it next</option>
+                                <option value="CancelPrevious">CancelPrevious — interrupt the running one</option>
+                                <option value="AllowAll">AllowAll — run side by side</option>
+                            </select>
+                            <button class="primary" onclick="post('overlap', {policy: val('overlapPolicy')})">Schedule Slow Job (6 × 2s, 5s each)</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>17. Pause With a Reason (Quartz 4.3)</h3>
+                        <p>A pause can now say why and who asked. The store keeps that record on the trigger (and on a paused group) until it is resumed; the <b>Pause</b> buttons in the table and <i>Pause All</i> below send what is typed here, and the paused trigger's row shows it. Leave both blank for the old reasonless pause.</p>
+                        <div class="card-actions">
+                            <input type="text" id="pauseReason" placeholder="Reason" value="maintenance window">
+                            <input type="text" id="pauseBy" placeholder="Requested by" value="ops@demo">
+                            <button class="warning" onclick="pauseAll()">Pause All With This Reason</button>
+                            <button class="success" onclick="post('resume-all')">Resume All (forgets the reasons)</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>18. Progress Reporting (Quartz 4.3)</h3>
+                        <p>A 20-second job that calls <code>context.ReportProgress(percent, message)</code> every second. The scheduler hands the latest report to the store, which keeps it on the firing record, so the job's row shows the percentage from <b>any</b> node of the cluster, not just the one running it.</p>
+                        <div class="card-actions">
+                            <button class="primary" onclick="post('progress-job')">Start Reporting Job</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>19. Schedule With a Conflict Rule (Quartz 4.3)</h3>
+                        <p>Schedules the same trigger key (<code>conflict.debounced</code>) again and again. <code>ScheduleTrigger(trigger, rule)</code> lets the store decide under its lock what happens to the one already stored: <b>Throw</b> refuses, <b>Replace</b> debounces (last call wins), <b>Keep</b> is an idempotent enqueue, <b>KeepEarlier</b> keeps whichever fires first. The response says Created, Replaced or Kept.</p>
+                        <div class="card-actions">
+                            <select id="conflictRule">
+                                <option value="Keep">Keep — leave the stored trigger</option>
+                                <option value="Replace">Replace — last call wins</option>
+                                <option value="KeepEarlier">KeepEarlier — earliest fire time wins</option>
+                                <option value="Throw">Throw — refuse a second one</option>
+                            </select>
+                            <select id="conflictDelay">
+                                <option value="30">fire in 30 seconds</option>
+                                <option value="10">fire in 10 seconds</option>
+                                <option value="90">fire in 90 seconds</option>
+                            </select>
+                            <button class="primary" onclick="post('schedule-conflict', {rule: val('conflictRule'), delaySeconds: Number(val('conflictDelay'))})">Schedule conflict.debounced</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>20. Per-Trigger Misfire Threshold (Quartz 4.6)</h3>
+                        <p>Two identical jobs, every 30s, stored <b>paused</b> in the same write that stores them (<code>ScheduleJobOptions.PauseReason</code>). One trigger has its own 3s threshold (<code>WithMisfireThreshold</code>); the other uses the store's (15s in this demo). Both resume about 9s after their fire time: <code>-own</code> is past its threshold, misfires and skips to its next occurrence; <code>-store</code> is within the store's and runs late, right away.</p>
+                        <div class="card-actions">
+                            <button class="warning" onclick="post('misfire-threshold')">Run Misfire Threshold Scenario (~10s)</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>21. Served / Refused Execution Groups (Quartz 4.6)</h3>
+                        <p>A node can refuse execution groups (<code>RefuseExecutionGroups</code>) or list only the ones it serves (<code>ServeExecutionGroups</code>); the store never hands it a trigger outside them and leaves such a trigger untouched for a node that serves it. Here the <code>second-node</code> profile refuses <code>reports</code>. Schedules 4 <code>reports</code> and 4 <code>emails</code> jobs: with both nodes up, <code>reports</code> only runs on <b>demo-node-1</b>, <code>emails</code> on either — the log names the node of every run.</p>
+                        <div class="card-actions">
+                            <button class="primary" onclick="post('execution-groups')">Schedule 4 reports + 4 emails Jobs</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>Stored jobs &amp; triggers</h2>
+                    <div class="hint">Read back from the NCache job store every 3 seconds. Pause / resume / delete act through the scheduler, i.e. through the store.</div>
+                    <table>
+                        <thead>
+                            <tr><th>Job</th><th>Trigger</th><th>State</th><th>Schedule</th><th>Next fire</th><th>Last fire</th><th>Prio</th><th>Calendar / Node / Group</th><th>Retry</th><th></th></tr>
+                        </thead>
+                        <tbody id="jobs-body"><tr><td colspan="10" class="empty">loading…</td></tr></tbody>
+                    </table>
+                    <div class="row-actions" style="margin-top:12px; justify-content:flex-end;">
+                        <button class="warning" onclick="pauseAll()">Pause All</button>
+                        <button class="success" onclick="post('resume-all')">Resume All</button>
+                        <button class="secondary" onclick="if (confirm('Remove every job, trigger and calendar from the store?')) post('clear')">Clear Store</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>Cluster</h2>
+                    <div class="hint">Every scheduler instance that checked in on this cache under the scheduler name. A node that stops checking in is marked Failed and its in-flight work is taken over by the others.</div>
+                    <table>
+                        <thead><tr><th>Instance</th><th>State</th><th>Last check-in</th><th>Interval</th></tr></thead>
+                        <tbody id="nodes-body"><tr><td colspan="4" class="empty">loading…</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const log = document.getElementById('log');
+        let logSince = 0;
+
+        function val(id) { return document.getElementById(id).value; }
+        function time(d) { return (d ? new Date(d) : new Date()).toLocaleTimeString(); }
+        function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+        function write(msg, type = 'info', at = null, tag = null) {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `<span class="muted">[${time(at)}]</span> ${tag ? `<span class="tag">${esc(tag)}</span> ` : ''}${esc(msg)}`;
+            log.appendChild(div);
+            while (log.childElementCount > 600) log.removeChild(log.firstChild);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function clearLog() { log.innerHTML = ''; }
+
+        async function call(method, endpoint, body = null) {
+            try {
+                const res = await fetch(`/api/jobs/${endpoint}`, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: body ? JSON.stringify(body) : null
+                });
+                const data = await res.json();
+                write(`${endpoint}: ${JSON.stringify(data)}`, res.ok ? 'success' : 'error');
+            } catch (e) {
+                write(`${endpoint}: ERROR - ${e.message}`, 'error');
+            }
+            await Promise.all([loadStats(), loadLog()]);
+        }
+
+        function post(endpoint, body = null) { return call('POST', endpoint, body); }
+        function delJob(group, name) { return call('DELETE', `delete/${encodeURIComponent(group)}/${encodeURIComponent(name)}`); }
+        function pauseDetails() { return { reason: val('pauseReason'), requestedBy: val('pauseBy') }; }
+        function pauseJob(group, name) { return call('POST', `pause/${encodeURIComponent(group)}/${encodeURIComponent(name)}`, pauseDetails()); }
+        function pauseAll() { return call('POST', 'pause-all', pauseDetails()); }
+        function resumeJob(group, name) { return call('POST', `resume/${encodeURIComponent(group)}/${encodeURIComponent(name)}`); }
+        function interruptJob(group, name) { return call('POST', `interrupt/${encodeURIComponent(group)}/${encodeURIComponent(name)}`); }
+
+        function state(s) { return `<span class="state ${esc(s)}">${esc(s)}</span>`; }
+
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/jobs/stats');
+                const data = await res.json();
+                const s = data.stats;
+                document.getElementById('stat-jobs').textContent = s.jobs;
+                document.getElementById('stat-triggers').textContent = s.triggers;
+                document.getElementById('stat-executing').textContent = s.executing;
+                document.getElementById('stat-fired').textContent = s.fired;
+                document.getElementById('stat-completed').textContent = `${s.completed}${s.failed ? ' / ' + s.failed + ' failed' : ''}`;
+                document.getElementById('stat-paused').textContent = s.paused;
+                document.getElementById('stat-blocked').textContent = s.blocked;
+                document.getElementById('stat-errors').textContent = s.errors;
+                document.getElementById('stat-awaiting').textContent = s.awaiting;
+                document.getElementById('stat-nodes').textContent = s.nodes;
+
+                const sc = data.scheduler;
+                document.getElementById('scheduler-info').innerHTML =
+                    `<b>${esc(sc.schedulerName)}</b> / ${esc(sc.schedulerInstanceId)}<br>` +
+                    `status <span class="${sc.status === 'Started' ? 'ok' : 'bad'}">${esc(sc.status)}</span> · threads ${sc.threadPoolSize}<br>` +
+                    `store <b>${esc(sc.jobStore)}</b> · clustered ${sc.jobStoreClustered} · persistent ${sc.jobStoreSupportsPersistence}`;
+
+                const jobsBody = document.getElementById('jobs-body');
+                if (!data.jobs.length) {
+                    jobsBody.innerHTML = '<tr><td colspan="10" class="empty">No jobs stored. Use the cards above.</td></tr>';
+                } else {
+                    jobsBody.innerHTML = data.jobs.map(j => {
+                        const flags = (j.durable ? '<span class="flag">durable</span>' : '') +
+                                      (j.nonConcurrent ? '<span class="flag">non-concurrent</span>' : '') +
+                                      (j.requestsRecovery ? '<span class="flag">recovery</span>' : '') +
+                                      (j.executing ? `<span class="flag" style="color:#7ee787;border-color:#7ee787">executing${j.running > 1 ? ' ×' + j.running : ''}${j.progress != null ? ' ' + j.progress + '%' : ''}</span>` : '') +
+                                      (j.executing && j.progressMessage ? `<span class="sub"> ${esc(j.progressMessage)}</span>` : '');
+                        const actions = `<div class="row-actions">
+                            <button class="warning" onclick="pauseJob('${esc(j.group)}','${esc(j.name)}')">Pause</button>
+                            <button class="success" onclick="resumeJob('${esc(j.group)}','${esc(j.name)}')">Resume</button>
+                            ${j.executing ? `<button class="warning" title="signal the running execution's cancellation token" onclick="interruptJob('${esc(j.group)}','${esc(j.name)}')">Interrupt</button>` : ''}
+                            <button class="secondary" onclick="delJob('${esc(j.group)}','${esc(j.name)}')">Delete</button></div>`;
+                        const jobCell = `<td class="mono">${esc(j.key)}<div class="sub">${esc(j.jobType)}${flags}</div></td>`;
+                        if (!j.triggers.length) {
+                            return `<tr>${jobCell}<td colspan="8" class="sub">no triggers (durable job)</td><td>${actions}</td></tr>`;
+                        }
+                        return j.triggers.map((t, i) => {
+                            const extras = [t.calendar ? 'cal ' + t.calendar : null, t.node ? 'node ' + t.node : null, t.executionGroup ? 'group ' + t.executionGroup : null, t.overlap ? 'overlap ' + t.overlap : null, t.misfireThreshold ? 'misfire after ' + t.misfireThreshold + 's' : null].filter(Boolean).join(' · ');
+                            const waits = t.waitsFor ? `<div class="sub">after ${esc(t.waitsFor)}</div>` : '';
+                            const why = t.pausedAt ? `<div class="sub">${esc(t.pauseReason ?? 'no reason given')}${t.pausedBy ? ' — ' + esc(t.pausedBy) : ''} · ${esc(t.pausedAt)}</div>` : '';
+                            return `<tr>${i === 0 ? jobCell : '<td></td>'}<td class="mono">${esc(t.key)}</td><td>${state(t.state)}${waits}${why}</td><td>${esc(t.type)}</td>` +
+                            `<td class="mono">${esc(t.nextFireAt ?? '—')}</td><td class="mono">${esc(t.previousFireAt ?? '—')}</td><td>${t.priority}</td>` +
+                            `<td class="sub">${esc(extras || '—')}</td>` +
+                            `<td class="sub">${t.retryPolicy ? esc(t.retryPolicy) + ' · attempt ' + t.retryAttempt : '—'}</td><td>${i === 0 ? actions : ''}</td></tr>`;
+                        }).join('');
+                    }).join('');
+                }
+
+                const nodesBody = document.getElementById('nodes-body');
+                nodesBody.innerHTML = data.nodes.map(n =>
+                    `<tr><td class="mono">${esc(n.instanceId)}${n.isCurrentNode ? '<span class="flag">this node</span>' : ''}</td><td>${state(n.state)}</td>` +
+                    `<td class="mono">${esc(n.lastCheckIn ?? '—')}</td><td>${n.checkInInterval != null ? n.checkInInterval + 's' : '—'}</td></tr>`).join('');
+
+                const pin = document.getElementById('pinNode');
+                const chosen = pin.value;
+                const options = ['<option value="auto">Auto (claimed by first node to fire)</option>']
+                    .concat(data.nodes.map(n => `<option value="${esc(n.instanceId)}">${esc(n.instanceId)}${n.isCurrentNode ? ' (this node)' : ''}${n.state !== 'Alive' ? ' [' + esc(n.state) + ']' : ''}</option>`));
+                if (pin.innerHTML !== options.join('')) {
+                    pin.innerHTML = options.join('');
+                    if ([...pin.options].some(o => o.value === chosen)) pin.value = chosen;
+                }
+            } catch (e) {
+                write('Stats refresh failed: ' + e.message, 'error');
+            }
+        }
+
+        let logLoading = false;
+
+        async function loadLog() {
+            if (logLoading) return;
+            logLoading = true;
+            try {
+                const res = await fetch(`/api/jobs/log?since=${logSince}`);
+                const data = await res.json();
+                for (const e of data.entries) {
+                    if (e.sequence <= logSince) continue;
+                    write(e.message, e.level, e.at, e.tag);
+                    logSince = e.sequence;
+                }
+                if (!data.entries.length) logSince = data.latest;
+            } catch (e) {
+            } finally {
+                logLoading = false;
+            }
+        }
+
+        setInterval(loadStats, 3000);
+        setInterval(loadLog, 1000);
+        loadStats();
+        loadLog();
+
+        function handleCronChange() {
+            const preset = document.getElementById('cronPreset').value;
+            const customInput = document.getElementById('customCron');
+            if (preset === 'custom') {
+                customInput.style.display = 'block';
+                customInput.focus();
+            } else {
+                customInput.style.display = 'none';
+                customInput.value = preset;
+            }
+        }
+
+        function postRecurring() {
+            const preset = document.getElementById('cronPreset').value;
+            const cron = preset === 'custom' ? document.getElementById('customCron').value : preset;
+            const jobId = document.getElementById('recurringJobId').value || 'cleanup-old-logs';
+            post('recurring-cleanup', { cronExpression: cron, jobId: jobId });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SAMPLE client configuration (reference only; not copied to output).
+  Point <server name="..."/> at your NCache OSS server(s) and use the cache id you
+  pass to UseNCacheStore (NCacheJobStoreOptions.CacheName). Every scheduler node that should form
+  one cluster must use the same cache, the same scheduler name and the same key prefix.
+-->
+<configuration>
+  <ncache-server connection-retries="5" retry-connection-delay="0" retry-interval="1" client-request-timeout="90" connection-timeout="5" port="9800" />
+  <cache id="defaultCache" enable-client-logs="False" log-level="error">
+    <server name="127.0.0.1"/>
+  </cache>
+</configuration>

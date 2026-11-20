@@ -1,0 +1,38 @@
+﻿ <Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup> 
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>NCache.OSS.Quartz</RootNamespace>
+    <AssemblyName>NCache.OSS.Quartz</AssemblyName>
+
+    <!-- NuGet packaging metadata -->
+    <PackageId>NCache.OSS.Quartz</PackageId>
+    <Version>5.3.603</Version>
+    <AssemblyVersion>5.3.0.0</AssemblyVersion>
+    <FileVersion>5.3.603</FileVersion>
+    <Authors>Alachisoft</Authors>
+    <Description>NCache-backed IJobStore for Quartz.NET, targeting NCache Open Source Edition.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>Icon.png</PackageIcon>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Alachisoft.NCache.Opensource.SDK" Version="5.3.603" />
+    <PackageReference Include="NCache.OSS.DistributedLock" Version="5.3.603" />
+    <PackageReference Include="Quartz" Version="4.6.2" />
+	<InternalsVisibleTo Include="NCache.OSS.Quartz.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="client.ncconf" CopyToOutputDirectory="Never" />
+    <None Update="config.ncconf" CopyToOutputDirectory="Never" />
+    <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="Icon.png" Pack="true" PackagePath="" />
+    <None Include="license.txt" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+</Project>
