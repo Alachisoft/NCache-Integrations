@@ -68,7 +68,7 @@ namespace NCacheDapper_TestApp
 
             var users4 = conn.QueryCached<User>(
                 "SELECT * FROM Users",
-                customProvider);
+                cacheProvider: customProvider);
             Console.WriteLine($"Count: {users4.Count()}");
 
             // =======================================
